@@ -1,0 +1,10 @@
+{
+  "name": "student-personal-homepage",
+  "version": "1.0.0",
+  "private": true,
+  "description": "可自行填写的学生综合个人主页，无第三方依赖。",
+  "scripts": {
+    "dev": "node preview.mjs",
+    "check": "node --check dist/content.js && node --check dist/app.js && node --check preview.mjs"
+  }
+}

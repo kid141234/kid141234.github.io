@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fafbf9">
+  <meta name="description" content="个人主页，记录学习、作品与生活。">
+  <title>个人主页 · 学习与生活</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="content.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body id="top">
+  <a class="skip-link" href="#main">跳转到主要内容</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#top" aria-label="个人主页，回到顶部"><span class="brand-mark" aria-hidden="true">✳</span> 个人主页<span class="brand-slash"> / </span><span class="brand-en">PERSONAL SPACE</span></a>
+      <nav class="top-nav" aria-label="页面导航" id="navigation"></nav>
+    </div>
+  </header>
+  <div class="page-layout">
+    <aside class="profile" aria-label="个人名片" id="profile"></aside>
+    <main id="main" tabindex="-1"></main>
+  </div>
+  <footer class="site-footer"><div class="footer-inner"><p id="copyright"></p><p class="footer-note">每一小步，都算数。<span class="footer-star" aria-hidden="true">✳</span></p><a href="#top">回到顶部 <span aria-hidden="true">↑</span></a></div></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><div class="noscript">请启用 JavaScript，以查看这份个人主页。</div></noscript>
+</body>
+</html>
