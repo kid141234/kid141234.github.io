@@ -5,7 +5,7 @@
  */
 window.HOMEPAGE = {
   profile: {
-    name: "",
+    name: "高源",
     englishName: "",
     role: "学生",
     school: "",
