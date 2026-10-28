@@ -125,16 +125,14 @@ interests: [
 
 ## 发布到 GitHub Pages
 
-你的 GitHub 用户名是 `kid141234`，当前仓库是 **`kid141234/yuan.github.io`**，发布成功后网址为 **https://kid141234.github.io/yuan.github.io/**。
-
-`yuan.github.io` 作为仓库名称时，它是网址中的项目路径。要使用根网址 `https://yuan.github.io/`，需要拥有用户名为 `yuan` 的 GitHub 账号。
+你的 GitHub 用户名是 `kid141234`，个人主页仓库是 **`kid141234/kid141234.github.io`**，发布成功后网址为 **https://kid141234.github.io/**。
 
 项目已准备好 `.github/workflows/pages.yml`：推送到 `main` 后，自动检查脚本并发布 `dist/`。不需要安装依赖，也不需要自定义域名。
 
-1. 使用已经创建的公开仓库 `kid141234/yuan.github.io`。
+1. 使用公开仓库 `kid141234/kid141234.github.io`。
 2. 将本项目作为仓库根目录推送到 `main`，包括 `.github/workflows/pages.yml` 和 `dist/`。
 3. 在仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。
-4. 在 **Actions** 中检查部署结果；成功后访问 https://kid141234.github.io/yuan.github.io/ 。如果首次推送早于 Pages 设置，点击 **Run workflow** 再运行一次。
+4. 在 **Actions** 中检查部署结果；成功后访问 https://kid141234.github.io/ 。如果首次推送早于 Pages 设置，点击 **Run workflow** 再运行一次。
 
 之后只需修改 `dist/content.js` 或添加 `dist/assets/` 内的文件，再提交到 `main`，网站会自动更新。浏览器直接编辑 GitHub 上的内容文件也可以触发更新。
 
