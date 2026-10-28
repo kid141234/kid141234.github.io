@@ -19,7 +19,7 @@ window.HOMEPAGE = {
     ] // 可继续添加 Google Scholar、博客等链接
   },
   intro: {
-    greeting: "你好，我是",
+    greeting: "你好，我是高源",
     tagline: "保持好奇，慢慢积累。",
     description: "这里记录我的学习、作品与生活。欢迎来到我的个人主页。"
   },
