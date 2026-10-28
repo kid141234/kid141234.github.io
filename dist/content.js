@@ -5,7 +5,7 @@
  */
 window.HOMEPAGE = {
   profile: {
-    name: "高源",
+    name: "高源", // 姓名只需在这里修改；标题、名片和页脚会自动更新
     englishName: "",
     role: "学生",
     school: "",
@@ -19,7 +19,7 @@ window.HOMEPAGE = {
     ] // 可继续添加 Google Scholar、博客等链接
   },
   intro: {
-    greeting: "你好，我是",
+    greeting: "你好，我是", // 这里只写问候语，不用重复填写姓名
     tagline: "保持好奇，慢慢积累。",
     description: "这里记录我的学习、作品与生活。欢迎来到我的个人主页。"
   },
