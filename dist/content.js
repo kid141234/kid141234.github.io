@@ -27,6 +27,13 @@ window.HOMEPAGE = {
   focus: [], // 关注的方向，例如 ["方向一", "方向二"]
   education: [],
   projects: [],
+  blog: [
+    {
+      title: "优化器究竟在选择什么？",
+      description: "从随机梯度的稳定性与噪声几何出发，理解优化器如何影响模型的解与参数表示。",
+      url: "blog/sgd-noise-geometry.html"
+    }
+  ],
   publications: [],
   experience: [],
   awards: [],

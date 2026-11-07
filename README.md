@@ -23,6 +23,7 @@ node preview.mjs
 - `focus`：关注方向，每一个方向为一个字符串。
 - `education`：教育经历。
 - `projects`：项目与作品。
+- `blog`：博客文章的标题、简介和页面链接。
 - `publications`：论文。为空数组时，栏目和导航自动隐藏。
 - `experience`：实习、工作、社团或志愿实践。为空时自动隐藏。
 - `awards`：奖项。为空时自动隐藏。
@@ -30,6 +31,10 @@ node preview.mjs
 - `contact`：联系区域的标题和说明。
 
 `""` 表示空文字，`[]` 表示暂时没有条目。保留引号和逗号；文字中需要英文双引号时使用 `\"`，或者改用中文引号。条目按照填写顺序展示，建议将最近经历放在前面。
+
+### 更新这篇博客
+
+文章 Markdown 源文件保存在 `blog/sgd-noise-geometry.md`，发布页面是 `dist/blog/sgd-noise-geometry.html`。修改源文件后，安装 Python 包 `markdown-it-py`，在项目根目录运行 `python build_blog.py`，重新生成页面。主页的文章标题和简介在 `dist/content.js` 的 `blog` 中修改。数学公式由 MathJax 加载渲染，需要访问 jsDelivr。
 
 教育、作品、兴趣未填写时会展示明确的占位内容。没有邮箱、简历或社交账号时，不会生成无效按钮。页面没有虚构论文、实习、奖项或个人背景。
 

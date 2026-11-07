@@ -73,6 +73,9 @@
     return `<article class="project${img ? " with-image" : ""}">${img ? `<img class="project-image" src="${esc(img)}" alt="${esc(item.imageAlt || item.title)}" loading="lazy" data-image>` : ""}<div>${text(item.date) ? `<div class="project-date">${esc(item.date)}</div>` : ""}<h3>${esc(item.title)}</h3>${text(item.description) ? `<p>${esc(item.description)}</p>` : ""}${list(item.tags).length ? `<div class="focus-tags">${tags(item.tags)}</div>` : ""}${links(item.links) ? `<div class="entry-links">${links(item.links)}</div>` : ""}</div></article>`;
   }).join("")}</div>` : `<div class="empty-project"><div class="empty-art">${icon("folder")}</div><div><h3>下一件作品，从这里开始。</h3><p>课程项目、个人开发，或一次有趣的尝试。</p><span class="empty-project-label">作品待添加</span></div></div>`);
 
+  const blog = items(data.blog, "title").filter(item => safeUrl(item.url));
+  if (blog.length) add("blog", "学习笔记", "BLOG", "博客", `<div class="blog-list">${blog.map(item => `<article class="blog-card"><div><span class="blog-label">学习笔记 / OPTIMIZATION</span><h3><a href="${esc(safeUrl(item.url))}">${esc(item.title)}</a></h3>${text(item.description) ? `<p>${esc(item.description)}</p>` : ""}</div><a class="blog-read" href="${esc(safeUrl(item.url))}" aria-label="阅读${esc(item.title)}">阅读文章 ${icon("arrow")}</a></article>`).join("")}</div>`);
+
   const publications = items(data.publications, "title");
   if (publications.length) add("publications", "论文发表", "PUBLICATIONS", "论文", publications.map(item => `<article class="publication"><h3>${esc(item.title)}</h3>${text(item.authors) ? `<p class="publication-authors">${esc(item.authors)}</p>` : ""}${item.venue || item.year ? `<p class="publication-venue">${esc([item.venue, item.year].filter(Boolean).join(" · "))}</p>` : ""}${links(item.links) ? `<div class="entry-links">${links(item.links)}</div>` : ""}</article>`).join(""));
 
