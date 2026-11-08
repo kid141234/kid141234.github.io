@@ -8,11 +8,11 @@ window.HOMEPAGE = {
     name: "高源", // 姓名只需在这里修改；标题、名片和页脚会自动更新
     englishName: "",
     role: "学生",
-    school: "",
+    school: "北京邮电大学",
     major: "",
     location: "",
     avatar: "", // 将照片放入 assets 文件夹，填写 "assets/你的照片.jpg"
-    email: "",
+    email: "3509628398@qq.com",
     resume: "", // 例如 "assets/resume.pdf"；留空不显示简历按钮
     links: [
       { label: "GitHub", url: "https://github.com/kid141234", icon: "github" }
