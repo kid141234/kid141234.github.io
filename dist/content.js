@@ -32,6 +32,12 @@ window.HOMEPAGE = {
       title: "优化器究竟在选择什么？",
       description: "从随机梯度的稳定性与噪声几何出发，理解优化器如何影响模型的解与参数表示。",
       url: "blog/sgd-noise-geometry.html"
+    },
+    {
+      title: "球面动力学、学习率与权重衰减",
+      label: "学习笔记 / PRETRAINING OPTIMIZATION",
+      description: "从尺度不变性与球面更新出发，串联有效学习率、Hyperball、权重衰减平衡、河谷动力学，以及预训练优化器的比较口径。",
+      url: "blog/pretraining-optimization-lecture.html"
     }
   ],
   // --- BEGIN 专题：由 build_notes.py 生成，请勿手工改动 ---

@@ -33,9 +33,13 @@ node preview.mjs
 
 `""` 表示空文字，`[]` 表示暂时没有条目。保留引号和逗号；文字中需要英文双引号时使用 `\"`，或者改用中文引号。条目按照填写顺序展示，建议将最近经历放在前面。
 
-### 更新这篇博客
+### 独立博客文章
 
-文章 Markdown 源文件保存在 `blog/sgd-noise-geometry.md`，发布页面是 `dist/blog/sgd-noise-geometry.html`。修改源文件后，安装 Python 包 `markdown-it-py`，在项目根目录运行 `python build_blog.py`，重新生成页面。主页的文章标题和简介在 `dist/content.js` 的 `blog` 中修改。数学公式由 MathJax 加载渲染，需要访问 jsDelivr。
+每篇文章涉及三处：`blog/<slug>.md` 源文件、`build_blog.py` 里 `ARTICLES` 中的一条配置（标题、简介、栏目标签、是否允许内联 HTML）、`dist/content.js` 的 `blog` 数组中的一张卡片。**`blog` 数组的顺序就是主页上的展示顺序。**
+
+改完源文件后，安装 Python 包 `markdown-it-py`，在项目根目录运行 `python build_blog.py`，生成 `dist/blog/<slug>.html`。新增一篇文章时，把 Markdown 放进 `blog/`，在 `ARTICLES` 和 `content.js` 各加一条，再重新运行脚本即可。
+
+配置里 `html: True` 的文章会保留源文件中的内联 `<figure>`/`<svg>` 示意图与标题锚点（示意图的颜色变量定义在 `dist/blog/blog.css` 的 `.article` 规则中）。数学公式由 MathJax 加载渲染，需要访问 jsDelivr。
 
 ### 学习笔记专题：John Lee
 
