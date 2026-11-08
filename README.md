@@ -39,7 +39,7 @@ node preview.mjs
 
 ### 学习笔记专题：John Lee
 
-「学习笔记」栏目收录了专题 **John Lee**，是《Introduction to Smooth Manifolds》的 10 篇读书笔记。主页上的专题区块由 `dist/content.js` 中带 `BEGIN 专题 / END 专题` 标记的 `topics` 数据块提供，**这个区块由脚本自动生成，不要手工改动**。
+「学习笔记」栏目收录了专题 **John Lee**，是《Introduction to Smooth Manifolds》的 10 篇读书笔记。**主页只显示一个可点击的专题入口卡片，不展开笔记列表；点进专题首页 `dist/blog/john-lee/index.html` 才能看到全部 10 篇。** 栏目里另外保留 `blog` 中的独立文章卡片。专题数据来自 `dist/content.js` 中带 `BEGIN 专题 / END 专题` 标记的 `topics` 区块，**这个区块由脚本自动生成，不要手工改动**；其中 `notes` 目前只用于主页显示篇数、生成专题首页和每篇的上下篇导航。
 
 相关文件：
 
@@ -59,7 +59,7 @@ python build_notes.py
 - `dist/blog/john-lee/index.html`：专题首页。
 - `dist/blog/notes.css`：定理框、列表和公式块样式。
 
-**新增一篇笔记**：把新笔记的 `main.tex` 解压成 `blog/john-lee/<slug>.tex`，在 `meta.json` 的 `notes` 里按目标顺序加一条（`slug` 与文件名一致），重新运行脚本即可。`notes` 的顺序同时决定主页专题列表、专题首页和每篇的上一篇 / 下一篇。
+**新增一篇笔记**：把新笔记的 `main.tex` 解压成 `blog/john-lee/<slug>.tex`，在 `meta.json` 的 `notes` 里按目标顺序加一条（`slug` 与文件名一致），重新运行脚本即可。`notes` 的顺序决定专题首页的列表和每篇的上一篇 / 下一篇，主页专题卡片上的篇数会自动更新（主页本身不会列出这些笔记）。
 
 每篇 LaTeX 导言区里的 `\newcommand` 会自动转成该页的 MathJax 宏；公式仍需访问 jsDelivr 加载 MathJax 才能渲染。
 
