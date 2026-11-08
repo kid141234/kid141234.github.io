@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="微分形式速查表：楔积、外微分、拉回、内乘与李导数的基本公式，以及常用恒等式汇总。">
+<title>微分形式运算法则 · John Lee 专题 · 高源的学习笔记</title><link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../blog.css"><link rel="stylesheet" href="../notes.css">
+<script>window.MathJax={"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"macros":{"R":"\\mathbb{R}","Om":"\\Omega","dd":"\\,\\mathrm{d}","dx":"\\mathrm{d}x","dy":"\\mathrm{d}y","df":"\\mathrm{d}f","pull":"^{*}","mathbbm":["\\mathbf{#1}",1],"bm":["\\boldsymbol{#1}",1]}},"svg":{"fontCache":"global"}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script></head>
+<body id="top"><a class="skip-link" href="#article">跳转到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="../../index.html"><span class="brand-mark" aria-hidden="true">✳</span> 个人主页<span class="brand-slash"> / </span><span class="brand-en">PERSONAL SPACE</span></a><a class="back-link" href="../../index.html#blog">← 返回学习笔记</a></div></header>
+<div class="article-layout"><aside class="article-toc" aria-label="文章目录"><p>目录 <span>CONTENTS</span></p><ol><li class="toc-l2"><a href="#section-1">0. 基本对象与记号</a></li><li class="toc-l2"><a href="#section-2">1. 加法与函数乘法（0-形式乘 k-形式）</a></li><li class="toc-l2"><a href="#section-3">2. 楔积（外积）wedge</a></li><li class="toc-l3"><a href="#section-4">2.1 双线性与分配律</a></li><li class="toc-l3"><a href="#section-5">2.2 结合律</a></li><li class="toc-l3"><a href="#section-6">2.3 分次交换律（graded commutativity）</a></li><li class="toc-l3"><a href="#section-7">2.4 基本元取值（常用）</a></li><li class="toc-l2"><a href="#section-8">3. 外微分 d</a></li><li class="toc-l3"><a href="#section-9">3.1 对 0-形式（函数）</a></li><li class="toc-l3"><a href="#section-10">3.2 对一般 k-形式（书中定义）</a></li><li class="toc-l3"><a href="#section-11">3.3 线性</a></li><li class="toc-l3"><a href="#section-12">3.4\ Leibniz 公式（分次乘法法则）</a></li><li class="toc-l3"><a href="#section-13">3.5\ d^2=0</a></li><li class="toc-l2"><a href="#section-14">4. 拉回（变量代换）fpull</a></li><li class="toc-l3"><a href="#section-15">4.1 对 0-形式（函数）</a></li><li class="toc-l3"><a href="#section-16">4.2 线性与函数乘法相容</a></li><li class="toc-l3"><a href="#section-17">4.3 与楔积相容</a></li><li class="toc-l3"><a href="#section-18">4.4 复合律</a></li><li class="toc-l3"><a href="#section-19">4.5 与外微分可交换</a></li><li class="toc-l3"><a href="#section-20">4.6 维数原因导致为 0</a></li><li class="toc-l2"><a href="#section-21">5. 坐标计算速记（代换规则）</a></li><li class="toc-l2"><a href="#section-22">6. 内积诱导的向量场与 1-形式对应</a></li></ol></aside><main id="article" class="article"><p class="article-kicker">学习笔记 / JOHN LEE / SMOOTH MANIFOLDS · 09 / 10</p><h1>微分形式运算法则</h1><p class="article-lead">微分形式速查表：楔积、外微分、拉回、内乘与李导数的基本公式，以及常用恒等式汇总。</p><h2 id="section-1">0. 基本对象与记号</h2><p>设 $U\subset \R^n$ 为开集，$T_pU\simeq \R^n$。</p><ul class="note-list"><li><strong>0-形式</strong>：可微函数 $g:U\to\R$，记作 $g\in \Om^0(U)$。</li><li><p><strong>$k$-形式</strong>：对每个 $p\in U$ 赋予一个交替 $k$-线性映射</p><div class="math-block">\[
+  \omega(p):(T_pU)^k\to \R,\qquad \omega\in \Om^k(U).
+  \]</div></li><li><p><strong>坐标展开</strong>：</p><div class="math-block">\[
+  \omega=\sum_{I} a_I\, \dx_I,\qquad
+  \dx_I=\dx_{i_1}\wedge\cdots\wedge \dx_{i_k},\ i_1&lt;\cdots&lt;i_k.
+  \]</div></li><li><strong>维数限制</strong>：若 $k&gt;n$，则 $\Om^k(U)=\{0\}$。</li></ul><h2 id="section-2">1. 加法与函数乘法（0-形式乘 $k$-形式）</h2><ul class="note-list"><li><strong>加法（同阶）</strong>：$(\omega+\eta)(p)=\omega(p)+\eta(p)$。</li><li><p><strong>函数乘形式（按点标量乘法）</strong>：</p><div class="math-block">\[
+  (g\omega)(p)(v_1,\dots,v_k)=g(p)\,\omega(p)(v_1,\dots,v_k).
+  \]</div></li><li>也可视作 $g\wedge \omega$（因为 $g$ 是 0-形式）。</li></ul><h2 id="section-3">2. 楔积（外积）$\wedge$</h2><p>若 $\omega\in\Om^k(U)$，$\eta\in\Om^s(U)$，则 $\omega\wedge\eta\in\Om^{k+s}(U)$。</p><h3 id="section-4">2.1 双线性与分配律</h3><div class="math-block">\[
+(\omega_1+\omega_2)\wedge\eta=\omega_1\wedge\eta+\omega_2\wedge\eta,\qquad
+\omega\wedge(\eta_1+\eta_2)=\omega\wedge\eta_1+\omega\wedge\eta_2.
+\]</div><p>若 $g,h\in\Om^0(U)$，</p><div class="math-block">\[
+(g\omega)\wedge(h\eta)=(gh)(\omega\wedge\eta).
+\]</div><h3 id="section-5">2.2 结合律</h3><div class="math-block">\[
+(\omega\wedge\eta)\wedge\theta=\omega\wedge(\eta\wedge\theta).
+\]</div><h3 id="section-6">2.3 分次交换律（graded commutativity）</h3><p>若 $\deg\omega=k$，$\deg\eta=s$，则</p><div class="math-block">\[
+\omega\wedge\eta = (-1)^{ks}\,\eta\wedge\omega.
+\]</div><p>推论：若 $k$ 为奇数，则 $\omega\wedge\omega=0$。</p><h3 id="section-7">2.4 基本元取值（常用）</h3><p>若 $i_1&lt;\cdots&lt;i_k$ 且 $j_1&lt;\cdots&lt;j_k$，则</p><div class="math-block">\[
+(\dx_{i_1}\wedge\cdots\wedge \dx_{i_k})(e_{j_1},\dots,e_{j_k})
+=
+\begin{cases}
+1,&amp; (i_1,\dots,i_k)=(j_1,\dots,j_k),\\
+0,&amp; \text{否则}.
+\end{cases}
+\]</div><h2 id="section-8">3. 外微分 $d$</h2><p>外微分是线性算子 $d:\Om^k(U)\to \Om^{k+1}(U)$。</p><h3 id="section-9">3.1 对 0-形式（函数）</h3><p>若 $g\in\Om^0(U)$，</p><div class="math-block">\[
+dg=\sum_{i=1}^n \frac{\partial g}{\partial x_i}\,\dx_i.
+\]</div><h3 id="section-10">3.2 对一般 $k$-形式（书中定义）</h3><p>若 $\omega=\sum_I a_I\,\dx_I$，则</p><div class="math-block">\[
+d\omega=\sum_I da_I\wedge \dx_I.
+\]</div><h3 id="section-11">3.3 线性</h3><div class="math-block">\[
+d(\omega+\eta)=d\omega+d\eta.
+\]</div><h3 id="section-12">3.4\ Leibniz 公式（分次乘法法则）</h3><p>若 $\deg\omega=k$，则</p><div class="math-block">\[
+d(\omega\wedge\eta)=d\omega\wedge\eta+(-1)^k\,\omega\wedge d\eta.
+\]</div><p>特别地，若 $g$ 为 0-形式，</p><div class="math-block">\[
+d(g\omega)=dg\wedge\omega+g\,d\omega.
+\]</div><h3 id="section-13">3.5 $d^2=0$</h3><div class="math-block">\[
+d(d\omega)=0.
+\]</div><p>特别地 $d(\dx_i)=0$，因此 $d(\dx_I)=0$。</p><h2 id="section-14">4. 拉回（变量代换）$f\pull$</h2><p>设 $f:U\subset\R^n\to V\subset\R^m$ 可微，则</p><div class="math-block">\[
+f\pull:\Om^k(V)\to \Om^k(U).
+\]</div><p>定义（在点 $p$）：</p><div class="math-block">\[
+(f\pull\omega)(p)(v_1,\dots,v_k)=\omega(f(p))\big(df_p(v_1),\dots,df_p(v_k)\big).
+\]</div><h3 id="section-15">4.1 对 0-形式（函数）</h3><div class="math-block">\[
+f\pull g=g\circ f.
+\]</div><h3 id="section-16">4.2 线性与函数乘法相容</h3><div class="math-block">\[
+f\pull(\omega+\eta)=f\pull\omega+f\pull\eta,\qquad
+f\pull(g\omega)=f\pull(g)\,f\pull(\omega).
+\]</div><p>（右边乘法是“函数 $\times$ 形式”的按点标量乘法。）</p><h3 id="section-17">4.3 与楔积相容</h3><div class="math-block">\[
+f\pull(\omega\wedge\eta)=f\pull\omega\wedge f\pull\eta.
+\]</div><h3 id="section-18">4.4 复合律</h3><p>若 $g:W\to U$ 可微，则</p><div class="math-block">\[
+(f\circ g)\pull = g\pull\circ f\pull.
+\]</div><h3 id="section-19">4.5 与外微分可交换</h3><div class="math-block">\[
+d(f\pull\omega)=f\pull(d\omega).
+\]</div><h3 id="section-20">4.6 维数原因导致为 0</h3><p>若 $\dim U=m$ 且 $k&gt;m$，则对任意 $\omega\in\Om^k(V)$，</p><div class="math-block">\[
+f\pull\omega=0.
+\]</div><h2 id="section-21">5. 坐标计算速记（代换规则）</h2><p>若 $f=(f_1,\dots,f_m)$，即 $y_i=f_i(x)$，则</p><div class="math-block">\[
+f\pull(\dy_i)=d(y_i\circ f)=df_i=\sum_{j=1}^n \frac{\partial f_i}{\partial x_j}\,\dx_j.
+\]</div><p>因此对</p><div class="math-block">\[
+\omega=\sum_I a_I(y)\,\dy_I
+\]</div><p>有</p><div class="math-block">\[
+f\pull\omega=\sum_I a_I(f(x))\, df_{i_1}\wedge\cdots\wedge df_{i_k}.
+\]</div><p>（把 $y$ 换成 $f(x)$，把 $\dy_i$ 换成 $df_i$。）</p><h2 id="section-22">6. 内积诱导的向量场与 1-形式对应</h2><p>在 $\R^n$ 标准内积 $\langle\cdot,\cdot\rangle$ 下：</p><div class="math-block">\[
+v\in T_p\R^n \longmapsto v^\flat\in T_p^*\R^n,\qquad
+v^\flat(u)=\langle v,u\rangle.
+\]</div><p>这给出向量场与 1-形式的逐点一一对应（常称 ``$\flat/\sharp$'' 音乐同构）。</p><p>\hrule</p><p><strong>备注：</strong>本文未涉及 Hodge 星号 $\star$（那是依赖度量的 $k\leftrightarrow (n-k)$ 运算，与对偶/拉回的 $*$ 不同）。</p><div class="series-nav"><a href="tensors.html">← 上一篇：张量</a><a href="index.html">专题目录 · John Lee</a><a href="hodge-laplace-operators.html">下一篇：Hodge 算子、Laplace 算子与梯度散度旋度 →</a></div><div class="article-end"><a href="../../index.html#blog">← 返回学习笔记</a><a href="#top">回到顶部 ↑</a></div></main></div>
+<footer class="site-footer"><div class="footer-inner"><p>© 高源 · Personal Homepage</p><p>保持好奇，慢慢积累。</p></div></footer></body></html>

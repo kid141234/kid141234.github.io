@@ -24,6 +24,7 @@ node preview.mjs
 - `education`：教育经历。
 - `projects`：项目与作品。
 - `blog`：博客文章的标题、简介和页面链接。
+- `topics`：学习笔记里的专题（标题、简介、专题首页链接和笔记列表）。由 `build_notes.py` 自动生成，详见下文。
 - `publications`：论文。为空数组时，栏目和导航自动隐藏。
 - `experience`：实习、工作、社团或志愿实践。为空时自动隐藏。
 - `awards`：奖项。为空时自动隐藏。
@@ -35,6 +36,32 @@ node preview.mjs
 ### 更新这篇博客
 
 文章 Markdown 源文件保存在 `blog/sgd-noise-geometry.md`，发布页面是 `dist/blog/sgd-noise-geometry.html`。修改源文件后，安装 Python 包 `markdown-it-py`，在项目根目录运行 `python build_blog.py`，重新生成页面。主页的文章标题和简介在 `dist/content.js` 的 `blog` 中修改。数学公式由 MathJax 加载渲染，需要访问 jsDelivr。
+
+### 学习笔记专题：John Lee
+
+「学习笔记」栏目收录了专题 **John Lee**，是《Introduction to Smooth Manifolds》的 10 篇读书笔记。主页上的专题区块由 `dist/content.js` 中带 `BEGIN 专题 / END 专题` 标记的 `topics` 数据块提供，**这个区块由脚本自动生成，不要手工改动**。
+
+相关文件：
+
+- `blog/john-lee/*.tex`：从 `John Lee/*.zip` 解压出的 LaTeX 源文件（每个压缩包内是一个 `main.tex`）。
+- `blog/john-lee/meta.json`：专题名称与简介，以及每篇笔记的 `slug`、标题、简介和排列顺序。
+- `build_notes.py`：把 LaTeX 转成 HTML，并同步 `content.js` 的 `topics` 区块。
+
+在项目根目录运行：
+
+```powershell
+python build_notes.py
+```
+
+脚本会生成或覆盖：
+
+- `dist/blog/john-lee/*.html`：10 篇笔记阅读页，含目录、定理框、MathJax 公式和上一篇 / 下一篇导航。
+- `dist/blog/john-lee/index.html`：专题首页。
+- `dist/blog/notes.css`：定理框、列表和公式块样式。
+
+**新增一篇笔记**：把新笔记的 `main.tex` 解压成 `blog/john-lee/<slug>.tex`，在 `meta.json` 的 `notes` 里按目标顺序加一条（`slug` 与文件名一致），重新运行脚本即可。`notes` 的顺序同时决定主页专题列表、专题首页和每篇的上一篇 / 下一篇。
+
+每篇 LaTeX 导言区里的 `\newcommand` 会自动转成该页的 MathJax 宏；公式仍需访问 jsDelivr 加载 MathJax 才能渲染。
 
 教育、作品、兴趣未填写时会展示明确的占位内容。没有邮箱、简历或社交账号时，不会生成无效按钮。页面没有虚构论文、实习、奖项或个人背景。
 
@@ -144,6 +171,18 @@ interests: [
 也可采用不使用自定义工作流的方式：将 `dist/` **内部文件** 上传至仓库根目录（包含 `.nojekyll`），Pages 选择 **Deploy from a branch → main → /(root)**。此时不要同时上传上述工作流。两种发布方式选择一种即可。
 
 GitHub 官方说明：https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site
+
+### 用 API 脚本发布（github.com 的 git 端点不可达时）
+
+若网络只放行 `api.github.com`、常规 `git push` 被代理拦截，可用 `publish_to_github.py`。它走 GitHub Git Data API，基于远端 `main` 的最新提交追加一次 commit，保留完整历史，不需要 force push，也不需要在本地建 git 仓库。
+
+```powershell
+python publish_to_github.py --dry-run     # 只读预览变更，无需 token
+$env:GITHUB_TOKEN = "ghp_..."             # fine-grained token 需 Contents: read/write
+python publish_to_github.py
+```
+
+脚本按 `.gitignore` 收集本地文件，逐文件比对远端 blob 的 SHA，只上传新增和修改的文件（也会处理删除），最后更新 `refs/heads/main`。token 只从环境变量读取，不会写入文件或打印。发布成功后 GitHub Actions 会自动部署 `dist/`。
 
 ## 语法检查
 

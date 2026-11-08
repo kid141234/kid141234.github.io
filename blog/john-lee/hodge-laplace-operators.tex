@@ -1,0 +1,280 @@
+% !TeX program = xelatex
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{ctex}
+
+\geometry{margin=1in}
+\setlist[itemize]{leftmargin=2em}
+
+\title{Euclidean $\mathbb{R}^n$ 上微分形式运算：Hodge 星、外微分、拉回，以及 $\mathrm{grad}$/$\mathrm{div}$/$\mathrm{rot}$/$\Delta$ 的定义与性质（基于习题 9--14）}
+\author{}
+\date{}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\dd}{\,d}
+\newcommand{\dstar}{d^\ast}
+\newcommand{\vol}{\nu}
+\newcommand{\ip}[2]{\langle #1,#2\rangle}
+
+\begin{document}
+\maketitle
+
+\section{基本对象与记号}
+
+\subsection{切空间、余切空间与形式}
+在欧氏空间 $\R^n$ 的任意点 $p$，切空间记为 $T_p\R^n$（书中记作 $\R^n_p$），其对偶空间为余切空间 $T_p^\ast\R^n$（书中记作 $(\R^n_p)^\ast$）。
+
+\begin{itemize}
+  \item $k$-形式（外 $k$-形式）是 $T_p\R^n$ 上的 $k$-线性交替映射：
+  \[
+  \Lambda^k(T_p^\ast\R^n)
+  :=\{\varphi:(T_p\R^n)^k\to\R\;\mid\;\varphi\ \text{$k$-线性且交替}\}.
+  \]
+  \item 在坐标 $(x_1,\dots,x_n)$ 下，$\{dx_1,\dots,dx_n\}$ 是 $T_p^\ast\R^n$ 的标准基。
+  \item 多重指标：若 $I=(i_1<\cdots<i_k)$，则写
+  \[
+  dx_I:=dx_{i_1}\wedge\cdots\wedge dx_{i_k}.
+  \]
+\end{itemize}
+
+\subsection{楔积与其性质}
+对 $k$-形式 $\alpha$ 与 $s$-形式 $\beta$，楔积 $\alpha\wedge\beta$ 是 $(k+s)$-形式，满足：
+\begin{itemize}
+  \item 双线性：对每个变量线性；
+  \item 结合律：$(\alpha\wedge\beta)\wedge\gamma=\alpha\wedge(\beta\wedge\gamma)$；
+  \item 反交换律（分次交换）：
+  \[
+  \alpha\wedge\beta = (-1)^{ks}\beta\wedge\alpha;
+  \]
+  \item 若 $\alpha$ 是奇次形式（$k$ 为奇数），则 $\alpha\wedge\alpha=0$。
+\end{itemize}
+
+\section{体积元与 Hodge 星算子（习题 9--10）}
+
+\subsection{体积元（volume element）}
+定义 $n$-形式 $\vol$ 使得在标准基 $\{e_1,\dots,e_n\}$ 下
+\[
+\vol(e_1,\dots,e_n)=1.
+\]
+则（习题 9）：
+\[
+\boxed{\ \vol = dx_1\wedge\cdots\wedge dx_n.\ }
+\]
+并且对任意 $v_i=\sum_{j=1}^n a_{ij}e_j$，
+\[
+\boxed{\ \vol(v_1,\dots,v_n)=\det(a_{ij}) = \mathrm{vol}(v_1,\dots,v_n).\ }
+\]
+
+\subsection{Hodge 星算子 \texorpdfstring{$\ast$}{*}}
+在标准取向与欧氏内积下，对基楔积 $dx_I$（$I=(i_1<\cdots<i_k)$），令 $J=(j_1<\cdots<j_{n-k})$ 为补指标，使
+\[
+(i_1,\dots,i_k,j_1,\dots,j_{n-k})
+\]
+是 $(1,\dots,n)$ 的一个排列，记其奇偶为 $\sigma\in\{0,1\}$。
+定义（习题 10）：
+\[
+\boxed{\ \ast(dx_I)=(-1)^\sigma\,dx_J,\quad\text{并线性延拓}.\ }
+\]
+特别地对 $1$-形式：
+\[
+\boxed{\ \ast dx_i = (-1)^{i-1}\,dx_1\wedge\cdots\wedge\widehat{dx_i}\wedge\cdots\wedge dx_n.\ }
+\]
+并且（习题 10(c)）：
+\[
+\boxed{\ \ast\ast\omega = (-1)^{k(n-k)}\omega,\quad \omega\in\Lambda^k(T_p^\ast\R^n).\ }
+\]
+
+\subsection{低维例子（来自习题 10）}
+\begin{itemize}
+  \item 在 $\R^3$，若 $\omega=a_{12}dx_1\wedge dx_2+a_{13}dx_1\wedge dx_3+a_{23}dx_2\wedge dx_3$，
+  \[
+  \boxed{\ \ast\omega = a_{12}dx_3 - a_{13}dx_2 + a_{23}dx_1. \ }
+  \]
+  \item 在 $\R^2$，若 $\omega=a_1dx_1+a_2dx_2$，
+  \[
+  \boxed{\ \ast\omega = a_1dx_2 - a_2dx_1. \ }
+  \]
+\end{itemize}
+
+\section{外微分 \texorpdfstring{$d$}{d}（定义与性质，命题 5）}
+
+\subsection{外微分的定义}
+若 $k$-形式写成
+\[
+\omega=\sum_I a_I\,dx_I,
+\]
+其中 $a_I$ 是可微函数，则定义（书中 Definition 5）：
+\[
+\boxed{\ d\omega := \sum_I da_I\wedge dx_I.\ }
+\]
+并且对函数（$0$-形式）$f$：
+\[
+\boxed{\ df = \sum_{i=1}^n \frac{\partial f}{\partial x_i}\,dx_i. }
+\]
+
+\subsection{外微分的基本性质（命题 5）}
+若 $\omega,\omega_1,\omega_2$ 为 $k$-形式，$\varphi$ 为 $s$-形式，则：
+\begin{enumerate}[label=(\alph*)]
+  \item 线性：
+  \[
+  \boxed{\ d(\omega_1+\omega_2)=d\omega_1+d\omega_2. }
+  \]
+  \item Leibniz（分次乘积法则）：
+  \[
+  \boxed{\ d(\omega\wedge\varphi)=d\omega\wedge\varphi + (-1)^k\,\omega\wedge d\varphi. }
+  \]
+  \item $d^2=0$：
+  \[
+  \boxed{\ d(d\omega)=0. }
+  \]
+\end{enumerate}
+
+\section{可微映射的拉回 \texorpdfstring{$f^\ast$}{f*}（Definition 与 Proposition 3--4--5(d)）}
+
+\subsection{定义：拉回}
+若 $f:\R^n\to\R^m$ 可微，$\omega$ 是 $\R^m$ 上的 $k$-形式，则 $f^\ast\omega$ 是 $\R^n$ 上的 $k$-形式，定义为：
+\[
+\boxed{\ (f^\ast\omega)(p)(v_1,\dots,v_k)=\omega(f(p))\bigl((df_p)v_1,\dots,(df_p)v_k\bigr). }
+\]
+对 $0$-形式（函数）$g$ 约定：
+\[
+\boxed{\ f^\ast(g)=g\circ f. }
+\]
+
+\subsection{性质（命题 3 与命题 4）}
+设 $\omega,\varphi$ 是 $\R^m$ 上的 $k$-形式，$g$ 是 $0$-形式，则：
+\begin{enumerate}[label=(\alph*)]
+  \item 加法交换：
+  \[
+  \boxed{\ f^\ast(\omega+\varphi)=f^\ast\omega+f^\ast\varphi. }
+  \]
+  \item 标量乘法（函数乘形式）：
+  \[
+  \boxed{\ f^\ast(g\,\omega)=f^\ast(g)\,f^\ast(\omega). }
+  \]
+  \item 对 $1$-形式楔积（并可推广到一般形式）：
+  \[
+  \boxed{\ f^\ast(\varphi_1\wedge\cdots\wedge\varphi_k)=f^\ast\varphi_1\wedge\cdots\wedge f^\ast\varphi_k. }
+  \]
+  \item 与复合相容：
+  \[
+  \boxed{\ (f\circ g)^\ast\omega=g^\ast(f^\ast\omega). }
+  \]
+  \item 与外微分交换（命题 5(d)）：
+  \[
+  \boxed{\ d(f^\ast\omega)=f^\ast(d\omega). }
+  \]
+\end{enumerate}
+
+\section{向量场与 1-形式的典范同构（内积诱导）}
+在欧氏内积 $\ip{\cdot}{\cdot}$ 下，对每个点 $p$ 有线性同构（书中称 canonical isomorphism）
+\[
+\flat_p:T_p\R^n\to T_p^\ast\R^n,\qquad v\mapsto \omega,\ \ \omega(u)=\ip{v}{u}.
+\]
+若 $v=\sum_{i=1}^n a_i e_i$，则对应的 $1$-形式是
+\[
+\boxed{\ \omega = v^\flat = \sum_{i=1}^n a_i\,dx_i. }
+\]
+（因为 $\omega(e_j)=\ip{v}{e_j}=a_j$ 且 $dx_i(e_j)=\delta_{ij}$。）
+
+\section{梯度、散度、旋度、拉普拉斯（习题 11--14）}
+
+\subsection{梯度 \texorpdfstring{$\mathrm{grad}$}{grad}}
+对可微函数 $f:\R^n\to\R$，定义向量场 $\mathrm{grad}\,f$（习题 12）为：
+\[
+\boxed{\ \ip{\mathrm{grad}\,f(p)}{u}=df_p(u),\quad \forall u\in T_p\R^n. }
+\]
+在标准基下：
+\[
+\boxed{\ \mathrm{grad}\,f=\sum_{i=1}^n \frac{\partial f}{\partial x_i}\,e_i. }
+\]
+并且 $\mathrm{grad}\,f$ 对应的 1-形式正是 $df$。
+
+\subsection{散度 \texorpdfstring{$\mathrm{div}$}{div}}
+把可微向量场 $v:\R^n\to\R^n$ 视为可微映射，定义（习题 11）：
+\[
+\boxed{\ (\mathrm{div}\,v)(p)=\mathrm{trace}\,(dv)_p. }
+\]
+若 $v=\sum_{i=1}^n a_i e_i$，则
+\[
+\boxed{\ \mathrm{div}\,v=\sum_{i=1}^n \frac{\partial a_i}{\partial x_i}. }
+\]
+
+\paragraph{散度与 Hodge 星（习题 11(b)）}
+令 $\omega=v^\flat$，$\vol$ 为体积元，则
+\[
+\boxed{\ d(\ast\omega) = (\mathrm{div}\,v)\,\vol. }
+\]
+（这条公式是把散度用形式语言刻画出来的关键。）
+
+\subsection{旋度 \texorpdfstring{$\mathrm{rot}$}{rot}（一般维）}
+书中在 $\R^n$ 给出 ``rotational'' 的形式版本（习题 14）：
+\[
+\boxed{\ \mathrm{rot}\,v := \ast(d\omega),\quad \omega=v^\flat. }
+\]
+其中 $d\omega$ 是 2-形式，所以 $\mathrm{rot}\,v$ 是 $(n-2)$-形式。
+
+\paragraph{特殊维数的解释}
+\begin{itemize}
+  \item $n=2$：$\mathrm{rot}\,v$ 是 $0$-形式（标量涡量）。
+  \item $n=3$：$\mathrm{rot}\,v$ 是 $1$-形式，可再用 $\sharp$ 同构回到向量场，即熟悉的 $\nabla\times v$。
+\end{itemize}
+
+\paragraph{恒等式（习题 14(a)）}
+\[
+\boxed{\ \mathrm{rot}(\mathrm{grad}\,f)=0. }
+\]
+证明的形式语言：$\omega=(\mathrm{grad}f)^\flat=df$，故 $\mathrm{rot}(\mathrm{grad}f)=\ast(d(df))=\ast(0)=0$。
+
+\paragraph{三维坐标公式（习题 14(b1)）}
+在 $n=3$，若 $v=\sum_{i=1}^3 a_i e_i$，则（把 $\mathrm{rot}\,v$ 识别为向量）
+\[
+\boxed{
+\mathrm{rot}\,v=
+\Big(\frac{\partial a_3}{\partial x_2}-\frac{\partial a_2}{\partial x_3}\Big)e_1+
+\Big(\frac{\partial a_1}{\partial x_3}-\frac{\partial a_3}{\partial x_1}\Big)e_2+
+\Big(\frac{\partial a_2}{\partial x_1}-\frac{\partial a_1}{\partial x_2}\Big)e_3.}
+\]
+
+\paragraph{三维恒等式（习题 14(b2)）}
+\[
+\boxed{\ \mathrm{div}(\mathrm{rot}\,v)=0. }
+\]
+
+\subsection{拉普拉斯 \texorpdfstring{$\Delta$}{Delta}}
+定义（习题 13）：
+\[
+\boxed{\ \Delta f := \mathrm{div}(\mathrm{grad}\,f). }
+\]
+坐标表达：
+\[
+\boxed{\ \Delta f = \sum_{i=1}^n \frac{\partial^2 f}{\partial x_i^2}. }
+\]
+并且（习题 13(b)）对函数乘积 $fg$：
+\[
+\boxed{\ \Delta(fg)=f\,\Delta g + g\,\Delta f + 2\,\ip{\mathrm{grad}\,f}{\mathrm{grad}\,g}. }
+\]
+
+\paragraph{与 Hodge 星的联系（习题 13(c) 的形式表达）}
+在 $\R^n$ 取体积元 $\vol$，可得
+\[
+\boxed{\ d(\ast\,df) = (\Delta f)\,\vol. }
+\]
+（这是把 $\Delta$ 写成 $d\ast d$ 的版本；等价于 ``$d(\ast df)$ 的系数就是 $\Delta f$''。）
+
+\section{常用恒等式汇总（便于记忆）}
+在欧氏 $\R^n$（标准内积与取向）中，令 $v^\flat$ 为向量场对应的 1-形式：
+\begin{itemize}
+  \item \textbf{梯度：} $(\mathrm{grad}f)^\flat = df$。
+  \item \textbf{散度：} $d(\ast v^\flat)=(\mathrm{div}v)\,\vol$。
+  \item \textbf{旋度（形式版）：} $\mathrm{rot}v=\ast(dv^\flat)$（值为 $(n-2)$-形式）。
+  \item \textbf{拉普拉斯：} $\Delta f=\mathrm{div}(\mathrm{grad}f)$，且 $d(\ast df)=(\Delta f)\,\vol$。
+  \item \textbf{零恒等式：} $\mathrm{rot}(\mathrm{grad}f)=0$；（在 $n=3$）$\mathrm{div}(\mathrm{rot}v)=0$。
+  \item \textbf{核心公理：} $d^2=0$，$d(\alpha\wedge\beta)=d\alpha\wedge\beta+(-1)^{\deg\alpha}\alpha\wedge d\beta$，$\ast\ast=(-1)^{k(n-k)}$。
+\end{itemize}
+
+\end{document}

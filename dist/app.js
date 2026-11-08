@@ -74,7 +74,19 @@
   }).join("")}</div>` : `<div class="empty-project"><div class="empty-art">${icon("folder")}</div><div><h3>下一件作品，从这里开始。</h3><p>课程项目、个人开发，或一次有趣的尝试。</p><span class="empty-project-label">作品待添加</span></div></div>`);
 
   const blog = items(data.blog, "title").filter(item => safeUrl(item.url));
-  if (blog.length) add("blog", "学习笔记", "BLOG", "博客", `<div class="blog-list">${blog.map(item => `<article class="blog-card"><div><span class="blog-label">学习笔记 / OPTIMIZATION</span><h3><a href="${esc(safeUrl(item.url))}">${esc(item.title)}</a></h3>${text(item.description) ? `<p>${esc(item.description)}</p>` : ""}</div><a class="blog-read" href="${esc(safeUrl(item.url))}" aria-label="阅读${esc(item.title)}">阅读文章 ${icon("arrow")}</a></article>`).join("")}</div>`);
+  const blogCards = blog.map(item => `<article class="blog-card"><div><span class="blog-label">${esc(text(item.label) || "学习笔记 / OPTIMIZATION")}</span><h3><a href="${esc(safeUrl(item.url))}">${esc(item.title)}</a></h3>${text(item.description) ? `<p>${esc(item.description)}</p>` : ""}</div><a class="blog-read" href="${esc(safeUrl(item.url))}" aria-label="阅读${esc(item.title)}">阅读文章 ${icon("arrow")}</a></article>`).join("");
+  const topics = items(data.topics, "title").map((topic, index) => ({
+    index: index + 1,
+    topic,
+    url: safeUrl(topic.url),
+    notes: items(topic.notes, "title").filter(note => safeUrl(note.url))
+  })).filter(entry => entry.notes.length);
+  const topicBlocks = topics.map(entry => {
+    const topic = entry.topic;
+    const rows = entry.notes.map((note, i) => `<li><a href="${esc(safeUrl(note.url))}"><span class="note-no">${String(i + 1).padStart(2, "0")}</span><span class="note-main"><strong>${esc(note.title)}</strong>${text(note.description) ? `<span>${esc(note.description)}</span>` : ""}</span>${icon("arrow")}</a></li>`).join("");
+    return `<section class="blog-topic" id="topic-${entry.index}" aria-label="专题：${esc(topic.title)}"><div class="topic-head"><div class="topic-info"><p class="topic-kicker">专题 / SERIES</p><h3>${esc(topic.title)}${text(topic.english) ? `<span class="topic-en">${esc(topic.english)}</span>` : ""}</h3>${text(topic.description) ? `<p class="topic-desc">${esc(topic.description)}</p>` : ""}</div><span class="topic-count">${String(entry.notes.length).padStart(2, "0")} 篇笔记</span></div><ol class="topic-notes">${rows}</ol>${entry.url ? `<a class="topic-entry" href="${esc(entry.url)}">进入专题首页 ${icon("arrow")}</a>` : ""}</section>`;
+  }).join("");
+  if (blog.length || topics.length) add("blog", "学习笔记", "NOTES & WRITING", "笔记", `${blog.length ? `<div class="blog-list">${blogCards}</div>` : ""}${topicBlocks}`);
 
   const publications = items(data.publications, "title");
   if (publications.length) add("publications", "论文发表", "PUBLICATIONS", "论文", publications.map(item => `<article class="publication"><h3>${esc(item.title)}</h3>${text(item.authors) ? `<p class="publication-authors">${esc(item.authors)}</p>` : ""}${item.venue || item.year ? `<p class="publication-venue">${esc([item.venue, item.year].filter(Boolean).join(" · "))}</p>` : ""}${links(item.links) ? `<div class="entry-links">${links(item.links)}</div>` : ""}</article>`).join(""));

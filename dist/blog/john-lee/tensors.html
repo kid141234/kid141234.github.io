@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="第 12 章：多线性映射与张量积、协变与逆变张量、对称与交替张量、张量丛与张量场、拉回与李导数。">
+<title>张量 · John Lee 专题 · 高源的学习笔记</title><link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../blog.css"><link rel="stylesheet" href="../notes.css">
+<script>window.MathJax={"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"macros":{"R":"\\mathbb{R}","F":"\\mathcal{F}","Cinf":"C^{\\infty}","X":"\\mathfrak{X}","T":"\\mathcal{T}","Sym":"\\mathrm{Sym}","sgn":"\\mathrm{sgn}","id":"\\mathrm{Id}","Lie":"\\mathcal{L}","ot":"\\otimes","mathbbm":["\\mathbf{#1}",1],"bm":["\\boldsymbol{#1}",1]}},"svg":{"fontCache":"global"}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script></head>
+<body id="top"><a class="skip-link" href="#article">跳转到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="../../index.html"><span class="brand-mark" aria-hidden="true">✳</span> 个人主页<span class="brand-slash"> / </span><span class="brand-en">PERSONAL SPACE</span></a><a class="back-link" href="../../index.html#blog">← 返回学习笔记</a></div></header>
+<div class="article-layout"><aside class="article-toc" aria-label="文章目录"><p>目录 <span>CONTENTS</span></p><ol><li class="toc-l2"><a href="#section-1">多线性映射与张量积（函数观点）</a></li><li class="toc-l2"><a href="#section-2">自由向量空间与抽象张量积</a></li><li class="toc-l2"><a href="#section-3">向量空间上的协变/逆变/混合张量</a></li><li class="toc-l2"><a href="#section-4">对称张量与交替张量</a></li><li class="toc-l2"><a href="#section-5">流形上的张量丛与张量场</a></li><li class="toc-l2"><a href="#section-6">张量场的拉回</a></li><li class="toc-l2"><a href="#section-7">张量场的李导数</a></li><li class="toc-l2"><a href="#section-8">附：向量场对向量场的李导数（与符号 theta_-t 的关系）</a></li></ol></aside><main id="article" class="article"><p class="article-kicker">学习笔记 / JOHN LEE / SMOOTH MANIFOLDS · 08 / 10</p><h1>张量</h1><p class="article-lead">第 12 章：多线性映射与张量积、协变与逆变张量、对称与交替张量、张量丛与张量场、拉回与李导数。</p><h2 id="section-1">多线性映射与张量积（函数观点）</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">多线性映射与空间 $L(V_1,\dots,V_k;W)$</span></div><div class="thm-body"><p>设 $V_1,\dots,V_k,W$ 为实向量空间。映射</p><div class="math-block">\[
+F:V_1\times\cdots\times V_k\to W
+\]</div><p>称为<strong>多线性</strong>，若对每个 $i$，当其余变量固定时，$F$ 关于第 $i$ 个变量线性。记</p><div class="math-block">\[
+L(V_1,\dots,V_k;W)
+\]</div><p>为所有从 $V_1\times\cdots\times V_k$ 到 $W$ 的多线性映射的集合。其向量空间结构由逐点加法与数乘给出：</p><div class="math-block">\[
+(F+F')(v_1,\dots,v_k)=F(v_1,\dots,v_k)+F'(v_1,\dots,v_k),\qquad
+(aF)(v_1,\dots,v_k)=a\,F(v_1,\dots,v_k).
+\]</div></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">熟悉的多线性函数</span></div><div class="thm-body"><p>(a) $\R^n$ 的点积是标量值双线性函数； 
+(b) $\R^3$ 的叉积是向量值双线性函数； 
+(c) 行列式是 $n$ 个向量的实值多线性函数； 
+(d) 李代数括号 $[\cdot,\cdot]$ 是 $\mathfrak{g}$ 值双线性函数。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">（具体）协向量张量积：从多线性函数构造</span></div><div class="thm-body"><p>设 $V$ 为向量空间，$\omega,\eta\in V^*$。定义双线性函数</p><div class="math-block">\[
+(\omega\ot \eta)(v_1,v_2)=\omega(v_1)\eta(v_2).
+\]</div><p>更一般地，若 $F\in L(V_1,\dots,V_k;\R)$，$G\in L(W_1,\dots,W_l;\R)$，定义</p><div class="math-block">\[
+(F\ot G)(v_1,\dots,v_k,w_1,\dots,w_l)=F(v_1,\dots,v_k)\,G(w_1,\dots,w_l).
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">多线性函数张量积的性质（对应练习 12.3）</span></div><div class="thm-body"><p>上述张量积运算对 $F,G$ 双线性，并满足结合律：</p><div class="math-block">\[
+(F\ot G)\ot H = F\ot (G\ot H).
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">多线性函数空间的一组基（命题 12.4）</span></div><div class="thm-body"><p>设 $V_1,\dots,V_k$ 分别维数为 $n_1,\dots,n_k$。对每个 $j$，取 $V_j$ 的基 $(E^{(j)}_1,\dots,E^{(j)}_{n_j})$，
+其对偶基为 $(\varepsilon^{(j)}_1,\dots,\varepsilon^{(j)}_{n_j})$。则集合</p><div class="math-block">\[
+\mathcal{B}=
+\bigl\{\varepsilon^{(1)}_{i_1}\ot\cdots\ot \varepsilon^{(k)}_{i_k}:\;1\le i_j\le n_j\bigr\}
+\]</div><p>是 $L(V_1,\dots,V_k;\R)$ 的一组基，故</p><div class="math-block">\[
+\dim L(V_1,\dots,V_k;\R)=n_1\cdots n_k.
+\]</div></div></div><h2 id="section-2">自由向量空间与抽象张量积</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">形式线性组合与自由向量空间 $\F(S)$</span></div><div class="thm-body"><p>设 $S$ 为集合。<strong>形式线性组合</strong>定义为函数 $f:S\to\R$，满足仅有限多个 $s\in S$ 有 $f(s)\ne 0$。
+全体此类函数构成向量空间，记为 $\F(S)$，称为 $S$ 上的<strong>自由（实）向量空间</strong>。
+对每个 $x\in S$，定义 $\delta_x\in \F(S)$ 使得 $\delta_x(x)=1$ 且在其余点取 $0$，通常将 $\delta_x$ 与 $x$ 识别。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">自由向量空间的特征性质（命题 12.5）</span></div><div class="thm-body"><p>对任意集合 $S$ 与任意向量空间 $W$，每个映射 $A:S\to W$ 都存在唯一线性延拓</p><div class="math-block">\[
+\bar A:\F(S)\to W.
+\]</div></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">抽象张量积空间 $V_1\ot\cdots\ot V_k$ 的构造</span></div><div class="thm-body"><p>令 $V_1,\dots,V_k$ 为实向量空间。考虑自由向量空间 $\F(V_1\times\cdots\times V_k)$。
+令 $\mathcal{R}$ 为其子空间，由下列元素张成（对每个 $i$）：</p><div class="math-block">\[
+(v_1,\dots,av_i,\dots,v_k)-a(v_1,\dots,v_i,\dots,v_k),
+\]</div><div class="math-block">\[
+(v_1,\dots,v_i+v_i',\dots,v_k)-(v_1,\dots,v_i,\dots,v_k)-(v_1,\dots,v_i',\dots,v_k).
+\]</div><p>定义<strong>（抽象）张量积空间</strong>为商空间</p><div class="math-block">\[
+V_1\ot\cdots\ot V_k \;=\; \F(V_1\times\cdots\times V_k)/\mathcal{R}.
+\]</div><p>记自然投影为 $\Pi$，并定义</p><div class="math-block">\[
+v_1\ot\cdots\ot v_k \;:=\;\Pi(v_1,\dots,v_k).
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">张量积空间的特征性质（命题 12.7）</span></div><div class="thm-body"><p>设 $V_1,\dots,V_k$ 为有限维实向量空间。若 $A:V_1\times\cdots\times V_k\to X$ 是任意多线性映射，
+则存在唯一线性映射</p><div class="math-block">\[
+\widetilde{A}:V_1\ot\cdots\ot V_k\to X
+\]</div><p>使得对所有 $(v_1,\dots,v_k)$ 有</p><div class="math-block">\[
+\widetilde{A}(v_1\ot\cdots\ot v_k)=A(v_1,\dots,v_k).
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">张量积空间的一组基（命题 12.8）</span></div><div class="thm-body"><p>设 $V_j$ 维数为 $n_j$，并取 $V_j$ 的基 $(E^{(j)}_1,\dots,E^{(j)}_{n_j})$。
+则</p><div class="math-block">\[
+\mathcal{C}=\bigl\{E^{(1)}_{i_1}\ot\cdots\ot E^{(k)}_{i_k}:\;1\le i_j\le n_j\bigr\}
+\]</div><p>是 $V_1\ot\cdots\ot V_k$ 的一组基，因此</p><div class="math-block">\[
+\dim(V_1\ot\cdots\ot V_k)=n_1\cdots n_k.
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">张量积空间的结合性（命题 12.9）</span></div><div class="thm-body"><p>若 $V_1,V_2,V_3$ 为有限维实向量空间，则存在唯一同构</p><div class="math-block">\[
+V_1\ot(V_2\ot V_3)\;\cong\; V_1\ot V_2\ot V_3\;\cong\; (V_1\ot V_2)\ot V_3,
+\]</div><p>在此同构下 $v_1\ot(v_2\ot v_3)$、$v_1\ot v_2\ot v_3$、$(v_1\ot v_2)\ot v_3$ 彼此对应。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">抽象 vs. 具体张量积（命题 12.10）</span></div><div class="thm-body"><p>若 $V_1,\dots,V_k$ 为有限维向量空间，则存在规范同构</p><div class="math-block">\[
+V_1^*\ot\cdots\ot V_k^*\;\cong\; L(V_1,\dots,V_k;\R),
+\]</div><p>使得抽象张量积 $\omega^1\ot\cdots\ot\omega^k$ 对应于多线性函数</p><div class="math-block">\[
+(v_1,\dots,v_k)\mapsto \omega^1(v_1)\cdots\omega^k(v_k).
+\]</div><p>并且可进一步得到规范识别</p><div class="math-block">\[
+V_1\ot\cdots\ot V_k\;\cong\; L(V_1^*,\dots,V_k^*;\R).
+\]</div></div></div><h2 id="section-3">向量空间上的协变/逆变/混合张量</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">协变 $k$-张量、逆变 $k$-张量、混合 $(k,l)$-张量</span></div><div class="thm-body"><p>设 $V$ 为有限维实向量空间。</p><ul class="note-list"><li>协变 $k$-张量：$T^k(V^*)= \underbrace{V^*\ot\cdots\ot V^*}_{k\ \text{份}}$，
+常视为 $k$ 个向量的实值多线性函数 $\alpha:V^k\to\R$。</li><li>逆变 $k$-张量：$T^k(V)= \underbrace{V\ot\cdots\ot V}_{k\ \text{份}}$。</li><li>混合 $(k,l)$-张量：$T^{(k,l)}(V)= \underbrace{V\ot\cdots\ot V}_{k}\ot \underbrace{V^*\ot\cdots\ot V^*}_{l}$。</li></ul><p>约定 $T^0(V)=T^0(V^*)=\R$。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">协变张量的例子（例 12.11）</span></div><div class="thm-body"><p>(a) 协变 1-张量就是协向量 $V^*$； 
+(b) 协变 2-张量是双线性型（如点积、一般内积）； 
+(c) 将行列式视为 $n$ 个向量的函数，它是 $\R^n$ 上的协变 $n$-张量。</p></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">张量空间的基与维数（推论 12.12）</span></div><div class="thm-body"><p>设 $\dim V=n$，取基 $(E_i)$ 与对偶基 $(\varepsilon^j)$。则</p><div class="math-block">\[
+\{\varepsilon^{i_1}\ot\cdots\ot\varepsilon^{i_k}\}\ \text{为 }T^k(V^*)\text{ 的基},\qquad
+\{E_{i_1}\ot\cdots\ot E_{i_k}\}\ \text{为 }T^k(V)\text{ 的基},
+\]</div><div class="math-block">\[
+\{E_{i_1}\ot\cdots\ot E_{i_k}\ot \varepsilon^{j_1}\ot\cdots\ot \varepsilon^{j_l}\}\ \text{为 }T^{(k,l)}(V)\text{ 的基}.
+\]</div><p>因此</p><div class="math-block">\[
+\dim T^k(V^*)=\dim T^k(V)=n^k,\qquad \dim T^{(k,l)}(V)=n^{k+l}.
+\]</div><p>并且任意 $\alpha\in T^k(V^*)$ 可唯一写作</p><div class="math-block">\[
+\alpha=\alpha_{i_1\cdots i_k}\,\varepsilon^{i_1}\ot\cdots\ot\varepsilon^{i_k},\qquad
+\alpha_{i_1\cdots i_k}=\alpha(E_{i_1},\dots,E_{i_k}).
+\]</div></div></div><h2 id="section-4">对称张量与交替张量</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">对称张量与对称化算子</span></div><div class="thm-body"><p>协变 $k$-张量 $\alpha\in T^k(V^*)$ 称为<strong>对称</strong>，若交换任意两输入不改变取值。
+记所有对称协变 $k$-张量构成的子空间为 $\Sigma^k(V^*)$。
+令 $S_k$ 为 $k$ 元对称群。对 $\sigma\in S_k$ 定义</p><div class="math-block">\[
+{}^\sigma\alpha(v_1,\dots,v_k)=\alpha(v_{\sigma(1)},\dots,v_{\sigma(k)}).
+\]</div><p>定义<strong>对称化</strong>投影 $\Sym:T^k(V^*)\to \Sigma^k(V^*)$：</p><div class="math-block">\[
+\Sym(\alpha)=\frac1{k!}\sum_{\sigma\in S_k} {}^\sigma\alpha,
+\qquad
+(\Sym\alpha)(v_1,\dots,v_k)=\frac1{k!}\sum_{\sigma\in S_k}\alpha(v_{\sigma(1)},\dots,v_{\sigma(k)}).
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">对称化的性质（命题 12.14）</span></div><div class="thm-body"><p>(a) $\Sym(\alpha)$ 总是对称张量； 
+(b) $\Sym(\alpha)=\alpha$ 当且仅当 $\alpha$ 对称。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">对称积</span></div><div class="thm-body"><p>若 $\alpha\in \Sigma^k(V^*)$，$\beta\in \Sigma^l(V^*)$，定义它们的<strong>对称积</strong>为</p><div class="math-block">\[
+\alpha\beta:=\Sym(\alpha\ot\beta)\in \Sigma^{k+l}(V^*),
+\]</div><p>即</p><div class="math-block">\[
+\alpha\beta(v_1,\dots,v_{k+l})
+=\frac1{(k+l)!}\sum_{\sigma\in S_{k+l}}
+\alpha(v_{\sigma(1)},\dots,v_{\sigma(k)})\,
+\beta(v_{\sigma(k+1)},\dots,v_{\sigma(k+l)}).
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">对称积的性质（命题 12.15）</span></div><div class="thm-body"><p>(a) 对称积交换且双线性：$\alpha\beta=\beta\alpha$，并满足分配律与齐次性； 
+(b) 若 $\alpha,\beta\in V^*$（协向量），则</p><div class="math-block">\[
+\alpha\beta=\frac12(\alpha\ot\beta+\beta\ot\alpha).
+\]</div></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">交替张量</span></div><div class="thm-body"><p>协变 $k$-张量 $\alpha\in T^k(V^*)$ 称为<strong>交替</strong>（或反对称、斜对称），若交换任意两输入变号：</p><div class="math-block">\[
+\alpha(\dots,v_i,\dots,v_j,\dots)=-\alpha(\dots,v_j,\dots,v_i,\dots).
+\]</div><p>全体交替协变 $k$-张量构成子空间</p><div class="math-block">\[
+\Lambda^k(V^*)\subseteq T^k(V^*),
+\]</div><p>也称外形式/多协向量/$k$-协向量。
+对任意置换 $\sigma\in S_k$，其符号 $\sgn(\sigma)\in\{\pm1\}$。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">2-协变张量的对称-交替分解（文中结论）</span></div><div class="thm-body"><p>任意协变 2-张量（双线性型）$\beta$ 都可写为</p><div class="math-block">\[
+\beta=\alpha+\sigma,\qquad
+\alpha(v,w)=\tfrac12(\beta(v,w)-\beta(w,v))\in \Lambda^2(V^*),\quad
+\sigma(v,w)=\tfrac12(\beta(v,w)+\beta(w,v))\in \Sigma^2(V^*).
+\]</div></div></div><h2 id="section-5">流形上的张量丛与张量场</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">张量丛与张量场</span></div><div class="thm-body"><p>设 $M$ 为光滑流形。</p><ul class="note-list"><li><p>协变 $k$-张量丛：</p><div class="math-block">\[
+T^kT^*M=\bigsqcup_{p\in M} T^k(T_p^*M).
+\]</div></li><li><p>逆变 $k$-张量丛：</p><div class="math-block">\[
+T^kTM=\bigsqcup_{p\in M} T^k(T_pM).
+\]</div></li><li><p>混合型 $(k,l)$-张量丛：</p><div class="math-block">\[
+T^{(k,l)}TM=\bigsqcup_{p\in M} T^{(k,l)}(T_pM).
+\]</div></li></ul><p>张量丛的截面称为（协变/逆变/混合）<strong>张量场</strong>。光滑截面称为<strong>光滑张量场</strong>。
+记全体光滑协变 $k$-张量场空间为</p><div class="math-block">\[
+\T^k(M)=\Gamma(T^kT^*M).
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">张量场的局部坐标表示（文中陈述）</span></div><div class="thm-body"><p>在局部坐标 $(x^i)$ 中，截面可写为</p><div class="math-block">\[
+A=
+\begin{cases}
+A_{i_1\cdots i_k}\,dx^{i_1}\ot\cdots\ot dx^{i_k}, &amp; A\in\Gamma(T^kT^*M),\\[4pt]
+A^{i_1\cdots i_k}\,\dfrac{\partial}{\partial x^{i_1}}\ot\cdots\ot\dfrac{\partial}{\partial x^{i_k}}, &amp; A\in\Gamma(T^kTM),\\[8pt]
+A^{i_1\cdots i_k}{}_{j_1\cdots j_l}\,
+\dfrac{\partial}{\partial x^{i_1}}\ot\cdots\ot\dfrac{\partial}{\partial x^{i_k}}
+\ot dx^{j_1}\ot\cdots\ot dx^{j_l}, &amp; A\in\Gamma(T^{(k,l)}TM),
+\end{cases}
+\]</div><p>其中系数函数称为 $A$ 在该坐标下的<strong>分量函数</strong>。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">张量场的光滑性判别（命题 12.19）</span></div><div class="thm-body"><p>设 $A:M\to T^kT^*M$ 为粗糙截面。下列等价：</p><ol class="note-list"><li>$A$ 光滑；</li><li>在每个坐标图中，$A$ 的分量函数光滑；</li><li>每点附近存在坐标图使 $A$ 分量函数光滑；</li><li><p>对任意 $X_1,\dots,X_k\in\X(M)$，函数</p><div class="math-block">\[
+A(X_1,\dots,X_k)(p)=A_p\big((X_1)_p,\dots,(X_k)_p\big)
+\]</div><p>光滑；</p></li><li>若 $X_1,\dots,X_k$ 在开集 $U\subseteq M$ 上光滑，则 $A(X_1,\dots,X_k)$ 在 $U$ 上光滑。</li></ol></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">与函数相乘、张量积保持光滑（命题 12.22）</span></div><div class="thm-body"><p>设 $A\in\T^k(M)$，$B\in\T^l(M)$，$f\in\Cinf(M)$。则 $fA$ 与 $A\ot B$ 仍为光滑张量场，且在任意坐标系中</p><div class="math-block">\[
+(fA)_{i_1\cdots i_k}=f\,A_{i_1\cdots i_k},\qquad
+(A\ot B)_{i_1\cdots i_{k+l}}=A_{i_1\cdots i_k}\,B_{i_{k+1}\cdots i_{k+l}}.
+\]</div></div></div><div class="thm thm-lemma"><div class="thm-head"><span class="thm-kind">引理</span><span class="thm-name">张量刻画引理（引理 12.24）</span></div><div class="thm-body"><p>映射</p><div class="math-block">\[
+\mathcal{A}:\underbrace{\X(M)\times\cdots\times\X(M)}_{k\ \text{份}}\to \Cinf(M)
+\]</div><p>由某个光滑协变 $k$-张量场 $A$ 诱导（即 $\mathcal{A}(X_1,\dots,X_k)=A(X_1,\dots,X_k)$）
+当且仅当 $\mathcal{A}$ 对 $\Cinf(M)$ 是多线性的，即对每个位置满足</p><div class="math-block">\[
+\mathcal{A}(\dots,fX_i+f'X_i',\dots)=f\,\mathcal{A}(\dots,X_i,\dots)+f'\,\mathcal{A}(\dots,X_i',\dots),
+\quad f,f'\in\Cinf(M).
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">流形上的对称张量场与对称积（文中陈述）</span></div><div class="thm-body"><p>流形上的对称张量场指每点取值为对称张量的协变张量场。
+若 $A,B$ 为光滑协向量场（1-形式），其对称积是光滑 2-张量场</p><div class="math-block">\[
+AB=\tfrac12(A\ot B+B\ot A).
+\]</div><p>交替协变张量场称为<strong>微分形式</strong>。</p></div></div><h2 id="section-6">张量场的拉回</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">协变张量场的逐点拉回与拉回</span></div><div class="thm-body"><p>设 $F:M\to N$ 光滑。对 $p\in M$ 与 $\alpha\in T^k(T^*_{F(p)}N)$，定义逐点拉回</p><div class="math-block">\[
+dF_p^*(\alpha)\in T^k(T_p^*M),\qquad
+dF_p^*(\alpha)(v_1,\dots,v_k)=\alpha(dF_p(v_1),\dots,dF_p(v_k)).
+\]</div><p>若 $A$ 为 $N$ 上协变 $k$-张量场，定义 $M$ 上拉回张量场 $F^*A$：</p><div class="math-block">\[
+(F^*A)_p=dF_p^*(A_{F(p)}),
+\quad\text{即}\quad
+(F^*A)_p(v_1,\dots,v_k)=A_{F(p)}(dF_p(v_1),\dots,dF_p(v_k)).
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">拉回的性质（命题 12.25）</span></div><div class="thm-body"><p>设 $F:M\to N$、$G:N\to P$ 光滑，$A,B$ 为 $N$ 上协变张量场，$f$ 为 $N$ 上实值函数，则：</p><ol class="note-list"><li>$F^*(fB)=(f\circ F)\,F^*B$；</li><li>$F^*(A\ot B)=F^*A\ot F^*B$；</li><li>$F^*(A+B)=F^*A+F^*B$；</li><li>$F^*B$ 连续，且若 $B$ 光滑则 $F^*B$ 光滑；</li><li>$(G\circ F)^*B=F^*(G^*B)$；</li><li>$(\id_N)^*B=B$。</li></ol></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">坐标下的拉回公式（推论 12.28）</span></div><div class="thm-body"><p>设 $F:M\to N$ 光滑，$B$ 为 $N$ 上协变 $k$-张量场。若 $(y^i)$ 为 $N$ 在 $F(p)$ 附近坐标，则在 $p$ 附近</p><div class="math-block">\[
+F^*\!\left(B_{i_1\cdots i_k}\,dy^{i_1}\ot\cdots\ot dy^{i_k}\right)
+=(B_{i_1\cdots i_k}\circ F)\,d(y^{i_1}\circ F)\ot\cdots\ot d(y^{i_k}\circ F).
+\]</div></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">张量场拉回计算（例 12.29）</span></div><div class="thm-body"><p>令</p><div class="math-block">\[
+M=\{(r,\theta):r&gt;0,\ |\theta|&lt;\pi/2\},\quad N=\{(x,y):x&gt;0\},
+\quad F(r,\theta)=(r\cos\theta,r\sin\theta).
+\]</div><p>若 $A=x^{-2}\,dy\ot dy$，则</p><div class="math-block">\[
+F^*A=(r\cos\theta)^{-2}\,d(r\sin\theta)\ot d(r\sin\theta)
+\]</div><div class="math-block">\[
+=(r\cos\theta)^{-2}(\sin\theta\,dr+r\cos\theta\,d\theta)\ot(\sin\theta\,dr+r\cos\theta\,d\theta)
+\]</div><div class="math-block">\[
+=r^{-2}\tan^2\theta\,dr\ot dr
++r^{-1}\tan\theta\,(d\theta\ot dr+dr\ot d\theta)
++d\theta\ot d\theta.
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">混合张量的拉回/推前（文中备注）</span></div><div class="thm-body"><p>一般混合张量场既无自然推前也无自然拉回；但若 $F$ 为微分同胚，则任意变型张量场都可自然地推前与拉回。</p></div></div><h2 id="section-7">张量场的李导数</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">协变张量场的李导数（式 12.8）</span></div><div class="thm-body"><p>设 $V\in\X(M)$，$\theta$ 为其流。对光滑协变 $k$-张量场 $A$，定义相对于 $V$ 的李导数：</p><div class="math-block">\[
+(\Lie_VA)_p=\left.\frac{d}{dt}\right|_{t=0}(\theta_t^*A)_p
+=\lim_{t\to 0}\frac{d(\theta_t)_p^*(A_{\theta_t(p)})-A_p}{t},
+\]</div><p>若该极限存在。</p></div></div><div class="thm thm-lemma"><div class="thm-head"><span class="thm-kind">引理</span><span class="thm-name">存在性与光滑性（引理 12.30）</span></div><div class="thm-body"><p>在上述条件下，式 (12.8) 的导数对每个 $p\in M$ 都存在，并由此得到一个光滑张量场 $\Lie_VA$。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">李导数的基本性质（命题 12.32）</span></div><div class="thm-body"><p>设 $f\in\Cinf(M)$（视为 0-张量场），$A,B$ 为光滑协变张量场，则：</p><ol class="note-list"><li>$\Lie_V f=Vf$；</li><li>$\Lie_V(fA)=(\Lie_V f)A+f\,\Lie_VA$；</li><li>$\Lie_V(A\ot B)=(\Lie_VA)\ot B+A\ot(\Lie_VB)$；</li><li><p>若 $X_1,\dots,X_k$ 光滑向量场且 $A$ 为光滑协变 $k$-张量场，则</p><div class="math-block">\[
+\Lie_V\big(A(X_1,\dots,X_k)\big)
+=(\Lie_VA)(X_1,\dots,X_k)
++\sum_{i=1}^k A(X_1,\dots,\Lie_VX_i,\dots,X_k).
+\]</div></li></ol></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">用李括号表达李导数（推论 12.33，式 12.10）</span></div><div class="thm-body"><p>若 $A$ 为光滑协变 $k$-张量场，$X_1,\dots,X_k$ 为光滑向量场，则</p><div class="math-block">\[
+(\Lie_VA)(X_1,\dots,X_k)
+=V\big(A(X_1,\dots,X_k)\big)
+-\sum_{i=1}^k A(X_1,\dots,[V,X_i],\dots,X_k).
+\]</div></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">与外微分交换（推论 12.34）</span></div><div class="thm-body"><p>对任意 $f\in\Cinf(M)$，</p><div class="math-block">\[
+\Lie_V(df)=d(\Lie_V f).
+\]</div></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">坐标下计算 2-张量场的李导数（例 12.35）</span></div><div class="thm-body"><p>设 $A=A_{ij}\,dx^i\ot dx^j$ 为任意光滑协变 2-张量场，$V=V^k\frac{\partial}{\partial x^k}$。
+则</p><div class="math-block">\[
+\Lie_V(dx^i)=d(\Lie_V x^i)=d(Vx^i)=dV^i,
+\]</div><p>并且</p><div class="math-block">\[
+\Lie_VA
+=\Bigl(V(A_{ij})+A_{kj}\frac{\partial V^k}{\partial x^i}+A_{ik}\frac{\partial V^k}{\partial x^j}\Bigr)\,dx^i\ot dx^j.
+\]</div></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">在流下不变（式 12.11）</span></div><div class="thm-body"><p>设 $\theta$ 为流。称张量场 $A$ 在 $\theta$ 下<strong>不变</strong>，若对所有定义域内的 $(t,p)$，</p><div class="math-block">\[
+d(\theta_t)_p^*(A_{\theta_t(p)})=A_p.
+\]</div><p>若 $\theta$ 为全局流，则等价于对所有 $t$ 有 $\theta_t^*A=A$。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">$t_0$ 时刻的导数公式（命题 12.36，式 12.12）</span></div><div class="thm-body"><p>设 $V$ 的流为 $\theta$。对任意光滑协变张量场 $A$ 与定义域内任意 $(t_0,p)$，</p><div class="math-block">\[
+\left.\frac{d}{dt}\right|_{t=t_0}(\theta_t^*A)_p
+=\bigl(\theta_{t_0}^*(\Lie_VA)\bigr)_p.
+\]</div></div></div><div class="thm thm-theorem"><div class="thm-head"><span class="thm-kind">定理</span><span class="thm-name">不变性与李导数为零（定理 12.37）</span></div><div class="thm-body"><p>光滑协变张量场 $A$ 在 $V$ 的流下不变，当且仅当</p><div class="math-block">\[
+\Lie_VA=0.
+\]</div></div></div><h2 id="section-8">附：向量场对向量场的李导数（与符号 $\theta_{-t}$ 的关系）</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">向量场的李导数（常见等价写法）</span></div><div class="thm-body"><p>设 $V,W\in\X(M)$，$\theta$ 为 $V$ 的流。定义 $W$ 关于 $V$ 的李导数为</p><div class="math-block">\[
+(\Lie_VW)_p
+=\left.\frac{d}{dt}\right|_{t=0} d(\theta_{-t})_{\theta_t(p)}\big(W_{\theta_t(p)}\big)
+=\lim_{t\to 0}\frac{d(\theta_{-t})_{\theta_t(p)}(W_{\theta_t(p)})-W_p}{t}.
+\]</div><p>该写法强调：向量为逆变对象，搬回到 $T_pM$ 比较时自然使用反向流的推前。</p></div></div><p><strong>说明（简述）</strong>：协变张量的李导数通常用拉回 $\theta_t^*$（用 $\theta_t$）定义；
+向量场的李导数通常用推前并借助反向流 $\theta_{-t}$ 将向量搬回同一切空间后比较。二者刻画的几何意义一致。</p><div class="series-nav"><a href="covector-fields.html">← 上一篇：余切向量场</a><a href="index.html">专题目录 · John Lee</a><a href="differential-forms.html">下一篇：微分形式运算法则 →</a></div><div class="article-end"><a href="../../index.html#blog">← 返回学习笔记</a><a href="#top">回到顶部 ↑</a></div></main></div>
+<footer class="site-footer"><div class="footer-inner"><p>© 高源 · Personal Homepage</p><p>保持好奇，慢慢积累。</p></div></footer></body></html>

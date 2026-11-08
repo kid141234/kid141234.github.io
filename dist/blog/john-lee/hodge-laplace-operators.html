@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="体积元与 Hodge 星算子、外微分与拉回、向量场与 1-形式的同构，梯度、散度、旋度、Laplace 及习题恒等式。">
+<title>Hodge 算子、Laplace 算子与梯度散度旋度 · John Lee 专题 · 高源的学习笔记</title><link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../blog.css"><link rel="stylesheet" href="../notes.css">
+<script>window.MathJax={"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"macros":{"R":"\\mathbb{R}","dd":"\\,d","dstar":"d^\\ast","vol":"\\nu","ip":["\\langle #1,#2\\rangle",2],"mathbbm":["\\mathbf{#1}",1],"bm":["\\boldsymbol{#1}",1]}},"svg":{"fontCache":"global"}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script></head>
+<body id="top"><a class="skip-link" href="#article">跳转到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="../../index.html"><span class="brand-mark" aria-hidden="true">✳</span> 个人主页<span class="brand-slash"> / </span><span class="brand-en">PERSONAL SPACE</span></a><a class="back-link" href="../../index.html#blog">← 返回学习笔记</a></div></header>
+<div class="article-layout"><aside class="article-toc" aria-label="文章目录"><p>目录 <span>CONTENTS</span></p><ol><li class="toc-l2"><a href="#section-1">基本对象与记号</a></li><li class="toc-l3"><a href="#section-2">切空间、余切空间与形式</a></li><li class="toc-l3"><a href="#section-3">楔积与其性质</a></li><li class="toc-l2"><a href="#section-4">体积元与 Hodge 星算子（习题 9--10）</a></li><li class="toc-l3"><a href="#section-5">体积元（volume element）</a></li><li class="toc-l3"><a href="#section-6">Hodge 星算子 ast</a></li><li class="toc-l3"><a href="#section-7">低维例子（来自习题 10）</a></li><li class="toc-l2"><a href="#section-8">外微分 d（定义与性质，命题 5）</a></li><li class="toc-l3"><a href="#section-9">外微分的定义</a></li><li class="toc-l3"><a href="#section-10">外微分的基本性质（命题 5）</a></li><li class="toc-l2"><a href="#section-11">可微映射的拉回 f^ast（Definition 与 Proposition 3--4--5(d)）</a></li><li class="toc-l3"><a href="#section-12">定义：拉回</a></li><li class="toc-l3"><a href="#section-13">性质（命题 3 与命题 4）</a></li><li class="toc-l2"><a href="#section-14">向量场与 1-形式的典范同构（内积诱导）</a></li><li class="toc-l2"><a href="#section-15">梯度、散度、旋度、拉普拉斯（习题 11--14）</a></li><li class="toc-l3"><a href="#section-16">梯度 grad</a></li><li class="toc-l3"><a href="#section-17">散度 div</a></li><li class="toc-l4"><a href="#section-18">散度与 Hodge 星（习题 11(b)）</a></li><li class="toc-l3"><a href="#section-19">旋度 rot（一般维）</a></li><li class="toc-l4"><a href="#section-20">特殊维数的解释</a></li><li class="toc-l4"><a href="#section-21">恒等式（习题 14(a)）</a></li><li class="toc-l4"><a href="#section-22">三维坐标公式（习题 14(b1)）</a></li><li class="toc-l4"><a href="#section-23">三维恒等式（习题 14(b2)）</a></li><li class="toc-l3"><a href="#section-24">拉普拉斯 Delta</a></li><li class="toc-l4"><a href="#section-25">与 Hodge 星的联系（习题 13(c) 的形式表达）</a></li><li class="toc-l2"><a href="#section-26">常用恒等式汇总（便于记忆）</a></li></ol></aside><main id="article" class="article"><p class="article-kicker">学习笔记 / JOHN LEE / SMOOTH MANIFOLDS · 10 / 10</p><h1>Hodge 算子、Laplace 算子与梯度散度旋度</h1><p class="article-lead">体积元与 Hodge 星算子、外微分与拉回、向量场与 1-形式的同构，梯度、散度、旋度、Laplace 及习题恒等式。</p><h2 id="section-1">基本对象与记号</h2><h3 id="section-2">切空间、余切空间与形式</h3><p>在欧氏空间 $\R^n$ 的任意点 $p$，切空间记为 $T_p\R^n$（书中记作 $\R^n_p$），其对偶空间为余切空间 $T_p^\ast\R^n$（书中记作 $(\R^n_p)^\ast$）。</p><ul class="note-list"><li><p>$k$-形式（外 $k$-形式）是 $T_p\R^n$ 上的 $k$-线性交替映射：</p><div class="math-block">\[
+  \Lambda^k(T_p^\ast\R^n)
+  :=\{\varphi:(T_p\R^n)^k\to\R\;\mid\;\varphi\ \text{$k$-线性且交替}\}.
+  \]</div></li><li>在坐标 $(x_1,\dots,x_n)$ 下，$\{dx_1,\dots,dx_n\}$ 是 $T_p^\ast\R^n$ 的标准基。</li><li><p>多重指标：若 $I=(i_1&lt;\cdots&lt;i_k)$，则写</p><div class="math-block">\[
+  dx_I:=dx_{i_1}\wedge\cdots\wedge dx_{i_k}.
+  \]</div></li></ul><h3 id="section-3">楔积与其性质</h3><p>对 $k$-形式 $\alpha$ 与 $s$-形式 $\beta$，楔积 $\alpha\wedge\beta$ 是 $(k+s)$-形式，满足：</p><ul class="note-list"><li>双线性：对每个变量线性；</li><li>结合律：$(\alpha\wedge\beta)\wedge\gamma=\alpha\wedge(\beta\wedge\gamma)$；</li><li><p>反交换律（分次交换）：</p><div class="math-block">\[
+  \alpha\wedge\beta = (-1)^{ks}\beta\wedge\alpha;
+  \]</div></li><li>若 $\alpha$ 是奇次形式（$k$ 为奇数），则 $\alpha\wedge\alpha=0$。</li></ul><h2 id="section-4">体积元与 Hodge 星算子（习题 9--10）</h2><h3 id="section-5">体积元（volume element）</h3><p>定义 $n$-形式 $\vol$ 使得在标准基 $\{e_1,\dots,e_n\}$ 下</p><div class="math-block">\[
+\vol(e_1,\dots,e_n)=1.
+\]</div><p>则（习题 9）：</p><div class="math-block">\[
+\boxed{\ \vol = dx_1\wedge\cdots\wedge dx_n.\ }
+\]</div><p>并且对任意 $v_i=\sum_{j=1}^n a_{ij}e_j$，</p><div class="math-block">\[
+\boxed{\ \vol(v_1,\dots,v_n)=\det(a_{ij}) = \mathrm{vol}(v_1,\dots,v_n).\ }
+\]</div><h3 id="section-6">Hodge 星算子 $\ast$</h3><p>在标准取向与欧氏内积下，对基楔积 $dx_I$（$I=(i_1&lt;\cdots&lt;i_k)$），令 $J=(j_1&lt;\cdots&lt;j_{n-k})$ 为补指标，使</p><div class="math-block">\[
+(i_1,\dots,i_k,j_1,\dots,j_{n-k})
+\]</div><p>是 $(1,\dots,n)$ 的一个排列，记其奇偶为 $\sigma\in\{0,1\}$。
+定义（习题 10）：</p><div class="math-block">\[
+\boxed{\ \ast(dx_I)=(-1)^\sigma\,dx_J,\quad\text{并线性延拓}.\ }
+\]</div><p>特别地对 $1$-形式：</p><div class="math-block">\[
+\boxed{\ \ast dx_i = (-1)^{i-1}\,dx_1\wedge\cdots\wedge\widehat{dx_i}\wedge\cdots\wedge dx_n.\ }
+\]</div><p>并且（习题 10(c)）：</p><div class="math-block">\[
+\boxed{\ \ast\ast\omega = (-1)^{k(n-k)}\omega,\quad \omega\in\Lambda^k(T_p^\ast\R^n).\ }
+\]</div><h3 id="section-7">低维例子（来自习题 10）</h3><ul class="note-list"><li><p>在 $\R^3$，若 $\omega=a_{12}dx_1\wedge dx_2+a_{13}dx_1\wedge dx_3+a_{23}dx_2\wedge dx_3$，</p><div class="math-block">\[
+  \boxed{\ \ast\omega = a_{12}dx_3 - a_{13}dx_2 + a_{23}dx_1. \ }
+  \]</div></li><li><p>在 $\R^2$，若 $\omega=a_1dx_1+a_2dx_2$，</p><div class="math-block">\[
+  \boxed{\ \ast\omega = a_1dx_2 - a_2dx_1. \ }
+  \]</div></li></ul><h2 id="section-8">外微分 $d$（定义与性质，命题 5）</h2><h3 id="section-9">外微分的定义</h3><p>若 $k$-形式写成</p><div class="math-block">\[
+\omega=\sum_I a_I\,dx_I,
+\]</div><p>其中 $a_I$ 是可微函数，则定义（书中 Definition 5）：</p><div class="math-block">\[
+\boxed{\ d\omega := \sum_I da_I\wedge dx_I.\ }
+\]</div><p>并且对函数（$0$-形式）$f$：</p><div class="math-block">\[
+\boxed{\ df = \sum_{i=1}^n \frac{\partial f}{\partial x_i}\,dx_i. }
+\]</div><h3 id="section-10">外微分的基本性质（命题 5）</h3><p>若 $\omega,\omega_1,\omega_2$ 为 $k$-形式，$\varphi$ 为 $s$-形式，则：</p><ol class="note-list"><li><p>线性：</p><div class="math-block">\[
+  \boxed{\ d(\omega_1+\omega_2)=d\omega_1+d\omega_2. }
+  \]</div></li><li><p>Leibniz（分次乘积法则）：</p><div class="math-block">\[
+  \boxed{\ d(\omega\wedge\varphi)=d\omega\wedge\varphi + (-1)^k\,\omega\wedge d\varphi. }
+  \]</div></li><li><p>$d^2=0$：</p><div class="math-block">\[
+  \boxed{\ d(d\omega)=0. }
+  \]</div></li></ol><h2 id="section-11">可微映射的拉回 $f^\ast$（Definition 与 Proposition 3--4--5(d)）</h2><h3 id="section-12">定义：拉回</h3><p>若 $f:\R^n\to\R^m$ 可微，$\omega$ 是 $\R^m$ 上的 $k$-形式，则 $f^\ast\omega$ 是 $\R^n$ 上的 $k$-形式，定义为：</p><div class="math-block">\[
+\boxed{\ (f^\ast\omega)(p)(v_1,\dots,v_k)=\omega(f(p))\bigl((df_p)v_1,\dots,(df_p)v_k\bigr). }
+\]</div><p>对 $0$-形式（函数）$g$ 约定：</p><div class="math-block">\[
+\boxed{\ f^\ast(g)=g\circ f. }
+\]</div><h3 id="section-13">性质（命题 3 与命题 4）</h3><p>设 $\omega,\varphi$ 是 $\R^m$ 上的 $k$-形式，$g$ 是 $0$-形式，则：</p><ol class="note-list"><li><p>加法交换：</p><div class="math-block">\[
+  \boxed{\ f^\ast(\omega+\varphi)=f^\ast\omega+f^\ast\varphi. }
+  \]</div></li><li><p>标量乘法（函数乘形式）：</p><div class="math-block">\[
+  \boxed{\ f^\ast(g\,\omega)=f^\ast(g)\,f^\ast(\omega). }
+  \]</div></li><li><p>对 $1$-形式楔积（并可推广到一般形式）：</p><div class="math-block">\[
+  \boxed{\ f^\ast(\varphi_1\wedge\cdots\wedge\varphi_k)=f^\ast\varphi_1\wedge\cdots\wedge f^\ast\varphi_k. }
+  \]</div></li><li><p>与复合相容：</p><div class="math-block">\[
+  \boxed{\ (f\circ g)^\ast\omega=g^\ast(f^\ast\omega). }
+  \]</div></li><li><p>与外微分交换（命题 5(d)）：</p><div class="math-block">\[
+  \boxed{\ d(f^\ast\omega)=f^\ast(d\omega). }
+  \]</div></li></ol><h2 id="section-14">向量场与 1-形式的典范同构（内积诱导）</h2><p>在欧氏内积 $\ip{\cdot}{\cdot}$ 下，对每个点 $p$ 有线性同构（书中称 canonical isomorphism）</p><div class="math-block">\[
+\flat_p:T_p\R^n\to T_p^\ast\R^n,\qquad v\mapsto \omega,\ \ \omega(u)=\ip{v}{u}.
+\]</div><p>若 $v=\sum_{i=1}^n a_i e_i$，则对应的 $1$-形式是</p><div class="math-block">\[
+\boxed{\ \omega = v^\flat = \sum_{i=1}^n a_i\,dx_i. }
+\]</div><p>（因为 $\omega(e_j)=\ip{v}{e_j}=a_j$ 且 $dx_i(e_j)=\delta_{ij}$。）</p><h2 id="section-15">梯度、散度、旋度、拉普拉斯（习题 11--14）</h2><h3 id="section-16">梯度 $\mathrm{grad}$</h3><p>对可微函数 $f:\R^n\to\R$，定义向量场 $\mathrm{grad}\,f$（习题 12）为：</p><div class="math-block">\[
+\boxed{\ \ip{\mathrm{grad}\,f(p)}{u}=df_p(u),\quad \forall u\in T_p\R^n. }
+\]</div><p>在标准基下：</p><div class="math-block">\[
+\boxed{\ \mathrm{grad}\,f=\sum_{i=1}^n \frac{\partial f}{\partial x_i}\,e_i. }
+\]</div><p>并且 $\mathrm{grad}\,f$ 对应的 1-形式正是 $df$。</p><h3 id="section-17">散度 $\mathrm{div}$</h3><p>把可微向量场 $v:\R^n\to\R^n$ 视为可微映射，定义（习题 11）：</p><div class="math-block">\[
+\boxed{\ (\mathrm{div}\,v)(p)=\mathrm{trace}\,(dv)_p. }
+\]</div><p>若 $v=\sum_{i=1}^n a_i e_i$，则</p><div class="math-block">\[
+\boxed{\ \mathrm{div}\,v=\sum_{i=1}^n \frac{\partial a_i}{\partial x_i}. }
+\]</div><h4 class="note-para" id="section-18">散度与 Hodge 星（习题 11(b)）</h4><p>令 $\omega=v^\flat$，$\vol$ 为体积元，则</p><div class="math-block">\[
+\boxed{\ d(\ast\omega) = (\mathrm{div}\,v)\,\vol. }
+\]</div><p>（这条公式是把散度用形式语言刻画出来的关键。）</p><h3 id="section-19">旋度 $\mathrm{rot}$（一般维）</h3><p>书中在 $\R^n$ 给出 ``rotational'' 的形式版本（习题 14）：</p><div class="math-block">\[
+\boxed{\ \mathrm{rot}\,v := \ast(d\omega),\quad \omega=v^\flat. }
+\]</div><p>其中 $d\omega$ 是 2-形式，所以 $\mathrm{rot}\,v$ 是 $(n-2)$-形式。</p><h4 class="note-para" id="section-20">特殊维数的解释</h4><ul class="note-list"><li>$n=2$：$\mathrm{rot}\,v$ 是 $0$-形式（标量涡量）。</li><li>$n=3$：$\mathrm{rot}\,v$ 是 $1$-形式，可再用 $\sharp$ 同构回到向量场，即熟悉的 $\nabla\times v$。</li></ul><h4 class="note-para" id="section-21">恒等式（习题 14(a)）</h4><div class="math-block">\[
+\boxed{\ \mathrm{rot}(\mathrm{grad}\,f)=0. }
+\]</div><p>证明的形式语言：$\omega=(\mathrm{grad}f)^\flat=df$，故 $\mathrm{rot}(\mathrm{grad}f)=\ast(d(df))=\ast(0)=0$。</p><h4 class="note-para" id="section-22">三维坐标公式（习题 14(b1)）</h4><p>在 $n=3$，若 $v=\sum_{i=1}^3 a_i e_i$，则（把 $\mathrm{rot}\,v$ 识别为向量）</p><div class="math-block">\[
+\boxed{
+\mathrm{rot}\,v=
+\Big(\frac{\partial a_3}{\partial x_2}-\frac{\partial a_2}{\partial x_3}\Big)e_1+
+\Big(\frac{\partial a_1}{\partial x_3}-\frac{\partial a_3}{\partial x_1}\Big)e_2+
+\Big(\frac{\partial a_2}{\partial x_1}-\frac{\partial a_1}{\partial x_2}\Big)e_3.}
+\]</div><h4 class="note-para" id="section-23">三维恒等式（习题 14(b2)）</h4><div class="math-block">\[
+\boxed{\ \mathrm{div}(\mathrm{rot}\,v)=0. }
+\]</div><h3 id="section-24">拉普拉斯 $\Delta$</h3><p>定义（习题 13）：</p><div class="math-block">\[
+\boxed{\ \Delta f := \mathrm{div}(\mathrm{grad}\,f). }
+\]</div><p>坐标表达：</p><div class="math-block">\[
+\boxed{\ \Delta f = \sum_{i=1}^n \frac{\partial^2 f}{\partial x_i^2}. }
+\]</div><p>并且（习题 13(b)）对函数乘积 $fg$：</p><div class="math-block">\[
+\boxed{\ \Delta(fg)=f\,\Delta g + g\,\Delta f + 2\,\ip{\mathrm{grad}\,f}{\mathrm{grad}\,g}. }
+\]</div><h4 class="note-para" id="section-25">与 Hodge 星的联系（习题 13(c) 的形式表达）</h4><p>在 $\R^n$ 取体积元 $\vol$，可得</p><div class="math-block">\[
+\boxed{\ d(\ast\,df) = (\Delta f)\,\vol. }
+\]</div><p>（这是把 $\Delta$ 写成 $d\ast d$ 的版本；等价于 ``$d(\ast df)$ 的系数就是 $\Delta f$''。）</p><h2 id="section-26">常用恒等式汇总（便于记忆）</h2><p>在欧氏 $\R^n$（标准内积与取向）中，令 $v^\flat$ 为向量场对应的 1-形式：</p><ul class="note-list"><li><strong>梯度：</strong>$(\mathrm{grad}f)^\flat = df$。</li><li><strong>散度：</strong>$d(\ast v^\flat)=(\mathrm{div}v)\,\vol$。</li><li><strong>旋度（形式版）：</strong>$\mathrm{rot}v=\ast(dv^\flat)$（值为 $(n-2)$-形式）。</li><li><strong>拉普拉斯：</strong>$\Delta f=\mathrm{div}(\mathrm{grad}f)$，且 $d(\ast df)=(\Delta f)\,\vol$。</li><li><strong>零恒等式：</strong>$\mathrm{rot}(\mathrm{grad}f)=0$；（在 $n=3$）$\mathrm{div}(\mathrm{rot}v)=0$。</li><li><strong>核心公理：</strong>$d^2=0$，$d(\alpha\wedge\beta)=d\alpha\wedge\beta+(-1)^{\deg\alpha}\alpha\wedge d\beta$，$\ast\ast=(-1)^{k(n-k)}$。</li></ul><div class="series-nav"><a href="differential-forms.html">← 上一篇：微分形式运算法则</a><a href="index.html">专题目录 · John Lee</a><span>已是最后一篇</span></div><div class="article-end"><a href="../../index.html#blog">← 返回学习笔记</a><a href="#top">回到顶部 ↑</a></div></main></div>
+<footer class="site-footer"><div class="footer-inner"><p>© 高源 · Personal Homepage</p><p>保持好奇，慢慢积累。</p></div></footer></body></html>

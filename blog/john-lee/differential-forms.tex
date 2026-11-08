@@ -1,0 +1,200 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Packages ----------
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{ctex} % for Chinese; if you don't need Chinese, remove this line
+
+\setlist[itemize]{leftmargin=1.6em}
+\setlist[enumerate]{leftmargin=1.8em}
+
+% ---------- Macros ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Om}{\Omega}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\dx}{\mathrm{d}x}
+\newcommand{\dy}{\mathrm{d}y}
+\newcommand{\df}{\mathrm{d}f}
+\newcommand{\pull}{^{*}} % pullback star
+
+\title{微分形式（Differential Forms）常用运算法则速查表}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{0.\ 基本对象与记号}
+设 $U\subset \R^n$ 为开集，$T_pU\simeq \R^n$。
+\begin{itemize}
+  \item \textbf{0-形式}：可微函数 $g:U\to\R$，记作 $g\in \Om^0(U)$。
+  \item \textbf{$k$-形式}：对每个 $p\in U$ 赋予一个交替 $k$-线性映射
+  \[
+  \omega(p):(T_pU)^k\to \R,\qquad \omega\in \Om^k(U).
+  \]
+  \item \textbf{坐标展开}：
+  \[
+  \omega=\sum_{I} a_I\, \dx_I,\qquad
+  \dx_I=\dx_{i_1}\wedge\cdots\wedge \dx_{i_k},\ i_1<\cdots<i_k.
+  \]
+  \item \textbf{维数限制}：若 $k>n$，则 $\Om^k(U)=\{0\}$。
+\end{itemize}
+
+\section*{1.\ 加法与函数乘法（0-形式乘 $k$-形式）}
+\begin{itemize}
+  \item \textbf{加法（同阶）}：$(\omega+\eta)(p)=\omega(p)+\eta(p)$。
+  \item \textbf{函数乘形式（按点标量乘法）}：
+  \[
+  (g\omega)(p)(v_1,\dots,v_k)=g(p)\,\omega(p)(v_1,\dots,v_k).
+  \]
+  \item 也可视作 $g\wedge \omega$（因为 $g$ 是 0-形式）。
+\end{itemize}
+
+\section*{2.\ 楔积（外积）$\wedge$}
+若 $\omega\in\Om^k(U)$，$\eta\in\Om^s(U)$，则 $\omega\wedge\eta\in\Om^{k+s}(U)$。
+
+\subsection*{2.1\ 双线性与分配律}
+\[
+(\omega_1+\omega_2)\wedge\eta=\omega_1\wedge\eta+\omega_2\wedge\eta,\qquad
+\omega\wedge(\eta_1+\eta_2)=\omega\wedge\eta_1+\omega\wedge\eta_2.
+\]
+若 $g,h\in\Om^0(U)$，
+\[
+(g\omega)\wedge(h\eta)=(gh)(\omega\wedge\eta).
+\]
+
+\subsection*{2.2\ 结合律}
+\[
+(\omega\wedge\eta)\wedge\theta=\omega\wedge(\eta\wedge\theta).
+\]
+
+\subsection*{2.3\ 分次交换律（graded commutativity）}
+若 $\deg\omega=k$，$\deg\eta=s$，则
+\[
+\omega\wedge\eta = (-1)^{ks}\,\eta\wedge\omega.
+\]
+推论：若 $k$ 为奇数，则 $\omega\wedge\omega=0$。
+
+\subsection*{2.4\ 基本元取值（常用）}
+若 $i_1<\cdots<i_k$ 且 $j_1<\cdots<j_k$，则
+\[
+(\dx_{i_1}\wedge\cdots\wedge \dx_{i_k})(e_{j_1},\dots,e_{j_k})
+=
+\begin{cases}
+1,& (i_1,\dots,i_k)=(j_1,\dots,j_k),\\
+0,& \text{否则}.
+\end{cases}
+\]
+
+\section*{3.\ 外微分 $d$}
+外微分是线性算子 $d:\Om^k(U)\to \Om^{k+1}(U)$。
+
+\subsection*{3.1\ 对 0-形式（函数）}
+若 $g\in\Om^0(U)$，
+\[
+dg=\sum_{i=1}^n \frac{\partial g}{\partial x_i}\,\dx_i.
+\]
+
+\subsection*{3.2\ 对一般 $k$-形式（书中定义）}
+若 $\omega=\sum_I a_I\,\dx_I$，则
+\[
+d\omega=\sum_I da_I\wedge \dx_I.
+\]
+
+\subsection*{3.3\ 线性}
+\[
+d(\omega+\eta)=d\omega+d\eta.
+\]
+
+\subsection*{3.4\ Leibniz 公式（分次乘法法则）}
+若 $\deg\omega=k$，则
+\[
+d(\omega\wedge\eta)=d\omega\wedge\eta+(-1)^k\,\omega\wedge d\eta.
+\]
+特别地，若 $g$ 为 0-形式，
+\[
+d(g\omega)=dg\wedge\omega+g\,d\omega.
+\]
+
+\subsection*{3.5\ $d^2=0$}
+\[
+d(d\omega)=0.
+\]
+特别地 $d(\dx_i)=0$，因此 $d(\dx_I)=0$。
+
+\section*{4.\ 拉回（变量代换）$f\pull$}
+设 $f:U\subset\R^n\to V\subset\R^m$ 可微，则
+\[
+f\pull:\Om^k(V)\to \Om^k(U).
+\]
+定义（在点 $p$）：
+\[
+(f\pull\omega)(p)(v_1,\dots,v_k)=\omega(f(p))\big(df_p(v_1),\dots,df_p(v_k)\big).
+\]
+
+\subsection*{4.1\ 对 0-形式（函数）}
+\[
+f\pull g=g\circ f.
+\]
+
+\subsection*{4.2\ 线性与函数乘法相容}
+\[
+f\pull(\omega+\eta)=f\pull\omega+f\pull\eta,\qquad
+f\pull(g\omega)=f\pull(g)\,f\pull(\omega).
+\]
+（右边乘法是“函数 $\times$ 形式”的按点标量乘法。）
+
+\subsection*{4.3\ 与楔积相容}
+\[
+f\pull(\omega\wedge\eta)=f\pull\omega\wedge f\pull\eta.
+\]
+
+\subsection*{4.4\ 复合律}
+若 $g:W\to U$ 可微，则
+\[
+(f\circ g)\pull = g\pull\circ f\pull.
+\]
+
+\subsection*{4.5\ 与外微分可交换}
+\[
+d(f\pull\omega)=f\pull(d\omega).
+\]
+
+\subsection*{4.6\ 维数原因导致为 0}
+若 $\dim U=m$ 且 $k>m$，则对任意 $\omega\in\Om^k(V)$，
+\[
+f\pull\omega=0.
+\]
+
+\section*{5.\ 坐标计算速记（代换规则）}
+若 $f=(f_1,\dots,f_m)$，即 $y_i=f_i(x)$，则
+\[
+f\pull(\dy_i)=d(y_i\circ f)=df_i=\sum_{j=1}^n \frac{\partial f_i}{\partial x_j}\,\dx_j.
+\]
+因此对
+\[
+\omega=\sum_I a_I(y)\,\dy_I
+\]
+有
+\[
+f\pull\omega=\sum_I a_I(f(x))\, df_{i_1}\wedge\cdots\wedge df_{i_k}.
+\]
+（把 $y$ 换成 $f(x)$，把 $\dy_i$ 换成 $df_i$。）
+
+\section*{6.\ 内积诱导的向量场与 1-形式对应}
+在 $\R^n$ 标准内积 $\langle\cdot,\cdot\rangle$ 下：
+\[
+v\in T_p\R^n \longmapsto v^\flat\in T_p^*\R^n,\qquad
+v^\flat(u)=\langle v,u\rangle.
+\]
+这给出向量场与 1-形式的逐点一一对应（常称 ``$\flat/\sharp$'' 音乐同构）。
+
+\vspace{0.6em}
+\hrule
+\vspace{0.6em}
+\noindent\textbf{备注：}本文未涉及 Hodge 星号 $\star$（那是依赖度量的 $k\leftrightarrow (n-k)$ 运算，与对偶/拉回的 $*$ 不同）。
+
+\end{document}

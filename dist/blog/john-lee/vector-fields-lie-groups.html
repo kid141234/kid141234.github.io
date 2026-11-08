@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="推前与 F-related 向量场、李括号及其自然性，李群的左不变向量场、矩阵李代数、同态诱导与 Ado 定理。">
+<title>向量场、李群与李代数 · John Lee 专题 · 高源的学习笔记</title><link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../blog.css"><link rel="stylesheet" href="../notes.css">
+<script>window.MathJax={"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"macros":{"R":"\\mathbb{R}","C":"\\mathbb{C}","gl":"\\mathfrak{gl}","so":"\\mathfrak{so}","oo":"\\mathfrak{o}","Lie":"\\mathrm{Lie}","X":"\\mathfrak{X}","dd":"\\,\\mathrm{d}","id":"\\mathrm{id}","Te":"T_e","Ad":"\\mathrm{Ad}","mathbbm":["\\mathbf{#1}",1],"bm":["\\boldsymbol{#1}",1]}},"svg":{"fontCache":"global"}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script></head>
+<body id="top"><a class="skip-link" href="#article">跳转到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="../../index.html"><span class="brand-mark" aria-hidden="true">✳</span> 个人主页<span class="brand-slash"> / </span><span class="brand-en">PERSONAL SPACE</span></a><a class="back-link" href="../../index.html#blog">← 返回学习笔记</a></div></header>
+<div class="article-layout"><aside class="article-toc" aria-label="文章目录"><p>目录 <span>CONTENTS</span></p><ol><li class="toc-l2"><a href="#section-1">向量场与映射的关系：F-related、推前（pushforward）</a></li><li class="toc-l2"><a href="#section-2">子流形上的切向量场与限制</a></li><li class="toc-l2"><a href="#section-3">李括号：定义、例子与坐标公式</a></li><li class="toc-l2"><a href="#section-4">自然性（naturality）与推论：李括号与映射相容</a></li><li class="toc-l2"><a href="#section-5">李群与左不变向量场：Lie(G) 与李代数</a></li><li class="toc-l2"><a href="#section-6">GL(n,R) 与矩阵李代数：Lie(GL(n,R))conggl(n,R)</a></li><li class="toc-l2"><a href="#section-7">李群同态诱导的李代数同态</a></li><li class="toc-l2"><a href="#section-8">李子群的李代数</a></li><li class="toc-l2"><a href="#section-9">GL(n,C) 的李代数</a></li><li class="toc-l2"><a href="#section-10">李代数表示、Ado 定理与矩阵化推论</a></li></ol></aside><main id="article" class="article"><p class="article-kicker">学习笔记 / JOHN LEE / SMOOTH MANIFOLDS · 04 / 10</p><h1>向量场、李群与李代数</h1><p class="article-lead">推前与 F-related 向量场、李括号及其自然性，李群的左不变向量场、矩阵李代数、同态诱导与 Ado 定理。</p><h2 id="section-1">向量场与映射的关系：$F$-related、推前（pushforward）</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name"> $F$-related 向量场</span></div><div class="thm-body"><p>设 $F:M\to N$ 为光滑映射，$X\in\X(M)$，$Y\in\X(N)$。
+称 $Y$ 与 $X$ <strong>$F$-相关</strong>（$F$-related），若对一切 $p\in M$ 有</p><div class="math-block">\[
+\dd F_p(X_p)=Y_{F(p)}.
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">微分同胚下的推前唯一存在性（命题 8.19）</span></div><div class="thm-body"><p>设 $M,N$ 为光滑流形（可带边界），$F:M\to N$ 为微分同胚。则对每个 $X\in\X(M)$，存在唯一的 $Y\in\X(N)$ 与 $X$ $F$-相关。
+并且该向量场可显式给出为</p><div class="math-block">\[
+(F_*X)_q=\dd F_{F^{-1}(q)}\bigl(X_{F^{-1}(q)}\bigr),\qquad q\in N.
+\]</div></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">推前（pushforward）</span></div><div class="thm-body"><p>在命题 8.19 的情形中，记唯一的 $F$-相关向量场为 $F_*X$，
+称其为 $X$ 在 $F$ 下的<strong>推前</strong>（pushforward）。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">计算推前（例 8.20）</span></div><div class="thm-body"><p>令 $M,N\subset \R^2$，定义微分同胚 $F:M\to N$，并给定 $X\in\X(M)$。
+可用上式</p><div class="math-block">\[
+(F_*X)_q=\dd F_{F^{-1}(q)}(X_{F^{-1}(q)})
+\]</div><p>结合 $F^{-1}$ 与雅可比矩阵直接计算 $F_*X$ 的坐标表达式。</p></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">推前与对函数的作用（推论 8.21）</span></div><div class="thm-body"><p>设 $F:M\to N$ 为微分同胚，$X\in\X(M)$。对任意 $f\in C^\infty(N)$，</p><div class="math-block">\[
+\bigl((F_*X)f\bigr)\circ F = X(f\circ F).
+\]</div></div></div><h2 id="section-2">子流形上的切向量场与限制</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">向量场在子流形上的切向性</span></div><div class="thm-body"><p>设 $S\subseteq M$ 为浸入或嵌入子流形（可带边界）。向量场 $X\in\X(M)$
+称为在 $p\in S$ <strong>切于 $S$</strong>，若 $X_p\in T_pS\subseteq T_pM$；
+称 $X$ <strong>切于 $S$</strong>，若对一切 $p\in S$ 都切于 $S$。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">切向性的函数刻画（命题 8.22）</span></div><div class="thm-body"><p>设 $M$ 为光滑流形，$S\subseteq M$ 为嵌入子流形（可带边界），$X\in\X(M)$。
+则 $X$ 切于 $S$ 当且仅当：对每个满足 $f|_S=0$ 的 $f\in C^\infty(M)$，都有</p><div class="math-block">\[
+(Xf)|_S=0.
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">向量场限制到子流形（命题 8.23）</span></div><div class="thm-body"><p>设 $M$ 为光滑流形，$S\subseteq M$ 为浸入子流形（可带边界），
+$\iota:S\hookrightarrow M$ 为包含映射。若 $Y\in\X(M)$ 切于 $S$，
+则存在唯一的光滑向量场 $X\in\X(S)$，记为 $Y|_S$，
+使得 $X$ 与 $Y$ <strong>$\iota$-相关</strong>（即 $\dd \iota(X_p)=Y_p$ 对 $p\in S$ 成立）。</p></div></div><h2 id="section-3">李括号：定义、例子与坐标公式</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">复合算子与李括号</span></div><div class="thm-body"><p>设 $X,Y\in\X(M)$。对 $f\in C^\infty(M)$，定义</p><div class="math-block">\[
+[X,Y]f := X(Yf)-Y(Xf).
+\]</div><p>由此得到一个新向量场 $[X,Y]\in\X(M)$，称为 $X,Y$ 的<strong>李括号</strong>（Lie bracket）。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">复合一般不满足乘法法则（例 8.24）</span></div><div class="thm-body"><p>在 $\R^2$ 上令 $X=\frac{\partial}{\partial x}$，$Y=x\frac{\partial}{\partial y}$。
+则算子 $f\mapsto X(Yf)$ 一般不是导子（不满足 Leibniz 法则），
+但其交换子 $[X,Y]=XY-YX$ 是向量场。</p></div></div><div class="thm thm-lemma"><div class="thm-head"><span class="thm-kind">引理</span><span class="thm-name">李括号是光滑向量场（引理 8.25）</span></div><div class="thm-body"><p>任意光滑流形 $M$ 上，任意 $X,Y\in\X(M)$ 的李括号 $[X,Y]$ 仍是一个光滑向量场。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">李括号的坐标表达（命题 8.26）</span></div><div class="thm-body"><p>设在局部坐标 $(x^i)$ 下</p><div class="math-block">\[
+X=X^i\frac{\partial}{\partial x^i},\qquad
+Y=Y^j\frac{\partial}{\partial x^j},
+\]</div><p>则</p><div class="math-block">\[
+[X,Y]=\Bigl(X^i\frac{\partial Y^j}{\partial x^i}-Y^i\frac{\partial X^j}{\partial x^i}\Bigr)\frac{\partial}{\partial x^j}.
+\]</div><p>也可写为</p><div class="math-block">\[
+[X,Y]=(XY^j-YX^j)\frac{\partial}{\partial x^j}.
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">坐标向量场的李括号（式 8.10）</span></div><div class="thm-body"><p>在任意光滑坐标图中，</p><div class="math-block">\[
+\Bigl[\frac{\partial}{\partial x^i},\frac{\partial}{\partial x^j}\Bigr]=0\qquad(\forall\, i,j).
+\]</div></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">用坐标公式计算（例 8.27）</span></div><div class="thm-body"><p>在 $\R^3$ 上取</p><div class="math-block">\[
+X= x\frac{\partial}{\partial x}+\frac{\partial}{\partial y}+x(y+1)\frac{\partial}{\partial z},\qquad
+Y=\frac{\partial}{\partial x}+y\frac{\partial}{\partial z},
+\]</div><p>则可用命题 8.26 的坐标公式计算 $[X,Y]$。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">李括号的基本性质（命题 8.28）</span></div><div class="thm-body"><p>对任意 $X,Y,Z\in\X(M)$ 与 $a,b\in\R$：</p><ol class="note-list"><li><strong>双线性：</strong>  $[aX+bY,Z]=a[X,Z]+b[Y,Z]$，且 $[Z,aX+bY]=a[Z,X]+b[Z,Y]$。</li><li><strong>反对称：</strong>  $[X,Y]=-[Y,X]$。</li><li><strong>Jacobi 恒等式：</strong>  $[X,[Y,Z]]+[Y,[Z,X]]+[Z,[X,Y]]=0$。</li><li><p><strong>对函数的乘法法则：</strong>  对 $f,g\in C^\infty(M)$，</p><div class="math-block">\[
+[fX,gY]=fg[X,Y]+(fXg)Y-(gYf)X. \tag{8.11}
+\]</div></li></ol></div></div><h2 id="section-4">自然性（naturality）与推论：李括号与映射相容</h2><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">李括号的自然性（命题 8.30）</span></div><div class="thm-body"><p>设 $F:M\to N$ 为光滑映射，且 $X_1,X_2\in\X(M)$、$Y_1,Y_2\in\X(N)$ 满足
+$X_i$ 与 $Y_i$ $F$-相关（$i=1,2$）。则</p><div class="math-block">\[
+[X_1,X_2]\ \text{与}\ [Y_1,Y_2]\ \text{$F$-相关}.
+\]</div></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">李括号的推前（推论 8.31）</span></div><div class="thm-body"><p>若 $F:M\to N$ 为微分同胚，$X_1,X_2\in\X(M)$，则</p><div class="math-block">\[
+F_*[X_1,X_2]=[F_*X_1,F_*X_2].
+\]</div></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">切向向量场的括号仍切向（推论 8.32）</span></div><div class="thm-body"><p>设 $S\subseteq M$ 为浸入子流形（可带边界），若 $Y_1,Y_2\in\X(M)$ 都切于 $S$，
+则 $[Y_1,Y_2]$ 也切于 $S$。</p></div></div><h2 id="section-5">李群与左不变向量场：$\Lie(G)$ 与李代数</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">左平移与左不变向量场</span></div><div class="thm-body"><p>设 $G$ 为李群。对 $g\in G$，左平移 $L_g:G\to G$ 定义为 $L_g(h)=gh$。
+向量场 $X\in\X(G)$ 称为<strong>左不变</strong>，若对每个 $g\in G$，
+$X$ 与自身在 $L_g$ 下相关，即</p><div class="math-block">\[
+\dd(L_g)_{g'}(X_{g'})=X_{gg'}\qquad(\forall\, g,g'\in G).
+\]</div><p>等价地（因 $L_g$ 为微分同胚）：</p><div class="math-block">\[
+(L_g)_*X=X\qquad(\forall\, g\in G). \tag{8.12}
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">左不变向量场对李括号封闭（命题 8.33）</span></div><div class="thm-body"><p>设 $G$ 为李群，$X,Y$ 为 $G$ 上的光滑左不变向量场，则 $[X,Y]$ 仍是左不变向量场。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">李群的李代数 $\Lie(G)$</span></div><div class="thm-body"><p>记 $\Lie(G)$ 为李群 $G$ 上<strong>所有光滑左不变向量场</strong>的集合。
+在通常的向量场加法与数乘下，$\Lie(G)$ 是向量空间；
+在李括号 $[\cdot,\cdot]$ 下，$\Lie(G)$ 构成一个李代数。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">李代数的典型来源（例 8.36）</span></div><div class="thm-body"><ol class="note-list"><li>$\X(M)$ 在李括号下构成李代数。</li><li>若 $G$ 为李群，则所有左不变向量场组成 $\Lie(G)$，它是 $\X(G)$ 的李子代数。</li><li>$M(n,\R)$ 在交换子括号 $[A,B]=AB-BA$ 下成为李代数，记为 $\gl(n,\R)$。</li><li>类似地，$M(n,\C)$ 在交换子括号下为实李代数，记为 $\gl(n,\C)$（实维 $2n^2$）。</li><li>若 $V$ 为向量空间，则 $\gl(V)=\mathrm{End}(V)$ 在 $[A,B]=A\circ B-B\circ A$ 下为李代数。</li><li>若任意向量空间上定义括号恒为零，则得到<strong>阿贝尔</strong>李代数。</li></ol></div></div><div class="thm thm-theorem"><div class="thm-head"><span class="thm-kind">定理</span><span class="thm-name">取值映射同构（定理 8.37）</span></div><div class="thm-body"><p>设 $G$ 为李群。取值映射</p><div class="math-block">\[
+\varepsilon:\Lie(G)\to T_eG,\qquad \varepsilon(X)=X_e,
+\]</div><p>是向量空间同构。因此 $\Lie(G)$ 有限维，且</p><div class="math-block">\[
+\dim \Lie(G)=\dim G.
+\]</div></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">由 $v\in T_eG$ 生成的左不变向量场（式 8.13）</span></div><div class="thm-body"><p>对任意 $v\in T_eG$，定义（粗略）向量场 $v^L$：</p><div class="math-block">\[
+(v^L)_g=\dd(L_g)_e(v),\qquad g\in G. \tag{8.13}
+\]</div><p>该向量场实际上是光滑左不变向量场，并满足 $(v^L)_e=v$。</p></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">左不变粗略向量场必光滑（推论 8.38）</span></div><div class="thm-body"><p>李群 $G$ 上每个左不变的粗略向量场都是光滑的。</p></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">李群可平行化（推论 8.39）</span></div><div class="thm-body"><p>每个李群都存在一组左不变的光滑<strong>全局标架</strong>（global frame），因此每个李群都是可平行化的（parallelizable）。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">熟悉李群的李代数（例 8.40）</span></div><div class="thm-body"><ol class="note-list"><li>$\R^n$（加法群）：左不变向量场恰为常系数向量场，故 $\Lie(\R^n)\cong \R^n$（阿贝尔）。</li><li>圆周群 $S^1$：$\Lie(S^1)\cong \R$（阿贝尔）。</li><li>$n$-维环面 $T^n=(S^1)^n$：$\Lie(T^n)\cong \R^n$（阿贝尔）。</li><li>一般线性群 $GL(n,\R)$：其李代数与 $\gl(n,\R)$ 自然同构（见后述命题 8.41）。</li></ol></div></div><h2 id="section-6">$GL(n,\R)$ 与矩阵李代数：$\Lie(GL(n,\R))\cong\gl(n,\R)$</h2><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">一般线性群的李代数（命题 8.41）</span></div><div class="thm-body"><p>自然映射的复合</p><div class="math-block">\[
+\Lie\bigl(GL(n,\R)\bigr)\ \longrightarrow\ T_{I_n}GL(n,\R)\ \longrightarrow\ \gl(n,\R) \tag{8.14}
+\]</div><p>给出 $\Lie(GL(n,\R))$ 与矩阵李代数 $\gl(n,\R)$ 之间的<strong>李代数同构</strong>。</p></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">抽象向量空间版本（推论 8.42）</span></div><div class="thm-body"><p>设 $V$ 为有限维实向量空间，则自然同构的复合</p><div class="math-block">\[
+\Lie\bigl(GL(V)\bigr)\ \longrightarrow\ T_{\id}GL(V)\ \longrightarrow\ \gl(V) \tag{8.16}
+\]</div><p>给出 $\Lie(GL(V))$ 与 $\gl(V)$ 的李代数同构。</p></div></div><h2 id="section-7">李群同态诱导的李代数同态</h2><div class="thm thm-theorem"><div class="thm-head"><span class="thm-kind">定理</span><span class="thm-name">诱导李代数同态（定理 8.44）</span></div><div class="thm-body"><p>设 $G,H$ 为李群，$\mathfrak g=\Lie(G)$，$\mathfrak h=\Lie(H)$。
+若 $F:G\to H$ 为李群同态，则对每个 $X\in\mathfrak g$，存在唯一 $Y\in\mathfrak h$
+与 $X$ $F$-相关。记该 $Y$ 为 $F_*X$，则由此定义的映射</p><div class="math-block">\[
+F_*:\mathfrak g\to\mathfrak h
+\]</div><p>是一个<strong>李代数同态</strong>。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">诱导同态的性质（命题 8.45）</span></div><div class="thm-body"><ol class="note-list"><li>恒等同态诱导恒等：$(\id_G)_*=\id_{\Lie(G)}$。</li><li><p>复合相容：若 $F_1:G\to H$、$F_2:H\to K$ 为李群同态，则</p><div class="math-block">\[
+(F_2\circ F_1)_*=(F_2)_*\circ(F_1)_*:\Lie(G)\to\Lie(K).
+\]</div></li><li>同构推出李代数同构：若 $F:G\to H$ 为李群同构，则 $F_*:\Lie(G)\to\Lie(H)$ 为李代数同构。</li></ol></div></div><h2 id="section-8">李子群的李代数</h2><div class="thm thm-theorem"><div class="thm-head"><span class="thm-kind">定理</span><span class="thm-name">李子群的李代数（定理 8.46）</span></div><div class="thm-body"><p>设 $H\subseteq G$ 为李子群，$\iota:H\hookrightarrow G$ 为包含映射。
+则存在李子代数 $\mathfrak h\subseteq \Lie(G)$ 与 $\Lie(H)$ 典范同构，且</p><div class="math-block">\[
+\mathfrak h=\iota_*\bigl(\Lie(H)\bigr)
+=\{\,X\in \Lie(G): X_e\in T_eH\,\}. \tag{8.17}
+\]</div></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">正交群的李代数（例 8.47）</span></div><div class="thm-body"><p>$O(n)$ 是 $GL(n,\R)$ 的李子群，其在单位元处的切空间满足</p><div class="math-block">\[
+T_{I_n}O(n)=\{\,B\in\gl(n,\R):B^T+B=0\,\},
+\]</div><p>即所有 $n\times n$ 反对称矩阵。该子空间记为 $\oo(n)$，
+并与 $\Lie(O(n))$ 典范同构，且 $\oo(n)$ 是 $\gl(n,\R)$ 的李子代数。</p></div></div><h2 id="section-9">$GL(n,\C)$ 的李代数</h2><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">$GL(n,\C)$ 的李代数（命题 8.48）</span></div><div class="thm-body"><p>由自然同构</p><div class="math-block">\[
+\Lie(GL(n,\C))\xrightarrow{\ \varepsilon\ }T_{I_n}GL(n,\C)\xrightarrow{\ \varphi\ }\gl(n,\C) \tag{8.18}
+\]</div><p>的复合得到 $\Lie(GL(n,\C))$ 与矩阵李代数 $\gl(n,\C)$ 之间的<strong>李代数同构</strong>
+（将其视为<strong>实</strong>李代数）。</p></div></div><h2 id="section-10">李代数表示、Ado 定理与矩阵化推论</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">李代数表示与忠实性</span></div><div class="thm-body"><p>设 $\mathfrak g$ 为有限维李代数。称李代数同态</p><div class="math-block">\[
+\varphi:\mathfrak g\to\gl(V)
+\]</div><p>为 $\mathfrak g$ 的（有限维）<strong>表示</strong>。若 $\varphi$ 为单射，则称该表示<strong>忠实</strong>（faithful）。</p></div></div><div class="thm thm-theorem"><div class="thm-head"><span class="thm-kind">定理</span><span class="thm-name">Ado 定理（定理 8.49）</span></div><div class="thm-body"><p>每个有限维实李代数都存在一个忠实的有限维表示。</p></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">有限维李代数可嵌入矩阵李代数（推论 8.50）</span></div><div class="thm-body"><p>每个有限维实李代数都同构于某个矩阵李代数 $\gl(n,\R)$（带交换子括号）中的一个李子代数。</p></div></div><div class="series-nav"><a href="sard-theorem.html">← 上一篇：Sard 定理及其应用</a><a href="index.html">专题目录 · John Lee</a><a href="integral-curves-flows.html">下一篇：积分曲线与流 →</a></div><div class="article-end"><a href="../../index.html#blog">← 返回学习笔记</a><a href="#top">回到顶部 ↑</a></div></main></div>
+<footer class="site-footer"><div class="footer-inner"><p>© 高源 · Personal Homepage</p><p>保持好奇，慢慢积累。</p></div></footer></body></html>

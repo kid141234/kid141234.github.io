@@ -1,0 +1,277 @@
+% =========================
+%  LaTeX 常用宏包（适合数学/流形笔记）
+% =========================
+\documentclass[11pt,a4paper]{article}
+
+% ---- 页面与中文 ----
+\usepackage[margin=1in]{geometry}
+\usepackage[UTF8]{ctex} % 中文支持（推荐：xelatex/lualatex 编译）
+
+% ---- 数学环境与符号 ----
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm}         % 粗体数学符号
+\usepackage{mathrsfs}   % 花体 \mathscr
+\usepackage{bbm}        % 黑板粗体 \mathbbm{1}
+
+% ---- 定理环境 ----
+\usepackage{thmtools}
+\usepackage{hyperref}   % 超链接（放后面更稳）
+\usepackage[nameinlink,noabbrev]{cleveref} % 智能引用
+
+% ---- 排版与列表 ----
+\usepackage{enumitem}
+\usepackage{microtype}
+
+% ---- 图形（如需要）----
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% =========================
+%  可选：定理样式示例（如需要）
+% =========================
+\declaretheoremstyle[
+  headfont=\bfseries,
+  bodyfont=\normalfont,
+  spaceabove=6pt, spacebelow=6pt
+]{mystyle}
+
+\declaretheorem[style=mystyle,name=定理]{theorem}
+\declaretheorem[style=mystyle,name=命题,sibling=theorem]{proposition}
+\declaretheorem[style=mystyle,name=推论,sibling=theorem]{corollary}
+\declaretheorem[style=mystyle,name=引理,sibling=theorem]{lemma}
+\declaretheorem[style=mystyle,name=定义,sibling=theorem]{definition}
+\declaretheorem[style=mystyle,name=例,sibling=theorem]{example}
+\declaretheorem[style=mystyle,name=注记,sibling=theorem]{remark}
+
+% =========================
+%  常用符号命令（可选）
+% =========================
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Ker}{\operatorname{Ker}}
+\newcommand{\Img}{\operatorname{Im}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\id}{\operatorname{id}}
+
+\begin{document}
+% 你的内容从这里开始
+
+
+
+
+\section*{第5章：子流形（Submanifolds）}
+
+\subsection*{1.\ 子流形的两种基本类型}
+
+\subsubsection*{1.1\ 嵌入子流形（Embedded submanifold）}
+设 $M$ 为带或不带边界的光滑流形。$S\subseteq M$ 称为 $M$ 的\emph{嵌入子流形}
+（默认无边界），若满足：
+\begin{itemize}
+  \item $S$ 赋予 \emph{子空间拓扑} 后是一个（无边界的）拓扑流形；
+  \item $S$ 上存在光滑结构，使得包含映射 $i:S\hookrightarrow M$ 是\emph{光滑嵌入}（smooth embedding）。
+\end{itemize}
+若 $\dim M-\dim S=r$，称 $r$ 为 $S$ 在 $M$ 中的\emph{余维数}（codimension）。
+余维数 $1$ 的嵌入子流形称为\emph{嵌入超曲面}（embedded hypersurface）。
+
+\paragraph{命题 5.1（开子流形）}
+若 $M$ 为光滑流形，则 $M$ 中余维数 $0$ 的嵌入子流形\; $\Longleftrightarrow$\; $M$ 的开子集（即开子流形）。
+
+\paragraph{命题 5.2（嵌入的像）}
+若 $F:N\to M$ 是光滑嵌入，令 $S=F(N)$。则 $S$ 赋予子空间拓扑后为拓扑流形，
+且存在\emph{唯一}的光滑结构使其成为 $M$ 的嵌入子流形，并使 $F:N\to S$ 为到其像的微分同胚。
+
+\paragraph{命题 5.3（乘积流形切片）}
+若 $M,N$ 为光滑流形，则对每个 $p\in N$，集合 $M\times\{p\}$ 是 $M\times N$ 的嵌入子流形，
+且与 $M$ 微分同胚。
+
+\paragraph{命题 5.4（图像作为子流形）}
+设 $M$ 为 $m$ 维光滑流形、$N$ 为 $n$ 维光滑流形（带或不带边界），$U\subseteq M$ 开，
+$f:U\to N$ 光滑。定义图像
+\[
+\Gamma(f)=\{(x,y)\in M\times N:\ x\in U,\ y=f(x)\}.
+\]
+则 $\Gamma(f)$ 是 $M\times N$ 的 $m$ 维嵌入子流形，并与 $U$ 微分同胚。
+
+\paragraph{定义（适当嵌入 properly embedded）}
+嵌入子流形 $S\subseteq M$ 称为\emph{适当嵌入}，若包含映射 $i:S\hookrightarrow M$ 是\emph{proper map}
+（紧集的原像仍紧）。
+
+\paragraph{命题 5.5（proper $\Leftrightarrow$ 闭集）}
+若 $S\subseteq M$ 为嵌入子流形，则
+\[
+S \text{ 适当嵌入}\ \Longleftrightarrow\ S \text{ 是 } M \text{ 中的闭子集}.
+\]
+
+\paragraph{推论 5.6（紧嵌入子流形必 proper）}
+每个\emph{紧}的嵌入子流形都是适当嵌入的。
+
+\paragraph{命题 5.7（全局图像是 proper 嵌入）}
+若 $f:M\to N$ 为光滑映射，则其图像 $\Gamma(f)\subseteq M\times N$（按命题 5.4 的流形结构）
+是 \emph{properly embedded} 的。
+
+\subsubsection*{1.2\ 浸入子流形（Immersed submanifold）}
+设 $M$ 为带或不带边界的光滑流形。$S\subseteq M$ 称为 $M$ 的\emph{浸入子流形}，
+若 $S$ 赋予某个拓扑（\emph{不必}是子空间拓扑）后为（无边界）拓扑流形，
+且存在光滑结构使包含映射 $i:S\hookrightarrow M$ 为\emph{光滑浸入}（smooth immersion）。
+
+\paragraph{命题 5.18（单射浸入的像）}
+若 $F:N\to M$ 为\emph{单射}光滑浸入，令 $S=F(N)$。则存在\emph{唯一}的拓扑与光滑结构
+使 $S$ 成为 $M$ 的浸入子流形，并使 $F:N\to S$ 为到其像的微分同胚。
+
+\paragraph{例（典型非嵌入的浸入子流形）}
+八字形曲线（figure-eight）与环面上的稠密曲线可作为单射浸入的像，
+但它们一般\emph{不是}嵌入子流形（原因是它们的“子流形拓扑”不同于子空间拓扑）。
+
+\paragraph{命题 5.21（浸入子流形变成嵌入的充分条件）}
+设 $S\subseteq M$ 为浸入子流形。若以下任一条件成立，则 $S$ 实为嵌入子流形：
+\begin{enumerate}
+  \item $S$ 在 $M$ 中余维数为 $0$；
+  \item 包含映射 $S\hookrightarrow M$ 为 proper；
+  \item $S$ 为紧。
+\end{enumerate}
+
+\paragraph{命题 5.22（浸入子流形局部上是嵌入的）}
+若 $S\subseteq M$ 为浸入子流形，则对每个 $p\in S$，存在 $p$ 在 $S$ 中的邻域 $U$
+使得 $U$（看作 $M$ 的子集）是 $M$ 的嵌入子流形。
+
+\subsection*{2.\ 切片图与局部刻画}
+
+\subsubsection*{2.1\ $k$-切片（$k$-slice）与切片图（slice chart）}
+若 $U\subseteq\mathbb{R}^n$ 开，$k\in\{0,\dots,n\}$，称 $U$ 的一个 $k$-维切片为形如
+\[
+\{(x^1,\dots,x^n)\in U:\ x^{k+1}=c^{k+1},\dots,x^n=c^n\}
+\]
+的子集，其中 $c^{k+1},\dots,c^n$ 为常数。
+
+在流形 $M$ 的坐标图 $(U,\varphi)$ 中，若 $\varphi(S\cap U)$ 是 $\varphi(U)$ 的 $k$-切片，
+称 $(U,\varphi)$ 为 $S$ 的\emph{切片图}，并称相应坐标为\emph{切片坐标}。
+
+\paragraph{定理 5.8（嵌入子流形的局部切片判据）}
+设 $M$ 为光滑 $n$ 维流形。
+\begin{itemize}
+  \item 若 $S\subseteq M$ 是 $k$ 维嵌入子流形，则 $S$ 满足\emph{局部 $k$-切片条件}：
+  每个 $p\in S$ 都存在切片图，使 $S\cap U$ 在该图中是一张 $k$-切片。
+  \item 反之，若子集 $S\subseteq M$ 满足局部 $k$-切片条件，则在子空间拓扑下 $S$ 是 $k$ 维拓扑流形，
+  且存在光滑结构使其成为 $M$ 的 $k$ 维嵌入子流形。
+\end{itemize}
+
+\subsection*{3.\ 水平集（Level sets）与常秩/下沉定理}
+
+\subsubsection*{3.1\ 水平集定义}
+设 $\Phi:M\to N$ 为映射，$c\in N$。称
+\[
+\Phi^{-1}(c)
+\]
+为 $\Phi$ 的一个\emph{水平集}（level set）。若 $N=\mathbb{R}^k$ 且 $c=0$，常称为\emph{零集}（zero set）。
+
+\paragraph{定理 5.12（常秩水平集定理）}
+设 $M,N$ 为光滑流形，$\Phi:M\to N$ 为常秩 $r$ 的光滑映射。
+则每个水平集 $\Phi^{-1}(c)$ 都是 $M$ 的\emph{properly embedded} 子流形，且其余维数为 $r$。
+
+\paragraph{推论 5.13（下沉水平集定理）}
+若 $\Phi:M\to N$ 是光滑\emph{下沉}（submersion），则每个水平集 $\Phi^{-1}(c)$
+都是 properly embedded 子流形，其余维数等于 $\dim N$。
+
+\paragraph{推论 5.14（正则值/正则水平集定理）}
+若 $c\in N$ 是 $\Phi:M\to N$ 的\emph{正则值}（即对所有 $p\in\Phi^{-1}(c)$，$d\Phi_p$ 满射），
+则 $\Phi^{-1}(c)$ 是 properly embedded 子流形，其余维数为 $\dim N$。
+
+\paragraph{命题 5.16（嵌入子流形局部即为下沉的水平集）}
+设 $S\subseteq M$。则 $S$ 是 $M$ 的嵌入 $k$ 维子流形当且仅当：
+对每个 $p\in S$，存在 $M$ 中邻域 $U$ 与光滑下沉映射 $\Phi:U\to\mathbb{R}^{m-k}$
+使得 $U\cap S=\Phi^{-1}(c)$（某个常值 $c$）。
+
+\subsection*{4.\ 限制映射（Restricting maps）与弱嵌入}
+
+\paragraph{定理 5.27（限制定义域保持光滑）}
+若 $F:M\to N$ 光滑，$S\subseteq M$ 为浸入或嵌入子流形，则限制
+\[
+F|_S:S\to N
+\]
+仍为光滑映射。
+
+\paragraph{定理 5.29（限制值域到浸入子流形）}
+设 $M$ 为无边界光滑流形，$S\subseteq M$ 为浸入子流形，$F:N\to M$ 光滑且像包含于 $S$。
+若 $F$ 作为 $N\to S$ 的映射是\emph{连续的}，则 $F:N\to S$ 是光滑映射。
+
+\paragraph{推论 5.30（嵌入情形自动连续）}
+若 $S\subseteq M$ 为嵌入子流形，则任何光滑映射 $F:N\to M$ 只要满足 $\operatorname{Im}F\subseteq S$，
+就自动给出光滑映射 $F:N\to S$。
+
+\paragraph{定义（弱嵌入 weakly embedded / initial submanifold）}
+若 $S\subseteq M$ 为浸入子流形，并且满足：
+对任意流形 $N$ 与任意光滑映射 $F:N\to M$，只要 $\operatorname{Im}F\subseteq S$，
+则 $F$（视为映射 $N\to S$）也是光滑的，
+则称 $S$ 为\emph{弱嵌入}（weakly embedded），亦称\emph{初始子流形}（initial submanifold）。
+
+\subsection*{5.\ 子流形上拓扑与光滑结构的唯一性}
+
+\paragraph{定理 5.31（嵌入子流形的唯一性）}
+若 $S\subseteq M$ 是嵌入子流形，则使 $S$ 成为嵌入（或浸入）子流形的
+\emph{拓扑与光滑结构}是唯一的：即只能是子空间拓扑以及由局部切片判据（定理 5.8）给出的光滑结构。
+
+\paragraph{定理 5.32（给定拓扑下浸入结构唯一）}
+若 $S\subseteq M$ 是浸入子流形，则在\emph{给定的}拓扑下，使其成为浸入子流形的光滑结构唯一。
+
+\paragraph{定理 5.33（弱嵌入的强唯一性）}
+若 $S\subseteq M$ 是弱嵌入子流形，则使其成为浸入子流形的拓扑与光滑结构都是唯一的。
+
+\subsection*{6.\ 子流形的切空间（Tangent spaces of submanifolds）}
+
+设 $S\subseteq M$ 为浸入或嵌入子流形，包含映射 $i:S\hookrightarrow M$ 为浸入，
+故在每个 $p\in S$ 有单射线性映射 $di_p:T_pS\to T_pM$。
+通常把 $T_pS$ \emph{认同}为其像 $di_p(T_pS)\subseteq T_pM$，从而把 $T_pS$ 看作 $T_pM$ 的线性子空间。
+
+\paragraph{命题 5.35（曲线刻画切向量）}
+设 $S\subseteq M$ 为浸入或嵌入子流形，$p\in S$。
+向量 $v\in T_pM$ 属于 $T_pS$ 当且仅当存在一条光滑曲线 $\gamma:J\to M$，
+其像包含于 $S$ 且作为 $J\to S$ 也光滑，并满足 $\gamma(0)=p,\ \gamma'(0)=v$。
+
+\paragraph{命题 5.37（嵌入情形：由消去函数刻画切空间）}
+若 $S\subseteq M$ 为\emph{嵌入}子流形，$p\in S$，则
+\[
+T_pS=\{v\in T_pM:\ vf=0\ \text{对所有 } f\in C^\infty(M)\text{ 且 } f|_S=0\}.
+\]
+（注：该刻画一般不适用于非嵌入的浸入子流形。）
+
+\paragraph{命题 5.38（定义映射的核刻画切空间）}
+若 $S\subseteq M$ 为嵌入子流形，$\Phi:U\to N$ 为 $S$ 的局部定义映射，
+则对每个 $p\in S\cap U$，
+\[
+T_pS=\ker d\Phi_p\subseteq T_pM.
+\]
+
+\paragraph{推论 5.39（水平集的分量函数条件）}
+若 $S=\Phi^{-1}(c)$ 且 $\Phi=(\Phi^1,\dots,\Phi^k):M\to\mathbb{R}^k$ 为下沉映射，
+则 $v\in T_pM$ 与 $S$ 相切当且仅当
+\[
+v\Phi^1=\cdots=v\Phi^k=0.
+\]
+
+\subsection*{7.\ 带边界流形的切向量分类（简述）}
+
+若 $M$ 为带边界的光滑流形，$p\in\partial M$，可将 $T_pM$ 中向量分为：
+\begin{itemize}
+  \item 与边界相切：属于 $T_p(\partial M)$；
+  \item 向内指向（inward-pointing）；
+  \item 向外指向（outward-pointing）。
+\end{itemize}
+
+\paragraph{命题 5.41（边界坐标判别）}
+设 $(x^1,\dots,x^n)$ 为 $p\in\partial M$ 附近的边界坐标。
+则向内指向向量恰为 $x^n$ 分量 $>0$ 者；向外指向恰为 $x^n$ 分量 $<0$ 者；
+与 $\partial M$ 相切者恰为 $x^n$ 分量 $=0$ 者。
+
+\paragraph{边界定义函数（boundary defining function）}
+带边界流形 $M$ 的边界定义函数是光滑函数 $f:M\to[0,\infty)$，满足
+$f^{-1}(0)=\partial M$ 且对所有 $p\in\partial M$ 有 $df_p\neq 0$。
+
+\paragraph{命题 5.43（存在性）}
+每个带边界的光滑流形都存在边界定义函数。
+
+\bigskip
+\noindent\textbf{备注（本章“如何判定不是子流形”的常用思路）}\\
+若 $S\subseteq M$ 仅给定为一个集合，判断其是否为子流形通常利用：
+切空间维数应处处一致、局部参数化存在、切向量可由曲线速度实现、切向量消去在 $S$ 上常值的光滑函数等性质；
+若与这些性质矛盾，则 $S$ 不可能成为（合适拓扑与光滑结构下的）光滑子流形。
+\end{document}

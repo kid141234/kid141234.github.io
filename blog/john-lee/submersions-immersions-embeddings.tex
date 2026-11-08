@@ -1,0 +1,221 @@
+\documentclass[12pt]{article}
+
+% --- 编码与字体（推荐） ---
+\usepackage[UTF8]{ctex} % 中文支持（含 UTF-8）
+% 若你不用 ctex，可改用 xeCJK + fontspec（需 XeLaTeX/LuaLaTeX）
+
+% --- 页面与排版 ---
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{setspace}
+\usepackage{indentfirst}
+
+% --- 数学 ---
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+
+% --- 列表与链接 ---
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=blue,
+  citecolor=blue
+}
+
+% --- 可选：更好的微分符号与花体 ---
+\usepackage{mathrsfs}  % \mathscr
+\usepackage{bm}        % \bm for bold math
+
+%==================== (Optional) common macros / 常用宏 ====================
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\Id}{\operatorname{Id}}
+\newcommand{\Int}{\operatorname{Int}}
+\newcommand{\Image}{\operatorname{Im}}
+
+\newcommand{\diffeo}{\mathrel{\cong}} % 可按需替换
+
+%==================== End Packages / 宏包结束 ====================
+\begin{document}
+
+
+
+\section*{第4章：下沉、浸入、嵌入与覆叠映射（总结）}
+
+\subsection*{0. 微分与秩（Rank）}
+设 $F:M\to N$ 为光滑映射，$p\in M$。其微分（推前）为线性映射
+\[
+dF_p:T_pM\to T_{F(p)}N.
+\]
+\textbf{秩}定义为
+\[
+\rank(F)(p)=\dim(\mathrm{Im}\,dF_p).
+\]
+若存在常数 $r$ 使得对所有 $p\in M$ 都有 $\rank(F)(p)=r$，则称 $F$ \textbf{常秩}（constant rank），记 $\rank F=r$。
+
+\subsection*{1. 秩定理（Rank Theorem）/ 常秩定理}
+设 $M,N$ 分别为 $m,n$ 维光滑流形，$F:M\to N$ 为常秩 $r$ 的光滑映射。则对每个 $p\in M$，存在
+$p$ 的坐标图 $(U,\varphi)$ 与 $F(p)$ 的坐标图 $(V,\psi)$，使 $F(U)\subset V$，并且坐标表示
+\[
+\widehat F=\psi\circ F\circ \varphi^{-1}
+\]
+具有标准形式
+\[
+\widehat F(x^1,\dots,x^m)=\bigl(x^1,\dots,x^r,0,\dots,0\bigr).
+\]
+特别地：
+\begin{itemize}
+\item 若 $r=n$（对靶空间满秩），则局部可写为投影
+\[
+\widehat F(x^1,\dots,x^m)=(x^1,\dots,x^n).
+\]
+\item 若 $r=m$（对定义域满秩），则局部可写为坐标包含
+\[
+\widehat F(x^1,\dots,x^m)=(x^1,\dots,x^m,0,\dots,0).
+\]
+\end{itemize}
+
+\subsection*{2. 下沉（Submersion）}
+\paragraph{定义（光滑下沉）}
+光滑映射 $\pi:M^m\to N^n$ 称为\textbf{下沉}，若对任意 $p\in M$，
+\[
+d\pi_p:T_pM\to T_{\pi(p)}N
+\]
+为\textbf{满射}。等价地，$\rank(\pi)=n$。
+
+\paragraph{重要性质}
+\begin{itemize}
+\item （\textbf{局部标准形}）下沉在任意点附近局部等价于投影：
+\[
+\widehat\pi(x^1,\dots,x^m)=(x^1,\dots,x^n).
+\]
+\item （\textbf{局部截面存在}）对任意 $p\in M$，令 $q=\pi(p)$，存在 $q$ 的邻域 $U\subset N$ 和光滑映射
+$\sigma:U\to M$ 使
+\[
+\pi\circ\sigma=\mathrm{Id}_U,\qquad \sigma(q)=p.
+\]
+\item （\textbf{开映射}）任意光滑下沉都是开映射。若进一步 $\pi$ 满射，则 $\pi$ 是\textbf{商映射}（quotient map）。
+\item （\textbf{满射下沉的特征性质}）若 $\pi:M\to N$ 是\textbf{满射下沉}，$P$ 为任意光滑流形，则对任意映射 $F:N\to P$：
+\[
+F\ \text{光滑}\ \Longleftrightarrow\ F\circ\pi\ \text{光滑}.
+\]
+\item （\textbf{向商空间下推（光滑下降）}）若 $\pi:M\to N$ 为满射下沉，且 $F:M\to P$ 在每条纤维上常值（见第6节纤维定义），
+则存在唯一光滑映射 $\widetilde F:N\to P$ 使
+\[
+\widetilde F\circ\pi=F.
+\]
+\end{itemize}
+
+\subsection*{3. 浸入（Immersion）}
+\paragraph{定义（光滑浸入）}
+光滑映射 $F:M^m\to N^n$ 称为\textbf{浸入}，若对任意 $p\in M$，
+\[
+dF_p:T_pM\to T_{F(p)}N
+\]
+为\textbf{单射}。等价地，$\rank(F)=m$。
+
+\paragraph{重要性质}
+\begin{itemize}
+\item （\textbf{局部标准形}）浸入在任意点附近局部等价于坐标包含：
+\[
+\widehat F(x^1,\dots,x^m)=(x^1,\dots,x^m,0,\dots,0).
+\]
+\item （\textbf{局部嵌入性}）$F$ 是浸入当且仅当对每个 $p\in M$，存在邻域 $U$ 使得
+$F|_U:U\to N$ 是光滑嵌入（见下一节）。
+\item 浸入不必单射；即使单射浸入也未必是嵌入（可能失败于“到像是同胚”这一拓扑条件）。
+\end{itemize}
+
+\subsection*{4. 嵌入（Embedding）}
+\paragraph{定义（拓扑嵌入）}
+连续单射 $f:X\to Y$ 称为\textbf{拓扑嵌入}，若诱导映射
+\[
+f:X\to f(X)
+\]
+是到其像（带子空间拓扑）的同胚。
+
+\paragraph{定义（光滑嵌入）}
+光滑映射 $F:M\to N$ 称为\textbf{光滑嵌入}，若
+\[
+F\ \text{是光滑浸入}\quad\text{且}\quad F\ \text{是拓扑嵌入}.
+\]
+
+\paragraph{重要性质}
+\begin{itemize}
+\item （\textbf{复合封闭}）光滑嵌入的复合仍为光滑嵌入。
+\item （\textbf{充分条件（命题4.22）}）若 $F$ 为\textbf{单射浸入}，并满足以下任一条件，则 $F$ 为光滑嵌入：
+\begin{enumerate}
+\item $F$ 是开映射或闭映射（作为到其像的映射），
+\item $F$ 是 proper map（见第7节定义），
+\item $M$ 紧，
+\item $\partial M=\varnothing$ 且 $\dim M=\dim N$。
+\end{enumerate}
+\end{itemize}
+
+\subsection*{5. 局部微分同胚（Local diffeomorphism）}
+\paragraph{定义}
+映射 $F:M\to N$ 称为\textbf{局部微分同胚}，若对每个 $p\in M$，存在邻域 $U$ 使得 $F(U)$ 在 $N$ 中开，
+且限制映射
+\[
+F|_U:U\to F(U)
+\]
+为微分同胚。
+
+\paragraph{反函数定理（流形版，无边界情形）}
+若 $dF_p$ 为线性同构（可逆），则 $F$ 在 $p$ 附近是微分同胚到 $F(p)$ 的某个邻域。
+
+\paragraph{重要等价关系（无边界）}
+若 $M,N$ 无边界，则
+\[
+F\ \text{为局部微分同胚}\ \Longleftrightarrow\ F\ \text{同时是浸入与下沉}.
+\]
+若 $\dim M=\dim N$，则局部上“浸入”与“下沉”等价，并都等价于“局部微分同胚”。
+
+\subsection*{6. 纤维（Fiber）与截面（Section）}
+对 $\pi:E\to M$ 与 $q\in M$，\textbf{纤维}定义为
+\[
+\pi^{-1}(q)=\{p\in E:\pi(p)=q\}.
+\]
+\textbf{全局截面}：映射 $\sigma:M\to E$ 满足 $\pi\circ\sigma=\mathrm{Id}_M$。\\
+\textbf{局部截面}：在开集 $U\subset M$ 上定义的映射 $\sigma:U\to E$ 满足 $\pi\circ\sigma=\mathrm{Id}_U$。
+
+\subsection*{7. 覆叠（覆盖）映射（Covering map）与 proper map}
+\paragraph{定义（拓扑覆盖映射）}
+满射连续映射 $\pi:E\to M$ 称为\textbf{覆盖映射}，若对每个 $q\in M$ 存在开邻域 $U$（称 \textbf{均匀覆叠} evenly covered）
+使得
+\[
+\pi^{-1}(U)=\bigsqcup_{\alpha} U_\alpha
+\]
+为互不相交开集并，且每个限制 $\pi|_{U_\alpha}:U_\alpha\to U$ 是同胚。
+
+\paragraph{定义（光滑覆盖映射）}
+若 $E,M$ 为光滑流形，则 $\pi:E\to M$ 称为\textbf{光滑覆盖映射}，若 $\pi$ 光滑且满射，并且对每个均匀覆叠的 $U$，
+每个分支上 $\pi|_{U_\alpha}:U_\alpha\to U$ 为微分同胚。
+
+\paragraph{重要性质（命题4.33等）}
+\begin{itemize}
+\item 光滑覆盖映射一定是\textbf{局部微分同胚}，因此也是\textbf{光滑下沉}、\textbf{开映射}、\textbf{商映射}。
+\item 若光滑覆盖映射还是\textbf{单射}，则它是\textbf{微分同胚}。
+\item 拓扑覆盖映射是光滑覆盖映射当且仅当它是\textbf{局部微分同胚}。
+\item （\textbf{加强版局部截面性质}）若 $\pi:E\to M$ 为光滑覆盖映射，$U\subset M$ 均匀覆叠，则对任意 $q\in U$ 与任意
+$p\in\pi^{-1}(q)$，存在\textbf{唯一}光滑局部截面 $\sigma:U\to E$ 满足 $\sigma(q)=p$。
+\item （\textbf{覆盖空间的光滑结构}）若 $M$ 为连通光滑 $n$ 维流形，$\pi:E\to M$ 为拓扑覆盖映射，则 $E$ 是拓扑 $n$ 维流形，
+并且在 $E$ 上存在\textbf{唯一}光滑结构使得 $\pi$ 成为光滑覆盖映射。（带边界版本：$E$ 为带边界的拓扑 $n$ 维流形，
+且 $\partial E=\pi^{-1}(\partial M)$，并同样存在唯一光滑结构。）
+\end{itemize}
+
+\paragraph{定义（proper map）}
+连续映射 $f:X\to Y$ 称为 \textbf{proper}，若对任意紧集 $K\subset Y$，其逆像 $f^{-1}(K)\subset X$ 是紧集。
+
+\paragraph{重要结论（命题4.46）}
+若 $E,M$ 为非空连通光滑流形（可带边界），且 $\pi:E\to M$ 是\textbf{proper 的局部微分同胚}，
+则 $\pi$ 是\textbf{光滑覆盖映射}。
+
+\subsection*{8. 概念关系图}
+\[
+\text{光滑覆盖映射}\ \Rightarrow\ \text{局部微分同胚}\ \Longleftrightarrow\ (\text{浸入且下沉}).
+\]
+\[
+\text{光滑嵌入}=\text{光滑浸入}+\text{拓扑嵌入（到像为同胚）}.
+\]
+满射下沉是开映射与商映射，并满足特征性质与“光滑下降”（纤维上常值可下推到商）。
+
+\end{document}

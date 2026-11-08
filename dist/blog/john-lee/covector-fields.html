@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="第 11 章：余向量与对偶空间、余切丛与余标架、函数微分、拉回与限制、线积分，以及闭形式与庞加莱引理。">
+<title>余切向量场 · John Lee 专题 · 高源的学习笔记</title><link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../../styles.css"><link rel="stylesheet" href="../blog.css"><link rel="stylesheet" href="../notes.css">
+<script>window.MathJax={"tex":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]],"macros":{"R":"\\mathbb{R}","X":"\\mathfrak{X}","Cinf":"C^{\\infty}","Id":"\\mathrm{Id}","dF":"\\,\\mathrm{d}","T":"\\mathrm{T}","Tp":["\\mathrm{T}_{#1}",1],"Tps":["\\mathrm{T}^{*}_{#1}",1],"Tstar":"\\mathrm{T}^{*}","pair":["\\langle #1,#2\\rangle",2],"GL":"\\mathrm{GL}","mathbbm":["\\mathbf{#1}",1],"bm":["\\boldsymbol{#1}",1]}},"svg":{"fontCache":"global"}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script></head>
+<body id="top"><a class="skip-link" href="#article">跳转到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="../../index.html"><span class="brand-mark" aria-hidden="true">✳</span> 个人主页<span class="brand-slash"> / </span><span class="brand-en">PERSONAL SPACE</span></a><a class="back-link" href="../../index.html#blog">← 返回学习笔记</a></div></header>
+<div class="article-layout"><aside class="article-toc" aria-label="文章目录"><p>目录 <span>CONTENTS</span></p><ol><li class="toc-l2"><a href="#section-1">余向量与对偶空间</a></li><li class="toc-l3"><a href="#section-2">第二对偶空间与自然同构</a></li><li class="toc-l2"><a href="#section-3">流形上的切余向量与余切丛</a></li><li class="toc-l2"><a href="#section-4">余向量场、余标架与光滑性判别</a></li><li class="toc-l2"><a href="#section-5">函数微分</a></li><li class="toc-l2"><a href="#section-6">余向量场的拉回与限制</a></li><li class="toc-l3"><a href="#section-7">逐点拉回与余向量场拉回</a></li><li class="toc-l3"><a href="#section-8">限制到子流形</a></li><li class="toc-l2"><a href="#section-9">线积分</a></li><li class="toc-l3"><a href="#section-10">区间上的积分与换元不变性</a></li><li class="toc-l3"><a href="#section-11">曲线段、线积分与性质</a></li><li class="toc-l2"><a href="#section-12">恰当/保守/闭 1-形式与庞加莱引理</a></li><li class="toc-l3"><a href="#section-13">闭（closed）与等价刻画</a></li><li class="toc-l3"><a href="#section-14">星形域与庞加莱引理</a></li><li class="toc-l3"><a href="#section-15">求势函数的计算法示例</a></li></ol></aside><main id="article" class="article"><p class="article-kicker">学习笔记 / JOHN LEE / SMOOTH MANIFOLDS · 07 / 10</p><h1>余切向量场</h1><p class="article-lead">第 11 章：余向量与对偶空间、余切丛与余标架、函数微分、拉回与限制、线积分，以及闭形式与庞加莱引理。</p><h2 id="section-1">余向量与对偶空间</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">余向量与对偶空间</span></div><div class="thm-body"><p>设 $V$ 为有限维实向量空间。<em>余向量（covector）</em>是线性泛函 $\omega:V\to\R$。
+全体余向量构成向量空间 $V^{*}$，称为 $V$ 的<em>对偶空间（dual space）</em>。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.1：对偶基</span></div><div class="thm-body"><p>给定 $V$ 的一组基 $(E_1,\dots,E_n)$，定义 $\varepsilon^1,\dots,\varepsilon^n\in V^*$ 满足</p><div class="math-block">\[
+\varepsilon^i(E_j)=\delta^i_j.
+\]</div><p>则 $(\varepsilon^1,\dots,\varepsilon^n)$ 是 $V^*$ 的一组基，称为 $(E_j)$ 的<em>对偶基</em>，并且 $\dim V^*=\dim V$。</p></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.2</span></div><div class="thm-body"><p>证明命题 11.1。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">对偶映射/转置（dual map / transpose）</span></div><div class="thm-body"><p>设 $A:V\to W$ 为线性映射。定义 $A^*:W^*\to V^*$：</p><div class="math-block">\[
+(A^*\omega)(v)=\omega(Av),\qquad \omega\in W^*,\ v\in V.
+\]</div></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.3</span></div><div class="thm-body"><p>证明 $A^*\omega$ 确为 $V$ 上线性泛函且 $A^*$ 是线性映射。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.4：对偶映射性质</span></div><div class="thm-body"><div class="math-block">\[
+(A\circ B)^* = B^*\circ A^*,\qquad (\Id_V)^*=\Id_{V^*}.
+\]</div></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.5</span></div><div class="thm-body"><p>证明命题 11.4。</p></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">推论 11.6：反变函子</span></div><div class="thm-body"><p>把 $V\mapsto V^*$、$A\mapsto A^*$ 的对应给出从实向量空间范畴到自身的<em>反变函子</em>。</p></div></div><h3 id="section-2">第二对偶空间与自然同构</h3><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">第二对偶空间与自然映射</span></div><div class="thm-body"><p>定义 $V^{**}=(V^*)^*$。对每个向量空间 $V$，定义自然映射 $\xi:V\to V^{**}$：</p><div class="math-block">\[
+\xi(v)(\omega)=\omega(v),\qquad v\in V,\ \omega\in V^*.
+\]</div></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.7</span></div><div class="thm-body"><p>(a) 证明 $\xi(v)\in V^{**}$。  (b) 证明 $\xi:V\to V^{**}$ 线性。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.8：有限维时 $V\cong V^{**}$</span></div><div class="thm-body"><p>若 $V$ 有限维，则 $\xi:V\to V^{**}$ 是同构。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">自然配对/尖括号记号</span></div><div class="thm-body"><p>对 $\omega\in V^*$、$v\in V$，常用 $\pair{\omega}{v}$ 或 $\pair{v}{\omega}$ 表示 $\omega(v)$，称为<em>自然配对</em>。</p></div></div><h2 id="section-3">流形上的切余向量与余切丛</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">余切空间与切余向量</span></div><div class="thm-body"><p>设 $M$ 为光滑流形（可带边界），$p\in M$。定义</p><div class="math-block">\[
+\Tps{p}M=(\Tp{p}M)^*.
+\]</div><p>$\Tps{p}M$ 的元素称为 $p$ 处的<em>切余向量（tangent covector）</em>。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">坐标余标架（coordinate coframe）与分量</span></div><div class="thm-body"><p>给定坐标图 $(U,(x^i))$，坐标向量基 $\big(\frac{\partial}{\partial x^i}\big|_p\big)$ 在 $\Tps{p}M$ 诱导对偶基，
+记为 $(\lambda^i|_p)$（后用 $dx^i|_p$ 表示）。任意 $\omega\in\Tps{p}M$ 可唯一写成</p><div class="math-block">\[
+\omega=\omega_i\,\lambda^i|_p,\qquad \omega_i=\omega\Big(\frac{\partial}{\partial x^i}\Big|_p\Big).
+\]</div></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">余切丛（cotangent bundle）</span></div><div class="thm-body"><p>定义</p><div class="math-block">\[
+\Tstar M=\bigsqcup_{p\in M}\Tps{p}M,
+\]</div><p>并有自然投影 $\pi:\Tstar M\to M$，$\pi(\omega)=p$（当 $\omega\in\Tps{p}M$）。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.9：余切丛是秩 $n$ 的光滑向量丛</span></div><div class="thm-body"><p>若 $M$ 是 $n$ 维光滑流形，则 $\Tstar M$ 具有唯一的拓扑与光滑结构，使其成为 $M$ 上秩为 $n$ 的光滑向量丛，
+且所有坐标余向量场都是光滑局部截面。</p></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.10：一般向量丛的对偶丛</span></div><div class="thm-body"><p>设 $E\to M$ 为光滑向量丛。定义对偶丛 $E^*\to M$ 的纤维为 $(E_p)^*$。
+证明 $E^*\to M$ 为光滑向量丛，且其过渡函数为 $\tau^*(p)=(\tau(p)^{-1})^T$。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">余切丛的自然坐标</span></div><div class="thm-body"><p>若 $(U,(x^i))$ 为 $M$ 上坐标，则对 $\pi^{-1}(U)$ 上点 $\xi_i\,\lambda^i|_p$，定义坐标</p><div class="math-block">\[
+(p,\xi)\ \longmapsto\ \big(x^1(p),\dots,x^n(p),\xi_1,\dots,\xi_n\big)\in \R^{2n}.
+\]</div><p>称 $(x^i,\xi_i)$ 为 $\Tstar M$ 的<em>自然坐标</em>。</p></div></div><h2 id="section-4">余向量场、余标架与光滑性判别</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">余向量场/1-形式</span></div><div class="thm-body"><p>$\Tstar M$ 的截面称为<em>余向量场</em>或（微分）<em>1-形式</em>。
+若不说明，余向量场默认仅连续；光滑者称<em>光滑余向量场</em>。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">分量函数与收缩（contraction）</span></div><div class="thm-body"><p>在坐标图中，余向量场可写 $\omega=\omega_i\,\lambda^i$，其中 $\omega_i:U\to\R$ 称为分量函数，
+且</p><div class="math-block">\[
+\omega_i(p)=\omega_p\Big(\frac{\partial}{\partial x^i}\Big|_p\Big).
+\]</div><p>若 $X$ 为向量场，则定义函数 $\omega(X):M\to\R$：</p><div class="math-block">\[
+\omega(X)(p)=\omega_p(X_p),\qquad \text{坐标下 } \omega(X)=\omega_iX^i.
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.11：余向量场光滑性判别</span></div><div class="thm-body"><p>设 $\omega:M\to \Tstar M$ 为粗糙余向量场，则以下等价：<br>
+(a) $\omega$ 光滑；<br>
+(b) 在每张坐标图中分量函数 $\omega_i$ 光滑；<br>
+(c) 每点附近存在坐标图使分量函数光滑；<br>
+(d) 对每个光滑向量场 $X$，函数 $\omega(X)$ 光滑；<br>
+(e) 对任意开集 $U$ 上任意光滑 $X$，$\omega(X):U\to\R$ 光滑。</p></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.12</span></div><div class="thm-body"><p>证明命题 11.11。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">余标架（coframe）</span></div><div class="thm-body"><p>开集 $U\subseteq M$ 上的<em>局部余标架</em>是 $n$ 个余向量场 $(\varepsilon^1,\dots,\varepsilon^n)$，
+使得每点 $p\in U$ 的 $\big(\varepsilon^i|_p\big)$ 构成 $\Tps{p}M$ 的一组基。
+若 $U=M$，称为整体余标架。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">例 11.13：坐标余标架</span></div><div class="thm-body"><p>在坐标图 $(U,(x^i))$ 上的 $(\lambda^i)$（最终记作 $dx^i$）构成局部余标架，称为<em>坐标余标架</em>。</p></div></div><div class="thm thm-lemma"><div class="thm-head"><span class="thm-kind">引理</span><span class="thm-name">引理 11.14：标架与对偶余标架的光滑性等价</span></div><div class="thm-body"><p>若 $(E_i)$ 是粗糙局部标架，$(\varepsilon^i)$ 为其对偶余标架（$\varepsilon^i(E_j)=\delta^i_j$），
+则 $(E_i)$ 光滑当且仅当 $(\varepsilon^i)$ 光滑。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.15：余标架判别光滑性</span></div><div class="thm-body"><p>设 $(\varepsilon^i)$ 是 $U$ 上光滑余标架，$\omega$ 为粗糙余向量场。
+则 $\omega$ 在 $U$ 上光滑 $\Leftrightarrow$ $\omega=\omega_i\varepsilon^i$ 的分量函数 $\omega_i$ 全光滑。</p></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.16</span></div><div class="thm-body"><p>证明命题 11.15。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">光滑余向量场空间与模结构</span></div><div class="thm-body"><p>记 $M$ 上全体光滑余向量场为 $\X^*(M)$。对 $f\in \Cinf(M)$、$\omega\in\X^*(M)$，定义</p><div class="math-block">\[
+(f\omega)_p=f(p)\omega_p.
+\]</div><p>则 $\X^*(M)$ 是 $\Cinf(M)$ 上的模。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">几何直观：核超平面</span></div><div class="thm-body"><p>非零余向量 $\omega_p\in \Tps{p}M$ 由其核 $\ker(\omega_p)\subset \Tp{p}M$（余维 1 线性超平面）
+以及仿射超平面 $\{v:\omega_p(v)=1\}$（与核平行）刻画，可据此可视化余向量场。</p></div></div><h2 id="section-5">函数微分</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">函数的微分</span></div><div class="thm-body"><p>设 $f\in \Cinf(M)$。定义 1-形式 $df$：</p><div class="math-block">\[
+(df)_p(v)=vf,\qquad v\in \Tp{p}M.
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.18：$df$ 是光滑 1-形式</span></div><div class="thm-body"><p>若 $f$ 光滑，则 $df$ 是光滑余向量场（光滑 1-形式）。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">坐标表示</span></div><div class="thm-body"><p>在坐标图中</p><div class="math-block">\[
+(df)_p=\frac{\partial f}{\partial x^i}(p)\,dx^i|_p,\qquad
+df=\frac{\partial f}{\partial x^i}\,dx^i.
+\]</div><p>并且 $dx^j=\lambda^j$（坐标余向量场即坐标函数的微分）。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">例 11.19</span></div><div class="thm-body"><p>若 $f(x,y)=x^2y\cos x$，则</p><div class="math-block">\[
+df=(2xy\cos x-x^2y\sin x)\,dx + x^2\cos x\,dy.
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.20：微分的性质</span></div><div class="thm-body"><p>设 $f,g\in\Cinf(M)$：<br>
+(a) $d(af+bg)=a\,df+b\,dg$（$a,b$ 常数）；<br>
+(b) $d(fg)=f\,dg+g\,df$；<br>
+(c) 在 $g\neq 0$ 上，$d(f/g)=\frac{g\,df-f\,dg}{g^2}$；<br>
+(d) 若 $h:J\to\R$ 光滑且 $f(M)\subset J$，则 $d(h\circ f)=(h'\circ f)\,df$；<br>
+(e) $f$ 常数 $\Rightarrow df=0$。</p></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.21</span></div><div class="thm-body"><p>证明命题 11.20。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.22：微分为零的函数</span></div><div class="thm-body"><p>若 $f\in\Cinf(M)$，则 $df=0$ 当且仅当 $f$ 在 $M$ 的每个连通分支上为常数。</p></div></div><div class="thm thm-theorem"><div class="thm-head"><span class="thm-kind">定理</span><span class="thm-name">命题 11.23：沿曲线的导数公式</span></div><div class="thm-body"><p>设 $\gamma:J\to M$ 光滑曲线、$f\in\Cinf(M)$，则</p><div class="math-block">\[
+(f\circ\gamma)'(t)=(df)_{\gamma(t)}\big(\gamma'(t)\big).
+\]</div></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.24</span></div><div class="thm-body"><p>证明：$p$ 是 $f$ 的临界点当且仅当 $(df)_p=0$。</p></div></div><h2 id="section-6">余向量场的拉回与限制</h2><h3 id="section-7">逐点拉回与余向量场拉回</h3><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">逐点拉回/余切映射</span></div><div class="thm-body"><p>设 $F:M\to N$ 光滑。对 $p\in M$，微分</p><div class="math-block">\[
+dF_p:\Tp{p}M\to \Tp{F(p)}N
+\]</div><p>诱导对偶映射（逐点拉回）</p><div class="math-block">\[
+dF_p^*:\Tps{F(p)}N\to \Tps{p}M,\qquad dF_p^*(\omega)(v)=\omega(dF_p(v)).
+\]</div></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">余向量场拉回</span></div><div class="thm-body"><p>若 $\omega$ 为 $N$ 上余向量场，定义 $M$ 上余向量场 $F^*\omega$：</p><div class="math-block">\[
+(F^*\omega)_p = dF_p^*\big(\omega_{F(p)}\big),\qquad
+(F^*\omega)_p(v)=\omega_{F(p)}(dF_p(v)).
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.25：拉回的两条基本性质</span></div><div class="thm-body"><p>设 $u$ 为 $N$ 上连续函数、$\omega$ 为 $N$ 上余向量场，则</p><div class="math-block">\[
+F^*(u\omega)=(u\circ F)\,F^*\omega.
+\]</div><p>若进一步 $u$ 光滑，则</p><div class="math-block">\[
+F^*du = d(u\circ F).
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.26：拉回保持连续/光滑</span></div><div class="thm-body"><p>若 $\omega$ 连续，则 $F^*\omega$ 连续；若 $\omega$ 光滑，则 $F^*\omega$ 光滑。
+并且在坐标中可写为</p><div class="math-block">\[
+F^*\omega=(\omega_j\circ F)\,d(y^j\circ F)=(\omega_j\circ F)\,dF^j.
+\]</div></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">例 11.27</span></div><div class="thm-body"><p>令 $F:\R^3\to\R^2$，$F(x,y,z)=(u,v)=(x^2y,\ y\sin z)$，并令</p><div class="math-block">\[
+\omega=u\,dv+v\,du.
+\]</div><p>则</p><div class="math-block">\[
+F^*\omega
+=2xy^2\sin z\,dx+2x^2y\sin z\,dy+x^2y^2\cos z\,dz.
+\]</div></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">例 11.28：极坐标替换法</span></div><div class="thm-body"><p>在右半平面 $H=\{(x,y):x&gt;0\}$ 上用极坐标 $(r,\theta)$：$x=r\cos\theta,\ y=r\sin\theta$。
+则</p><div class="math-block">\[
+x\,dy-y\,dx = r^2\,d\theta.
+\]</div></div></div><h3 id="section-8">限制到子流形</h3><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">限制（restriction）为拉回</span></div><div class="thm-body"><p>设 $i:S\hookrightarrow M$ 为浸入子流形的包含映射。对 $M$ 上余向量场 $\omega$，其在 $S$ 上的限制定义为</p><div class="math-block">\[
+i^*\omega,
+\]</div><p>其作用满足 $(i^*\omega)_p(v)=\omega_p(v)$（$v\in\Tp{p}S$ 视为 $\Tp{p}M$ 的子空间向量）。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">例 11.29：限制可能为零</span></div><div class="thm-body"><p>在 $\R^2$ 上取 $\omega=dy$，令 $S$ 为 $x$ 轴（嵌入子流形），则 $\omega$ 在 $\R^2$ 处处非零，
+但 $i^*\omega\equiv 0$，因为 $i^*dy=d(y\circ i)=0$。</p></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.30</span></div><div class="thm-body"><p>证明 $d(f|_S)=i^*(df)$。推出：$df$ 拉回到 $S$ 为零当且仅当 $f$ 在 $S$ 每个连通分支上为常数。</p></div></div><h2 id="section-9">线积分</h2><h3 id="section-10">区间上的积分与换元不变性</h3><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">区间上的 1-形式积分</span></div><div class="thm-body"><p>在紧区间 $[a,b]\subset\R$ 上，若 $\omega=f(t)\,dt$，定义</p><div class="math-block">\[
+\int_{[a,b]}\omega := \int_a^b f(t)\,dt.
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.31：递增微分同胚不变性</span></div><div class="thm-body"><p>若 $\varphi:[c,d]\to[a,b]$ 为递增微分同胚，则</p><div class="math-block">\[
+\int_{[c,d]}\varphi^*\omega = \int_{[a,b]}\omega.
+\]</div></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.32</span></div><div class="thm-body"><p>若 $\varphi$ 递减，则 $\int_{[c,d]}\varphi^*\omega = -\int_{[a,b]}\omega$。</p></div></div><h3 id="section-11">曲线段、线积分与性质</h3><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">曲线段/分段光滑曲线段</span></div><div class="thm-body"><p>曲线段指连续曲线 $\gamma:[a,b]\to M$（$[a,b]$ 紧）。若 $\gamma$ 光滑（将区间视为带边界流形），称<em>光滑曲线段</em>。
+若存在有限分割 $a=a_0&lt;\cdots&lt;a_k=b$ 使得 $\gamma|_{[a_{i-1},a_i]}$ 光滑，则称<em>分段光滑曲线段</em>。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.33：连通流形上两点可由分段光滑曲线连接</span></div><div class="thm-body"><p>若 $M$ 连通，则任意两点可由一条分段光滑曲线段连接。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">线积分</span></div><div class="thm-body"><p>若 $\gamma:[a,b]\to M$ 光滑且 $\omega\in\X^*(M)$，定义</p><div class="math-block">\[
+\int_{\gamma}\omega := \int_{[a,b]}\gamma^*\omega.
+\]</div><p>若 $\gamma$ 分段光滑，则在各光滑子区间上求和定义 $\int_\gamma\omega$。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.34：线积分性质</span></div><div class="thm-body"><p>设 $\gamma$ 分段光滑、$\omega,\omega_1,\omega_2\in\X^*(M)$：<br>
+(a) 线性：$\int_\gamma(c_1\omega_1+c_2\omega_2)=c_1\int_\gamma\omega_1+c_2\int_\gamma\omega_2$；<br>
+(b) 常曲线：$\gamma$ 常值 $\Rightarrow \int_\gamma\omega=0$；<br>
+(c) 拼接可加：若 $\gamma=\gamma_1*\gamma_2$，则 $\int_\gamma\omega=\int_{\gamma_1}\omega+\int_{\gamma_2}\omega$；<br>
+(d) 与拉回相容：$\int_\gamma F^*\eta=\int_{F\circ\gamma}\eta$。</p></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.35</span></div><div class="thm-body"><p>证明命题 11.34。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">例 11.36：绕圈积分</span></div><div class="thm-body"><p>在 $M=\R^2\setminus\{0\}$ 上取</p><div class="math-block">\[
+\omega=\frac{x\,dy-y\,dx}{x^2+y^2},
+\quad \gamma(t)=(\cos t,\sin t),\ t\in[0,2\pi],
+\]</div><p>则 $\displaystyle \int_\gamma \omega=2\pi$。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">重参数化</span></div><div class="thm-body"><p>若 $\tilde\gamma=\gamma\circ\varphi$，其中 $\varphi:[c,d]\to[a,b]$ 为微分同胚，则称 $\tilde\gamma$ 为 $\gamma$ 的重参数化；
+$\varphi$ 递增/递减分别称正向/反向重参数化。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.37：线积分与参数无关</span></div><div class="thm-body"><p>若 $\tilde\gamma$ 为 $\gamma$ 的重参数化，则</p><div class="math-block">\[
+\int_{\tilde\gamma}\omega=
+\begin{cases}
+\int_\gamma\omega,&amp; \tilde\gamma\text{ 正向重参数化},\\
+-\int_\gamma\omega,&amp; \tilde\gamma\text{ 反向重参数化}.
+\end{cases}
+\]</div></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.38：普通积分表达式</span></div><div class="thm-body"><p>若 $\gamma:[a,b]\to M$ 分段光滑，则</p><div class="math-block">\[
+\int_\gamma\omega=\int_a^b \omega_{\gamma(t)}\big(\gamma'(t)\big)\,dt.
+\]</div></div></div><div class="thm thm-theorem"><div class="thm-head"><span class="thm-kind">定理</span><span class="thm-name">定理 11.39：线积分基本定理</span></div><div class="thm-body"><p>设 $f\in\Cinf(M)$，$\gamma:[a,b]\to M$ 分段光滑，则</p><div class="math-block">\[
+\int_\gamma df = f(\gamma(b)) - f(\gamma(a)).
+\]</div></div></div><h2 id="section-12">恰当/保守/闭 1-形式与庞加莱引理</h2><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">恰当（exact）与势函数</span></div><div class="thm-body"><p>若 $\omega\in\X^*(M)$，存在 $f\in\Cinf(M)$ 使 $\omega=df$，则称 $\omega$ <em>恰当</em>，$f$ 称为 $\omega$ 的<em>势函数</em>。</p></div></div><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">保守（conservative）</span></div><div class="thm-body"><p>若对任意分段光滑闭曲线段 $\gamma$ 都有 $\int_\gamma\omega=0$，则称 $\omega$ <em>保守</em>。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.40：路径无关刻画保守性</span></div><div class="thm-body"><p>$\omega$ 保守 $\Longleftrightarrow$ 任意起终点相同的分段光滑曲线段 $\gamma,\tilde\gamma$ 满足</p><div class="math-block">\[
+\int_\gamma\omega=\int_{\tilde\gamma}\omega.
+\]</div></div></div><div class="thm thm-exercise"><div class="thm-head"><span class="thm-kind">练习</span><span class="thm-name">练习 11.41</span></div><div class="thm-body"><p>证明命题 11.40。</p></div></div><div class="thm thm-theorem"><div class="thm-head"><span class="thm-kind">定理</span><span class="thm-name">定理 11.42：保守当且仅当恰当</span></div><div class="thm-body"><p>在带边界或不带边界的光滑流形 $M$ 上，光滑余向量场 $\omega$ 保守 $\Longleftrightarrow$ 恰当。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">例 11.43：穿孔平面上闭但不恰当</span></div><div class="thm-body"><p>例 11.36 的 $\omega=\frac{x\,dy-y\,dx}{x^2+y^2}$ 在 $\R^2\setminus\{0\}$ 上不是恰当的，
+因为存在闭曲线使 $\int_\gamma\omega=2\pi\neq 0$，故不保守。</p></div></div><h3 id="section-13">闭（closed）与等价刻画</h3><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">闭 1-形式（closed）</span></div><div class="thm-body"><p>在坐标中写 $\omega=\omega_i\,dx^i$。若在每张坐标图中对所有 $i,j$ 成立</p><div class="math-block">\[
+\frac{\partial\omega_j}{\partial x^i}=\frac{\partial\omega_i}{\partial x^j},
+\]</div><p>则称 $\omega$ <em>闭</em>。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.44：恰当必闭</span></div><div class="thm-body"><p>每个恰当余向量场都是闭的。</p></div></div><div class="thm thm-proposition"><div class="thm-head"><span class="thm-kind">命题</span><span class="thm-name">命题 11.45：闭性的坐标无关刻画</span></div><div class="thm-body"><p>对光滑余向量场 $\omega$，以下等价：<br>
+(a) $\omega$ 闭；<br>
+(b) 每点附近存在坐标图使其分量满足上述偏导对称条件；<br>
+(c) 对任意开集 $U\subseteq M$ 及任意 $X,Y\in\X(U)$，</p><div class="math-block">\[
+X(\omega(Y)) - Y(\omega(X)) = \omega([X,Y]).
+\]</div></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">推论 11.46：局部微分同胚下闭/恰当的保持性</span></div><div class="thm-body"><p>若 $F:M\to N$ 为局部微分同胚，则拉回 $F^*:\X^*(N)\to\X^*(M)$
+把闭 1-形式拉回为闭 1-形式，把恰当 1-形式拉回为恰当 1-形式。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">例 11.47：闭与非闭的对比</span></div><div class="thm-body"><p>在 $\R^2$ 上</p><div class="math-block">\[
+\omega=y\cos(xy)\,dx+x\cos(xy)\,dy
+\]</div><p>满足闭性条件（并可猜测 $\omega=d(\sin(xy))$）。
+而</p><div class="math-block">\[
+\eta=x\cos(xy)\,dx+y\cos(xy)\,dy
+\]</div><p>不闭，因此不恰当。</p></div></div><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">例 11.48：域的形状影响“闭是否恰当”】【全局性</span></div><div class="thm-body"><p>例 11.36 的 $\omega$ 在 $\R^2\setminus\{0\}$ 上闭但不恰当；
+若限制到右半平面 $U=\{(x,y):x&gt;0\}$，则可写成</p><div class="math-block">\[
+\omega=d(\tan^{-1}(y/x))\quad(\text{极坐标中 } \omega=d\theta),
+\]</div><p>显示“闭 $\Rightarrow$ 恰当”依赖定义域拓扑（是否有洞）。</p></div></div><h3 id="section-14">星形域与庞加莱引理</h3><div class="thm thm-definition"><div class="thm-head"><span class="thm-kind">定义</span><span class="thm-name">星形开集（star-shaped）</span></div><div class="thm-body"><p>设 $U\subset V$（$V$ 为有限维向量空间）。若存在 $c\in U$ 使得对任意 $x\in U$，线段 $[c,x]\subset U$，
+则称 $U$ 关于 $c$ 星形。每个凸集都是星形的。</p></div></div><div class="thm thm-theorem"><div class="thm-head"><span class="thm-kind">定理</span><span class="thm-name">定理 11.49：余向量场的庞加莱引理</span></div><div class="thm-body"><p>若 $U$ 是 $\R^n$ 或 $\mathbb{H}^n$ 的星形开子集，则 $U$ 上每个闭余向量场都是恰当的。</p></div></div><div class="thm thm-corollary"><div class="thm-head"><span class="thm-kind">推论</span><span class="thm-name">推论 11.50：闭 1-形式局部恰当</span></div><div class="thm-body"><p>设 $\omega$ 是 $M$ 上闭余向量场，则 $M$ 的每个点都有邻域 $U$ 使得 $\omega|_U$ 恰当（存在 $f\in\Cinf(U)$ 使 $\omega|_U=df$）。</p></div></div><h3 id="section-15">求势函数的计算法示例</h3><div class="thm thm-example"><div class="thm-head"><span class="thm-kind">例</span><span class="thm-name">例 11.51：计算势函数</span></div><div class="thm-body"><p>在 $\R^3$ 上令</p><div class="math-block">\[
+\omega=e^{y^2}\,dx+2xye^{y^2}\,dy-2z\,dz.
+\]</div><p>其势函数 $f$ 需满足</p><div class="math-block">\[
+\frac{\partial f}{\partial x}=e^{y^2},\quad
+\frac{\partial f}{\partial y}=2xye^{y^2},\quad
+\frac{\partial f}{\partial z}=-2z.
+\]</div><p>可取一势函数</p><div class="math-block">\[
+f(x,y,z)=x e^{y^2}-z^2,
+\]</div><p>其余势函数与之相差常数。</p></div></div><div class="series-nav"><a href="vector-bundles.html">← 上一篇：向量丛与纤维丛</a><a href="index.html">专题目录 · John Lee</a><a href="tensors.html">下一篇：张量 →</a></div><div class="article-end"><a href="../../index.html#blog">← 返回学习笔记</a><a href="#top">回到顶部 ↑</a></div></main></div>
+<footer class="site-footer"><div class="footer-inner"><p>© 高源 · Personal Homepage</p><p>保持好奇，慢慢积累。</p></div></footer></body></html>

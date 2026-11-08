@@ -1,0 +1,360 @@
+% !TeX program = xelatex
+\documentclass[11pt,a4paper]{article}
+
+% ---------- 宏包 ----------
+\usepackage[UTF8]{ctex}
+\usepackage{geometry}
+\geometry{margin=2.2cm}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
+
+% ---------- 常用符号与宏 ----------
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\gl}{\mathfrak{gl}}
+\newcommand{\so}{\mathfrak{so}}
+\newcommand{\oo}{\mathfrak{o}}
+\newcommand{\Lie}{\mathrm{Lie}}
+\newcommand{\X}{\mathfrak{X}} % 向量场空间
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\Te}{T_e}
+\newcommand{\Ad}{\mathrm{Ad}}
+
+% ---------- 定理环境 ----------
+\theoremstyle{definition}
+\newtheorem{definition}{定义}[section]
+\newtheorem{example}[definition]{例}
+\newtheorem{remark}[definition]{注}
+
+\theoremstyle{plain}
+\newtheorem{theorem}[definition]{定理}
+\newtheorem{proposition}[definition]{命题}
+\newtheorem{lemma}[definition]{引理}
+\newtheorem{corollary}[definition]{推论}
+
+% ---------- 标题 ----------
+\title{向量场、李括号与李群的李代数}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\tableofcontents
+
+\section{向量场与映射的关系：$F$-related、推前（pushforward）}
+
+\begin{definition}[ $F$-related 向量场]
+设 $F:M\to N$ 为光滑映射，$X\in\X(M)$，$Y\in\X(N)$。
+称 $Y$ 与 $X$ \textbf{$F$-相关}（$F$-related），若对一切 $p\in M$ 有
+\[
+\dd F_p(X_p)=Y_{F(p)}.
+\]
+\end{definition}
+
+\begin{proposition}[微分同胚下的推前唯一存在性（命题 8.19）]
+设 $M,N$ 为光滑流形（可带边界），$F:M\to N$ 为微分同胚。则对每个 $X\in\X(M)$，存在唯一的 $Y\in\X(N)$ 与 $X$ $F$-相关。
+并且该向量场可显式给出为
+\[
+(F_*X)_q=\dd F_{F^{-1}(q)}\bigl(X_{F^{-1}(q)}\bigr),\qquad q\in N.
+\]
+\end{proposition}
+
+\begin{definition}[推前（pushforward）]
+在命题 8.19 的情形中，记唯一的 $F$-相关向量场为 $F_*X$，
+称其为 $X$ 在 $F$ 下的\textbf{推前}（pushforward）。
+\end{definition}
+
+\begin{example}[计算推前（例 8.20）]
+令 $M,N\subset \R^2$，定义微分同胚 $F:M\to N$，并给定 $X\in\X(M)$。
+可用上式
+\[
+(F_*X)_q=\dd F_{F^{-1}(q)}(X_{F^{-1}(q)})
+\]
+结合 $F^{-1}$ 与雅可比矩阵直接计算 $F_*X$ 的坐标表达式。
+\end{example}
+
+\begin{corollary}[推前与对函数的作用（推论 8.21）]
+设 $F:M\to N$ 为微分同胚，$X\in\X(M)$。对任意 $f\in C^\infty(N)$，
+\[
+\bigl((F_*X)f\bigr)\circ F = X(f\circ F).
+\]
+\end{corollary}
+
+\section{子流形上的切向量场与限制}
+
+\begin{definition}[向量场在子流形上的切向性]
+设 $S\subseteq M$ 为浸入或嵌入子流形（可带边界）。向量场 $X\in\X(M)$
+称为在 $p\in S$ \textbf{切于 $S$}，若 $X_p\in T_pS\subseteq T_pM$；
+称 $X$ \textbf{切于 $S$}，若对一切 $p\in S$ 都切于 $S$。
+\end{definition}
+
+\begin{proposition}[切向性的函数刻画（命题 8.22）]
+设 $M$ 为光滑流形，$S\subseteq M$ 为嵌入子流形（可带边界），$X\in\X(M)$。
+则 $X$ 切于 $S$ 当且仅当：对每个满足 $f|_S=0$ 的 $f\in C^\infty(M)$，都有
+\[
+(Xf)|_S=0.
+\]
+\end{proposition}
+
+\begin{proposition}[向量场限制到子流形（命题 8.23）]
+设 $M$ 为光滑流形，$S\subseteq M$ 为浸入子流形（可带边界），
+$\iota:S\hookrightarrow M$ 为包含映射。若 $Y\in\X(M)$ 切于 $S$，
+则存在唯一的光滑向量场 $X\in\X(S)$，记为 $Y|_S$，
+使得 $X$ 与 $Y$ \textbf{$\iota$-相关}（即 $\dd \iota(X_p)=Y_p$ 对 $p\in S$ 成立）。
+\end{proposition}
+
+\section{李括号：定义、例子与坐标公式}
+
+\begin{definition}[复合算子与李括号]
+设 $X,Y\in\X(M)$。对 $f\in C^\infty(M)$，定义
+\[
+[X,Y]f := X(Yf)-Y(Xf).
+\]
+由此得到一个新向量场 $[X,Y]\in\X(M)$，称为 $X,Y$ 的\textbf{李括号}（Lie bracket）。
+\end{definition}
+
+\begin{example}[复合一般不满足乘法法则（例 8.24）]
+在 $\R^2$ 上令 $X=\frac{\partial}{\partial x}$，$Y=x\frac{\partial}{\partial y}$。
+则算子 $f\mapsto X(Yf)$ 一般不是导子（不满足 Leibniz 法则），
+但其交换子 $[X,Y]=XY-YX$ 是向量场。
+\end{example}
+
+\begin{lemma}[李括号是光滑向量场（引理 8.25）]
+任意光滑流形 $M$ 上，任意 $X,Y\in\X(M)$ 的李括号 $[X,Y]$ 仍是一个光滑向量场。
+\end{lemma}
+
+\begin{proposition}[李括号的坐标表达（命题 8.26）]
+设在局部坐标 $(x^i)$ 下
+\[
+X=X^i\frac{\partial}{\partial x^i},\qquad
+Y=Y^j\frac{\partial}{\partial x^j},
+\]
+则
+\[
+[X,Y]=\Bigl(X^i\frac{\partial Y^j}{\partial x^i}-Y^i\frac{\partial X^j}{\partial x^i}\Bigr)\frac{\partial}{\partial x^j}.
+\]
+也可写为
+\[
+[X,Y]=(XY^j-YX^j)\frac{\partial}{\partial x^j}.
+\]
+\end{proposition}
+
+\begin{proposition}[坐标向量场的李括号（式 8.10）]
+在任意光滑坐标图中，
+\[
+\Bigl[\frac{\partial}{\partial x^i},\frac{\partial}{\partial x^j}\Bigr]=0\qquad(\forall\, i,j).
+\]
+\end{proposition}
+
+\begin{example}[用坐标公式计算（例 8.27）]
+在 $\R^3$ 上取
+\[
+X= x\frac{\partial}{\partial x}+\frac{\partial}{\partial y}+x(y+1)\frac{\partial}{\partial z},\qquad
+Y=\frac{\partial}{\partial x}+y\frac{\partial}{\partial z},
+\]
+则可用命题 8.26 的坐标公式计算 $[X,Y]$。
+\end{example}
+
+\begin{proposition}[李括号的基本性质（命题 8.28）]
+对任意 $X,Y,Z\in\X(M)$ 与 $a,b\in\R$：
+\begin{enumerate}[label=(\alph*)]
+\item \textbf{双线性：}\quad $[aX+bY,Z]=a[X,Z]+b[Y,Z]$，且 $[Z,aX+bY]=a[Z,X]+b[Z,Y]$。
+\item \textbf{反对称：}\quad $[X,Y]=-[Y,X]$。
+\item \textbf{Jacobi 恒等式：}\quad $[X,[Y,Z]]+[Y,[Z,X]]+[Z,[X,Y]]=0$。
+\item \textbf{对函数的乘法法则：}\quad 对 $f,g\in C^\infty(M)$，
+\[
+[fX,gY]=fg[X,Y]+(fXg)Y-(gYf)X. \tag{8.11}
+\]
+\end{enumerate}
+\end{proposition}
+
+\section{自然性（naturality）与推论：李括号与映射相容}
+
+\begin{proposition}[李括号的自然性（命题 8.30）]
+设 $F:M\to N$ 为光滑映射，且 $X_1,X_2\in\X(M)$、$Y_1,Y_2\in\X(N)$ 满足
+$X_i$ 与 $Y_i$ $F$-相关（$i=1,2$）。则
+\[
+[X_1,X_2]\ \text{与}\ [Y_1,Y_2]\ \text{$F$-相关}.
+\]
+\end{proposition}
+
+\begin{corollary}[李括号的推前（推论 8.31）]
+若 $F:M\to N$ 为微分同胚，$X_1,X_2\in\X(M)$，则
+\[
+F_*[X_1,X_2]=[F_*X_1,F_*X_2].
+\]
+\end{corollary}
+
+\begin{corollary}[切向向量场的括号仍切向（推论 8.32）]
+设 $S\subseteq M$ 为浸入子流形（可带边界），若 $Y_1,Y_2\in\X(M)$ 都切于 $S$，
+则 $[Y_1,Y_2]$ 也切于 $S$。
+\end{corollary}
+
+\section{李群与左不变向量场：$\Lie(G)$ 与李代数}
+
+\begin{definition}[左平移与左不变向量场]
+设 $G$ 为李群。对 $g\in G$，左平移 $L_g:G\to G$ 定义为 $L_g(h)=gh$。
+向量场 $X\in\X(G)$ 称为\textbf{左不变}，若对每个 $g\in G$，
+$X$ 与自身在 $L_g$ 下相关，即
+\[
+\dd(L_g)_{g'}(X_{g'})=X_{gg'}\qquad(\forall\, g,g'\in G).
+\]
+等价地（因 $L_g$ 为微分同胚）：
+\[
+(L_g)_*X=X\qquad(\forall\, g\in G). \tag{8.12}
+\]
+\end{definition}
+
+\begin{proposition}[左不变向量场对李括号封闭（命题 8.33）]
+设 $G$ 为李群，$X,Y$ 为 $G$ 上的光滑左不变向量场，则 $[X,Y]$ 仍是左不变向量场。
+\end{proposition}
+
+\begin{definition}[李群的李代数 $\Lie(G)$]
+记 $\Lie(G)$ 为李群 $G$ 上\textbf{所有光滑左不变向量场}的集合。
+在通常的向量场加法与数乘下，$\Lie(G)$ 是向量空间；
+在李括号 $[\cdot,\cdot]$ 下，$\Lie(G)$ 构成一个李代数。
+\end{definition}
+
+\begin{example}[李代数的典型来源（例 8.36）]
+\begin{enumerate}[label=(\alph*)]
+\item $\X(M)$ 在李括号下构成李代数。
+\item 若 $G$ 为李群，则所有左不变向量场组成 $\Lie(G)$，它是 $\X(G)$ 的李子代数。
+\item $M(n,\R)$ 在交换子括号 $[A,B]=AB-BA$ 下成为李代数，记为 $\gl(n,\R)$。
+\item 类似地，$M(n,\C)$ 在交换子括号下为实李代数，记为 $\gl(n,\C)$（实维 $2n^2$）。
+\item 若 $V$ 为向量空间，则 $\gl(V)=\mathrm{End}(V)$ 在 $[A,B]=A\circ B-B\circ A$ 下为李代数。
+\item 若任意向量空间上定义括号恒为零，则得到\textbf{阿贝尔}李代数。
+\end{enumerate}
+\end{example}
+
+\begin{theorem}[取值映射同构（定理 8.37）]
+设 $G$ 为李群。取值映射
+\[
+\varepsilon:\Lie(G)\to T_eG,\qquad \varepsilon(X)=X_e,
+\]
+是向量空间同构。因此 $\Lie(G)$ 有限维，且
+\[
+\dim \Lie(G)=\dim G.
+\]
+\end{theorem}
+
+\begin{definition}[由 $v\in T_eG$ 生成的左不变向量场（式 8.13）]
+对任意 $v\in T_eG$，定义（粗略）向量场 $v^L$：
+\[
+(v^L)_g=\dd(L_g)_e(v),\qquad g\in G. \tag{8.13}
+\]
+该向量场实际上是光滑左不变向量场，并满足 $(v^L)_e=v$。
+\end{definition}
+
+\begin{corollary}[左不变粗略向量场必光滑（推论 8.38）]
+李群 $G$ 上每个左不变的粗略向量场都是光滑的。
+\end{corollary}
+
+\begin{corollary}[李群可平行化（推论 8.39）]
+每个李群都存在一组左不变的光滑\textbf{全局标架}（global frame），因此每个李群都是可平行化的（parallelizable）。
+\end{corollary}
+
+\begin{example}[熟悉李群的李代数（例 8.40）]
+\begin{enumerate}[label=(\alph*)]
+\item $\R^n$（加法群）：左不变向量场恰为常系数向量场，故 $\Lie(\R^n)\cong \R^n$（阿贝尔）。
+\item 圆周群 $S^1$：$\Lie(S^1)\cong \R$（阿贝尔）。
+\item $n$-维环面 $T^n=(S^1)^n$：$\Lie(T^n)\cong \R^n$（阿贝尔）。
+\item 一般线性群 $GL(n,\R)$：其李代数与 $\gl(n,\R)$ 自然同构（见后述命题 8.41）。
+\end{enumerate}
+\end{example}
+
+\section{$GL(n,\R)$ 与矩阵李代数：$\Lie(GL(n,\R))\cong\gl(n,\R)$}
+
+\begin{proposition}[一般线性群的李代数（命题 8.41）]
+自然映射的复合
+\[
+\Lie\bigl(GL(n,\R)\bigr)\ \longrightarrow\ T_{I_n}GL(n,\R)\ \longrightarrow\ \gl(n,\R) \tag{8.14}
+\]
+给出 $\Lie(GL(n,\R))$ 与矩阵李代数 $\gl(n,\R)$ 之间的\textbf{李代数同构}。
+\end{proposition}
+
+\begin{corollary}[抽象向量空间版本（推论 8.42）]
+设 $V$ 为有限维实向量空间，则自然同构的复合
+\[
+\Lie\bigl(GL(V)\bigr)\ \longrightarrow\ T_{\id}GL(V)\ \longrightarrow\ \gl(V) \tag{8.16}
+\]
+给出 $\Lie(GL(V))$ 与 $\gl(V)$ 的李代数同构。
+\end{corollary}
+
+\section{李群同态诱导的李代数同态}
+
+\begin{theorem}[诱导李代数同态（定理 8.44）]
+设 $G,H$ 为李群，$\mathfrak g=\Lie(G)$，$\mathfrak h=\Lie(H)$。
+若 $F:G\to H$ 为李群同态，则对每个 $X\in\mathfrak g$，存在唯一 $Y\in\mathfrak h$
+与 $X$ $F$-相关。记该 $Y$ 为 $F_*X$，则由此定义的映射
+\[
+F_*:\mathfrak g\to\mathfrak h
+\]
+是一个\textbf{李代数同态}。
+\end{theorem}
+
+\begin{proposition}[诱导同态的性质（命题 8.45）]
+\begin{enumerate}[label=(\alph*)]
+\item 恒等同态诱导恒等：$(\id_G)_*=\id_{\Lie(G)}$。
+\item 复合相容：若 $F_1:G\to H$、$F_2:H\to K$ 为李群同态，则
+\[
+(F_2\circ F_1)_*=(F_2)_*\circ(F_1)_*:\Lie(G)\to\Lie(K).
+\]
+\item 同构推出李代数同构：若 $F:G\to H$ 为李群同构，则 $F_*:\Lie(G)\to\Lie(H)$ 为李代数同构。
+\end{enumerate}
+\end{proposition}
+
+\section{李子群的李代数}
+
+\begin{theorem}[李子群的李代数（定理 8.46）]
+设 $H\subseteq G$ 为李子群，$\iota:H\hookrightarrow G$ 为包含映射。
+则存在李子代数 $\mathfrak h\subseteq \Lie(G)$ 与 $\Lie(H)$ 典范同构，且
+\[
+\mathfrak h=\iota_*\bigl(\Lie(H)\bigr)
+=\{\,X\in \Lie(G): X_e\in T_eH\,\}. \tag{8.17}
+\]
+\end{theorem}
+
+\begin{example}[正交群的李代数（例 8.47）]
+$O(n)$ 是 $GL(n,\R)$ 的李子群，其在单位元处的切空间满足
+\[
+T_{I_n}O(n)=\{\,B\in\gl(n,\R):B^T+B=0\,\},
+\]
+即所有 $n\times n$ 反对称矩阵。该子空间记为 $\oo(n)$，
+并与 $\Lie(O(n))$ 典范同构，且 $\oo(n)$ 是 $\gl(n,\R)$ 的李子代数。
+\end{example}
+
+\section{$GL(n,\C)$ 的李代数}
+
+\begin{proposition}[$GL(n,\C)$ 的李代数（命题 8.48）]
+由自然同构
+\[
+\Lie(GL(n,\C))\xrightarrow{\ \varepsilon\ }T_{I_n}GL(n,\C)\xrightarrow{\ \varphi\ }\gl(n,\C) \tag{8.18}
+\]
+的复合得到 $\Lie(GL(n,\C))$ 与矩阵李代数 $\gl(n,\C)$ 之间的\textbf{李代数同构}
+（将其视为\textbf{实}李代数）。
+\end{proposition}
+
+\section{李代数表示、Ado 定理与矩阵化推论}
+
+\begin{definition}[李代数表示与忠实性]
+设 $\mathfrak g$ 为有限维李代数。称李代数同态
+\[
+\varphi:\mathfrak g\to\gl(V)
+\]
+为 $\mathfrak g$ 的（有限维）\textbf{表示}。若 $\varphi$ 为单射，则称该表示\textbf{忠实}（faithful）。
+\end{definition}
+
+\begin{theorem}[Ado 定理（定理 8.49）]
+每个有限维实李代数都存在一个忠实的有限维表示。
+\end{theorem}
+
+\begin{corollary}[有限维李代数可嵌入矩阵李代数（推论 8.50）]
+每个有限维实李代数都同构于某个矩阵李代数 $\gl(n,\R)$（带交换子括号）中的一个李子代数。
+\end{corollary}
+
+\end{document}

@@ -1,0 +1,293 @@
+% =========================
+%  LaTeX 常用宏包（适合数学/流形笔记）
+% =========================
+\documentclass[11pt,a4paper]{article}
+
+% ---- 页面与中文 ----
+\usepackage[margin=1in]{geometry}
+\usepackage[UTF8]{ctex} % 中文支持（推荐：xelatex/lualatex 编译）
+
+% ---- 数学环境与符号 ----
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{bm}         % 粗体数学符号
+\usepackage{mathrsfs}   % 花体 \mathscr
+\usepackage{bbm}        % 黑板粗体 \mathbbm{1}
+
+% ---- 定理环境 ----
+\usepackage{thmtools}
+\usepackage{hyperref}   % 超链接（放后面更稳）
+\usepackage[nameinlink,noabbrev]{cleveref} % 智能引用
+
+% ---- 排版与列表 ----
+\usepackage{enumitem}
+\usepackage{microtype}
+
+% ---- 图形（如需要）----
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% =========================
+%  可选：定理样式示例（如需要）
+% =========================
+\declaretheoremstyle[
+  headfont=\bfseries,
+  bodyfont=\normalfont,
+  spaceabove=6pt, spacebelow=6pt
+]{mystyle}
+
+\declaretheorem[style=mystyle,name=定理]{theorem}
+\declaretheorem[style=mystyle,name=命题,sibling=theorem]{proposition}
+\declaretheorem[style=mystyle,name=推论,sibling=theorem]{corollary}
+\declaretheorem[style=mystyle,name=引理,sibling=theorem]{lemma}
+\declaretheorem[style=mystyle,name=定义,sibling=theorem]{definition}
+\declaretheorem[style=mystyle,name=例,sibling=theorem]{example}
+\declaretheorem[style=mystyle,name=注记,sibling=theorem]{remark}
+
+
+
+% 常用符号
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Hh}{\mathbb{H}} % 半空间符号（如需）
+\newcommand{\codim}{\operatorname{codim}}
+\newcommand{\vol}{\operatorname{vol}}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\diff}{\,\mathrm{d}}
+\begin{document}
+% 第6章（Sard 定理及其应用）内容总结（仅列定义/定理/引理/推论/命题；不含证明）
+% 说明：编号沿用原文（如 6.10, 6.15 等）；符号 I=[0,1]；$\mathbb H^m$ 表示半空间。
+% 你可直接复制到 LaTeX 文档中使用。
+
+\section*{第6章总结：Sard 定理、Whitney 定理、管状邻域与横截性}
+
+\subsection*{6.1 零测度集（Sets of Measure Zero）}
+
+\paragraph{定义（$\mathbb R^n$ 中的零测度）}
+集合 $A\subset\mathbb R^n$ 称为（Lebesgue）\emph{零测度}（measure zero），若对任意 $\delta>0$，
+存在可数个开矩形 $\{R_i\}_{i=1}^\infty$ 覆盖 $A$，且
+\[
+A\subset \bigcup_{i=1}^\infty R_i,\qquad \sum_{i=1}^\infty \operatorname{vol}(R_i)<\delta.
+\]
+
+\paragraph{引理 6.2（切片零测度推出整体零测度）}
+设 $A\subset\mathbb R^n$ 为紧集，且对每个 $c\in\mathbb R$，
+\[
+A\cap(\{c\}\times\mathbb R^{n-1})
+\]
+在 $(n-1)$ 维意义下是零测度。则 $A$ 在 $n$ 维意义下是零测度。
+
+\paragraph{（概念扩展）流形上的零测度}
+在光滑流形上，将“零测度”推广为一种局部坐标下与 $\mathbb R^n$ 的零测度相容的“薄集”概念；
+典型例子包括\emph{可数个正余维嵌入子流形的并}等。
+
+\paragraph{（基本性质）同维光滑映射保持零测度}
+若 $F:M\to N$ 为同维流形之间的光滑映射，则它把 $M$ 中的零测度集映到 $N$ 中的零测度集。
+
+\subsection*{6.2 Sard 定理}
+
+\paragraph{定理 6.10（Sard 定理）}
+设 $M,N$ 为可有边界或无边界的光滑流形，$F:M\to N$ 为光滑映射。
+则 $F$ 的\emph{临界值}（critical values）集合在 $N$ 中是零测度。
+
+\subsection*{6.3 Sard 定理的直接推论}
+
+\paragraph{推论 6.11（低维像为零测度）}
+设 $M,N$ 为光滑流形，$F:M\to N$ 光滑。若 $\dim M<\dim N$，则 $F(M)$ 在 $N$ 中为零测度。
+
+\paragraph{推论 6.12（低维浸入子流形为零测度）}
+设 $M$ 为光滑流形，$S\subset M$ 为（可有边界或无边界的）\emph{浸入子流形}。
+若 $\dim S<\dim M$，则 $S$ 在 $M$ 中为零测度。
+
+\subsection*{6.4 Whitney 嵌入定理（The Whitney Embedding Theorem）}
+
+\paragraph{引理 6.13（投影降维保持单射浸入的稠密方向）}
+设 $M\subset\mathbb R^N$ 为可有边界或无边界的光滑 $n$ 维嵌入子流形。
+对任意 $v\in\mathbb R^N\setminus\mathbb R^{N-1}$，令 $\pi_v:\mathbb R^N\to\mathbb R^{N-1}$
+为沿方向 $v$ 的线性投影（将 $\mathbb R^{N-1}$ 视为最后一坐标为 $0$ 的子空间）。
+若 $N>2n+1$，则存在一个在 $\mathbb R^N\setminus\mathbb R^{N-1}$ 中\emph{稠密}的向量集合，
+使得对每个这样的 $v$，$\pi_v|_M$ 是 $M\to\mathbb R^{N-1}$ 的\emph{单射浸入}。
+
+\paragraph{引理 6.14（从某个欧氏嵌入推出到 $\mathbb R^{2n+1}$ 的适当嵌入）}
+设 $M$ 为可有边界或无边界的光滑 $n$ 维流形。若 $M$ 可光滑嵌入到某个 $\mathbb R^N$，
+则 $M$ 亦可\emph{适当地}（properly）光滑嵌入到 $\mathbb R^{2n+1}$。
+
+\paragraph{定理 6.15（Whitney 嵌入定理，弱版本）}
+每个可有边界或无边界的光滑 $n$ 维流形，都存在到 $\mathbb R^{2n+1}$ 的\emph{适当光滑嵌入}。
+
+\paragraph{推论 6.16（与欧氏嵌入子流形微分同胚）}
+每个可有边界或无边界的光滑 $n$ 维流形，都与 $\mathbb R^{2n+1}$ 中某个\emph{适当嵌入}子流形
+（可有边界或无边界）\emph{微分同胚}。
+
+\paragraph{推论 6.17（紧情形：任意光滑映射可由嵌入一致逼近）}
+设 $M$ 为紧的光滑 $n$ 维流形（可有边界或无边界）。若 $N\ge 2n+1$，
+则每个光滑映射 $M\to\mathbb R^N$ 都可被\emph{嵌入}在一致范数下逼近。
+
+\paragraph{定理 6.18（Whitney 浸入定理，弱版本）}
+每个可有边界或无边界的光滑 $n$ 维流形，都存在到 $\mathbb R^{2n}$ 的\emph{光滑浸入}。
+
+\paragraph{定理 6.19（强 Whitney 嵌入定理）}
+若 $n>0$，则每个光滑 $n$ 维流形都能光滑嵌入到 $\mathbb R^{2n}$ 中。
+
+\paragraph{定理 6.20（强 Whitney 浸入定理）}
+若 $n>1$，则每个光滑 $n$ 维流形都能光滑浸入到 $\mathbb R^{2n-1}$ 中。
+
+\subsection*{6.5 Whitney 逼近定理（函数版本）}
+
+\paragraph{定义（$\delta$-接近）}
+设 $\delta:M\to\mathbb R$ 为处处正的连续函数。若 $F,\widetilde F:M\to\mathbb R^k$，
+称 $\widetilde F$ 与 $F$ \emph{$\delta$-接近}，若
+\[
+\|F(x)-\widetilde F(x)\|<\delta(x),\quad \forall x\in M.
+\]
+
+\paragraph{定理 6.21（函数的 Whitney 逼近定理）}
+设 $M$ 为可有边界或无边界的光滑流形，$F:M\to\mathbb R^k$ 连续。
+给定任意处处正的连续函数 $\delta:M\to\mathbb R$，存在光滑函数
+$\widetilde F:M\to\mathbb R^k$ 与 $F$ $\delta$-接近。
+若 $F$ 在某闭子集 $A\subset M$ 上已光滑，则可选取 $\widetilde F$ 使 $\widetilde F|_A=F|_A$。
+
+\paragraph{推论 6.22（处处正连续函数的光滑下界）}
+设 $M$ 为光滑流形（可有边界或无边界），$\delta:M\to\mathbb R$ 为处处正的连续函数。
+则存在光滑函数 $e:M\to\mathbb R$ 使得
+\[
+0<e(x)<\delta(x),\quad \forall x\in M.
+\]
+
+\subsection*{6.6 管状邻域（Tubular Neighborhoods）}
+
+\paragraph{定义（法空间、法丛）}
+设 $M\subset\mathbb R^n$ 为嵌入的 $m$ 维子流形。对 $x\in M$，
+\[
+N_xM:=\{v\in T_x\mathbb R^n:\ v\perp T_xM\}
+\]
+称为 $M$ 在 $x$ 处的\emph{法空间}。其\emph{法丛}定义为
+\[
+NM:=\{(x,v)\in \mathbb R^n\times\mathbb R^n:\ x\in M,\ v\in N_xM\},
+\]
+并有自然投影 $\pi_{NM}:NM\to M$，$\pi_{NM}(x,v)=x$。
+
+\paragraph{定理 6.23（法丛是子流形）}
+若 $M\subset\mathbb R^n$ 是嵌入的 $m$ 维子流形，则 $NM$ 是
+$T\mathbb R^n\simeq \mathbb R^n\times\mathbb R^n$ 的一个嵌入的 $n$ 维子流形。
+
+\paragraph{定义（指数式映射 $E$ 与管状邻域）}
+将 $NM$ 视为 $\mathbb R^n\times\mathbb R^n$ 的子流形，定义
+\[
+E:NM\to\mathbb R^n,\qquad E(x,v)=x+v.
+\]
+称 $M$ 的\emph{管状邻域}为 $\mathbb R^n$ 中包含 $M$ 的某个邻域 $U$，满足存在 $NM$ 的开子集
+$V\subset NM$ 使得 $E|_V:V\to U$ 为微分同胚，且
+\[
+V=\{(x,v)\in NM:\ \|v\|<\delta(x)\},
+\]
+其中 $\delta:M\to\mathbb R$ 为处处正的连续函数。
+
+\paragraph{定理 6.24（管状邻域定理）}
+$\mathbb R^n$ 的每个嵌入子流形都存在一个管状邻域。
+
+\paragraph{定义（回缩 retract）}
+若 $X$ 为拓扑空间，$M\subset X$。映射 $r:X\to M$ 称为从 $X$ 到 $M$ 的\emph{回缩}，
+若 $r|_M=\mathrm{id}_M$。
+
+\paragraph{命题 6.25（管状邻域给出光滑回缩与下沉）}
+设 $M\subset\mathbb R^n$ 为嵌入子流形，$U$ 为 $M$ 的任意管状邻域。
+则存在光滑映射 $r:U\to M$，它既是回缩，又是一个\emph{光滑下沉}（smooth submersion）。
+
+\subsection*{6.7 流形之间映射的光滑逼近}
+
+\paragraph{定理 6.26（Whitney 逼近定理：映射版本）}
+设 $N$ 为可有边界或无边界的光滑流形，$M$ 为\emph{无边界}光滑流形，$F:N\to M$ 连续。
+则 $F$ 与某个光滑映射同伦。
+若 $F$ 在某闭子集 $A\subset N$ 上已光滑，则可取同伦\emph{相对于 $A$}（即在 $A$ 上保持不变）。
+
+\paragraph{推论 6.27（光滑映射的延拓引理）}
+设 $N$ 为可有边界或无边界的光滑流形，$M$ 为光滑流形，$A\subset N$ 为闭集，
+$f:A\to M$ 为光滑映射。则 $f$ 存在到 $N$ 的光滑延拓，当且仅当 $f$ 存在到 $N$ 的连续延拓。
+
+\paragraph{定义（光滑同伦、光滑同伦等价）}
+若 $N,M$ 为可有边界或无边界的光滑流形。同伦 $H:N\times I\to M$ 称为\emph{光滑同伦}，
+若 $H$ 作为映射在适当意义下是光滑的（例如可延拓为 $N\times\mathbb R$ 中某邻域上的光滑映射）。
+若两映射之间存在光滑同伦，则称它们\emph{光滑同伦}（smoothly homotopic）。
+
+\paragraph{引理 6.28（光滑同伦是等价关系）}
+在从 $N$ 到 $M$ 的所有光滑映射集合上，“光滑同伦”构成等价关系。
+
+\paragraph{定理 6.29（同伦可光滑化）}
+设 $N$ 为可有边界或无边界的光滑流形，$M$ 为光滑流形，$F,G:N\to M$ 为光滑映射。
+若 $F$ 与 $G$ 同伦，则它们\emph{光滑同伦}；
+若 $F$ 与 $G$ 在某闭集 $A\subset N$ 上相对同伦，则它们在 $A$ 上亦相对光滑同伦。
+
+\subsection*{6.8 横截性（Transversality）}
+
+\paragraph{定义（子流形的横截相交）}
+设 $M$ 为光滑流形，$S,S'\subset M$ 为嵌入子流形。
+称 $S$ 与 $S'$ \emph{横截相交}，若对每个 $p\in S\cap S'$，
+\[
+T_pS + T_pS' = T_pM.
+\]
+
+\paragraph{定义（映射横截于子流形）}
+设 $F:N\to M$ 光滑，$S\subset M$ 为嵌入子流形。
+称 $F$ \emph{横截于} $S$（记作 $F\pitchfork S$），若对每个 $x\in F^{-1}(S)$，
+\[
+T_{F(x)}S + dF_x(T_xN) = T_{F(x)}M.
+\]
+特别地，若 $F$ 是下沉，则 $F$ 自动横截于 $M$ 的每个嵌入子流形。
+
+\paragraph{定理 6.30（横截性的逆像/交集为子流形）}
+设 $N,M$ 为光滑流形，$S\subset M$ 为嵌入子流形。
+\begin{enumerate}
+\item[(a)] 若 $F:N\to M$ 为光滑且 $F\pitchfork S$，则 $F^{-1}(S)$ 是 $N$ 的嵌入子流形，
+其余维数等于 $S$ 在 $M$ 中的余维数。
+\item[(b)] 若 $S'\subset M$ 为与 $S$ 横截相交的嵌入子流形，则 $S\cap S'$ 是 $M$ 的嵌入子流形，
+其余维数等于 $\operatorname{codim}S+\operatorname{codim}S'$。
+\end{enumerate}
+
+\paragraph{推论 6.31（下沉的逆像）}
+设 $N,M$ 为光滑流形，$S\subset M$ 为余维数 $k$ 的嵌入子流形，$F:N\to M$ 为下沉。
+则 $F^{-1}(S)$ 是 $N$ 的嵌入余维数 $k$ 子流形。
+
+\paragraph{定理 6.32（图像的整体刻画：Global Characterization of Graphs）}
+设 $M,N$ 为光滑流形，$S\subset M\times N$ 为浸入子流形。记投影 $\pi_M,\pi_N$。
+下列条件等价：
+\begin{enumerate}
+\item[(a)] $S$ 是某个光滑映射 $f:M\to N$ 的图像；
+\item[(b)] $\pi_M|_S:S\to M$ 是微分同胚；
+\item[(c)] 对每个 $p\in M$，子流形 $S$ 与 $\{p\}\times N$ 横截相交且恰交于一点。
+\end{enumerate}
+若成立，则 $S$ 为映射
+\[
+f=\pi_N\circ(\pi_M|_S)^{-1}
+\]
+的图像。
+
+\paragraph{推论 6.33（图像的局部刻画：Local Characterization of Graphs）}
+设 $M,N$ 为光滑流形，$S\subset M\times N$ 为浸入子流形，$(p,q)\in S$。
+若 $S$ 在 $(p,q)$ 处与 $\{p\}\times N$ 横截相交，则存在 $p$ 的邻域 $U\subset M$ 与
+$(p,q)$ 在 $S$ 中的邻域 $V$，使得 $V$ 是某个光滑映射 $f:U\to N$ 的图像。
+
+\paragraph{定义（光滑映射族）}
+设 $N,M,S$ 为光滑流形。若对每个 $s\in S$ 给定 $F_s:N\to M$，
+并且由
+\[
+F:N\times S\to M,\qquad F(x,s)=F_s(x)
+\]
+定义的映射 $F$ 是光滑的，则称 $\{F_s:s\in S\}$ 为\emph{光滑映射族}（smooth family of maps）。
+
+\paragraph{命题 6.34（连通参数给出同伦）}
+若 $\{F_s:s\in S\}$ 是从 $N$ 到 $M$ 的光滑映射族且 $S$ 连通，则任意 $s_1,s_2\in S$，
+映射 $F_{s_1}$ 与 $F_{s_2}$ 同伦。
+
+\paragraph{定义（几乎处处 almost every）}
+若 $S$ 为光滑流形，$B\subset S$ 且 $S\setminus B$ 在 $S$ 中为零测度，则称 $B$ 包含 $S$ 的
+\emph{几乎所有}元素（almost every element of $S$）。
+
+\paragraph{定理 6.35（参数横截性定理：Parametric Transversality Theorem）}
+设 $N,M$ 为光滑流形，$X\subset M$ 为嵌入子流形，$\{F_s:s\in S\}$ 为从 $N$ 到 $M$ 的光滑映射族。
+若总映射 $F:N\times S\to M$ 横截于 $X$（即 $F\pitchfork X$），
+则对\emph{几乎所有} $s\in S$，映射 $F_s:N\to M$ 都横截于 $X$。
+
+\paragraph{定理 6.36（横截同伦定理：Transversality Homotopy Theorem）}
+设 $M,N$ 为光滑流形，$X\subset M$ 为嵌入子流形。
+则任意光滑映射 $f:N\to M$ 都与某个光滑映射 $g:N\to M$ 同伦，并且 $g\pitchfork X$。
+
+\end{document}
