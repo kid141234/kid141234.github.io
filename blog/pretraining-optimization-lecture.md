@@ -1,0 +1,266 @@
+# 球面动力学、学习率与权重衰减
+
+## 目录
+
+- [1. 权重范数与收敛](#motivation)
+- [2. 尺度不变性与球面更新](#geometry)
+- [3. Hyperball 的固定半径与相对步长](#hyperball)
+- [4. 权重衰减与角步长的平衡](#equilibrium)
+- [5. 学习率日程中的河谷动力学](#river)
+- [6. 预训练优化器的比较](#benchmark)
+- [参考文献](#sources)
+
+<a id="motivation"></a>
+
+## 1. 权重范数与收敛
+
+训练日志里的权重范数、梯度范数和损失都可能趋于平稳，但它们描述的是不同的量。设 $W_t$ 是第 $t$ 步的参数，$L$ 是训练目标，$W_\star$ 是一个参考最优解。给定容差 $\epsilon>0$，可以分别考察参数位置、目标值和一阶最优性。
+
+| 检查量 | 判据 | 含义 |
+|---|---|---|
+| 到参考解的距离 | $\lVert W_t-W_\star\rVert\le\epsilon$ | 参数接近指定的解。有参数对称性时，表示同一函数的解可以相距很远。 |
+| 到最优值的差距 | $L(W_t)-L(W_\star)\le\epsilon$ | 目标值接近最优值。预测是否接近还需比较模型输出。 |
+| 一阶梯度的大小 | $\lVert\nabla L(W_t)\rVert\le\epsilon$ | 满足近似一阶驻点条件。区分极小点、极大点和鞍点需要更多信息。 |
+
+相邻两步也有两种不同的距离。$\|W_{t+1}-W_t\|$ 度量参数的绝对位移，学习率较小时，这个位移可以很小。$|\|W_{t+1}\|-\|W_t\||$ 只度量到原点的距离变化。取 $w_t=(1,0)$ 和 $w_{t+1}=(0,1)$，两者的范数都是 1，方向却相差 $90^\circ$。对归一化线性模型 $f_w(x)=w^\top x/\|w\|_2$，这个变化使输入 $x=(1,0)$ 上的输出从 1 变成 0。
+
+如果模型对权重的正尺度缩放不敏感，分析一次更新时就应把半径和方向分开。下面从尺度不变性出发，推导权重方向在一次 SGD 更新中转过的角度。 [\[1\]](#src-1) [\[2\]](#src-2)
+
+<a id="geometry"></a>
+
+## 2. 尺度不变性与球面更新
+
+把非零参数块写成 $W=R\widehat W$，其中 $R=\|W\|_F$，$\widehat W=W/R$。对矩阵，Frobenius 范数相当于展平后的欧氏范数，内积也按同样的方式计算。固定其他参数，若任意 $c>0$ 都满足 $f_{cW}=f_W$，就称这个参数块具有正尺度不变性。上一章的归一化线性模型满足这一性质。例如 $w=(3,4)$ 和 $w=(0.03,0.04)$ 有同一单位方向，对任意输入都给出相同输出。对 Transformer 要逐块判断。忽略归一化分母中的 $\epsilon$ 等因素时，QK-Norm 可以抵消相应 Q/K 投影的正尺度缩放。输出头的整体缩放则通常会改变 logits 和预测概率。 [\[1\]](#src-1) [\[2\]](#src-2) [\[3\]](#src-3)
+
+即使半径不影响前向计算，它仍会改变参数坐标中的梯度。固定一个 batch 和其他参数，以该 batch 上的任务损失作为 $L$，令 $g(W)=\nabla_W L(W)$，$\widehat g=g(\widehat W)$。对精确尺度不变的块，有
+
+$$
+\langle W,g(W)\rangle_F=0,
+\qquad
+g(R\widehat W)=\frac{\widehat g}{R}.
+$$
+
+沿缩放路径 $c\mapsto cW$ 对 $L(cW)=L(W)$ 求导，并令 $c=1$，得到第一个等式。因此梯度落在球面的切空间内。固定 $c$，再对等式两侧的 $W$ 求导，得到 $c\,g(cW)=g(W)$，取 $W=\widehat W$ 和 $c=R$ 即得第二个等式。同一方向上的半径放大十倍，原始梯度便缩小到十分之一。 [\[2\]](#src-2)
+
+现在令无动量、无衰减的 SGD 从 $W_t$ 沿切线走一步，得到 $W_{t+1}=W_t-\eta_tg(W_t)$。切向位移与原半径正交，故有
+
+$$
+R_{t+1}^2=R_t^2+\eta_t^2\|g(W_t)\|_F^2.
+$$
+
+只要位移非零，更新后的点就落在旧球面之外。图中的橙色箭头是 SGD 走过的位移，试探点和绿色投影点在同一条从原点出发的射线上，因此二者对应同一个单位方向。
+
+<figure class="teaching-figure">
+<svg viewBox="0 0 620 270" role="img" aria-labelledby="sphere-svg-title sphere-svg-desc">
+<title id="sphere-svg-title">切向更新、球面转角与径向投影</title>
+<desc id="sphere-svg-desc">原点到当前权重的半径向右。切向步垂直向上，试探点落在圆外。试探点与原点的连线和旧圆相交，原来的半径与该连线之间是本步转角。</desc>
+<defs>
+<marker id="sphere-arrow-step" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--rust)"/></marker>
+<marker id="sphere-arrow-project" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z" fill="var(--teal)"/></marker>
+</defs>
+<rect x="18" y="10" width="584" height="246" rx="15" fill="var(--figure-bg)"/>
+<circle cx="174" cy="136" r="101" fill="none" stroke="var(--figure-grid)" stroke-width="2"/>
+<path d="M174 136 H275" fill="none" stroke="var(--ink-muted)" stroke-width="1.8"/>
+<path d="M174 136 L275 53" fill="none" stroke="var(--ink-muted)" stroke-width="1.8" stroke-dasharray="5 4"/>
+<path d="M275 128 V53" fill="none" stroke="var(--rust)" stroke-width="3" marker-end="url(#sphere-arrow-step)"/>
+<path d="M269 58 L253 71" fill="none" stroke="var(--teal)" stroke-width="2" stroke-dasharray="4 3" marker-end="url(#sphere-arrow-project)"/>
+<path d="M207 136 A33 33 0 0 0 200 115" fill="none" stroke="var(--teal)" stroke-width="2"/>
+<path d="M264 136 V125 H275" fill="none" stroke="var(--ink-muted)" stroke-width="1.2"/>
+<circle cx="174" cy="136" r="3" fill="var(--ink-muted)"/>
+<circle cx="275" cy="136" r="4.5" fill="var(--ink)"/>
+<circle cx="275" cy="53" r="4" fill="var(--rust)"/>
+<circle cx="252" cy="72" r="5" fill="var(--teal)"/>
+<g font-size="17" font-family="system-ui,sans-serif">
+<text x="155" y="155" fill="var(--ink-muted)">O</text>
+<text x="222" y="120" fill="var(--teal)">θ</text>
+<text x="221" y="158" fill="var(--ink-muted)">R</text>
+<text x="288" y="146" fill="var(--ink)">当前权重</text>
+<text x="289" y="54" fill="var(--rust)">试探点</text>
+<text x="293" y="97" fill="var(--rust)">切向一步</text>
+<text x="172" y="56" fill="var(--teal)">投影点</text>
+<text x="112" y="215" fill="var(--ink-muted)">旧球面截面</text>
+</g>
+</svg>
+<figcaption>图中橙色步长被放大以显示几何关系。试探点与投影点共用一条从原点出发的射线。</figcaption>
+</figure>
+
+切向步很小时，方向转过的角是一阶量，平方半径的增加是二阶量。这也解释了离散更新与连续梯度流的区别。梯度流满足 $\mathrm d\|W\|_F^2/\mathrm dt=-2\langle W,g(W)\rangle_F=0$，方向可以在固定半径上连续变化。SGD 走的是有限长度的切线段，每一步都会累积上式中的二阶增量。 [\[2\]](#src-2)
+
+令 $\theta_t=\angle(W_t,W_{t+1})$ 为角更新，并记 $\widehat g_t=g(\widehat W_t)$。图中的直角三角形给出无动量、无衰减 SGD 的精确关系
+
+$$
+\tan\theta_t
+=\frac{\eta_t\|g(W_t)\|_F}{R_t}
+=\frac{\eta_t}{R_t^2}\|\widehat g_t\|_F.
+$$
+
+这里的两个 $1/R_t$ 各有来处。一个来自把欧氏位移除以半径，另一个来自原始梯度随半径缩放。因此 $\eta_{\mathrm{eff},t}=\eta_t/R_t^2$ 是这种 SGD 在单位球面上的有效学习率系数。它还要乘上当前 batch 的单位球面梯度范数，才能得到 $\tan\theta_t$。也可以用单位方向的弦长 $s_t=\|\widehat W_{t+1}-\widehat W_t\|_F=2\sin(\theta_t/2)$ 度量方向位移。当 $\theta_t$ 很小时，$s_t$、$\tan\theta_t$ 和以弧度计的 $\theta_t$ 近似相等。即使名义学习率固定，只要半径继续增大，有效学习率系数就会下降。若此时 $\|\widehat g_t\|_F$ 变化不大，实际转角也会减小。 [\[1\]](#src-1) [\[2\]](#src-2) [\[3\]](#src-3)
+
+以归一化线性模型为例，取训练样本 $x=(0,1)$，目标值为 1，损失为平方误差的一半。从 $w=(1,0)$ 和 $w=(10,0)$ 出发，初始预测与损失相同，梯度分别为 $(0,-1)$ 和 $(0,-0.1)$。名义学习率都取 $0.1$，欧氏位移分别为 $0.1$ 和 $0.01$，除以各自的半径后得到 $\tan\theta=0.1$ 和 $0.001$。相应转角约为 $5.71^\circ$ 和 $0.057^\circ$。同一函数的两种参数表示，在相同学习率下走出了相差约百倍的角步长。
+
+| 量 | 含义 |
+|---|---|
+| 名义学习率 $\eta_t$ | 配置中乘在优化器更新上的系数。 |
+| 有效学习率系数 $\eta_t/R_t^2$ | 无动量、无衰减 SGD 中乘在单位球面梯度上的系数。 |
+| 实际角更新 $\theta_t$ 或弦长 $s_t$ | 相邻权重的方向实际移动的距离。 |
+
+换用 Adam 或 Muon 后，原始梯度还要经过逐坐标预条件或矩阵更新的近似正交化，处理后的更新未必与权重正交。记 $u_t$ 为基础优化器算出的、尚未乘学习率的更新，将它分解为 $u_t=a_t\widehat W_t+u_{t,\perp}$，其中 $a_t=\langle u_t,\widehat W_t\rangle_F$，$u_{t,\perp}$ 与 $\widehat W_t$ 正交。对无衰减的一步，更新后沿原方向的分量为 $R_t-\eta_t a_t$，切向分量的长度为 $\eta_t\|u_{t,\perp}\|_F$。当相对步长 $\eta_t\|u_t\|_F/R_t$ 很小时，因而有 $\theta_t\approx\eta_t\|u_{t,\perp}\|_F/R_t$。对任意优化器，只要相邻两步权重非零，就能直接测量夹角。角度度量走了多远，切向方向则关系到这一步如何改变模型输出。 [\[2\]](#src-2) [\[4\]](#src-4) [\[5\]](#src-5) [\[7\]](#src-7)
+
+<a id="hyperball"></a>
+
+## 3. Hyperball 的固定半径与相对步长
+
+上面的分解表明，同样长的基础更新会在不同半径上产生不同的相对位移。Hyperball 显式指定相对步长，同时将半径保持在固定值。对选中的权重矩阵取 $R=\|W_0\|_F>0$，保留 Adam 或 Muon 计算 $u_t$ 的方式。在 $u_t$ 和试探点非零时，一步更新写成
+
+$$
+\widetilde W_{t+1}=W_t-\eta_tR\frac{u_t}{\|u_t\|_F},
+\qquad
+W_{t+1}=R\frac{\widetilde W_{t+1}}{\|\widetilde W_{t+1}\|_F}.
+$$
+
+第一步将投影前的位移设为 $\eta_tR$，因此相对试探步长 $\|\widetilde W_{t+1}-W_t\|_F/R$ 直接等于 $\eta_t$。第二步沿射线将试探点投回半径 $R$ 的球面，下一步仍在同一半径上开始。投影保留试探点的方向，因此转角由第一步确定。 [\[5\]](#src-5)
+
+相对试探步长相同，转角仍取决于更新的切向分量。取 $W_t=(R,0)$ 和 $\eta_t=0.1$。若位移完全沿切向，试探点为 $(R,0.1R)$，转角约为 $5.71^\circ$。若等长的位移完全沿径向向外，试探点为 $(1.1R,0)$，投影后仍是 $(R,0)$。固定当前权重与 $u_t$ 时，整块标量缩放和径向投影保留了非零切向分量的朝向。将 Adam 换成 Muon 则会改变 $u_t$ 本身，因而也可能改变朝向。经过多步更新，两条轨迹的权重、梯度和动量都会受先前位移影响，单步的方向比较以同一状态为前提。 [\[5\]](#src-5) [\[7\]](#src-7)
+
+固定半径是否约束模型的表达能力，取决于前向计算是否使用尺度。对严格尺度不变的块，任一非零 $W$ 都满足 $f_W=f_{R\widehat W}$，其中 $R$ 可取任意正数。缩小球面仍保留所有单位方向，也就保留了它们表示的函数集合，优化轨迹则可能因步长和噪声而改变。对尺度敏感的块，固定半径是否影响容量需要结合架构判断。一种预训练配置将 Hyperball 用于 attention 和 MLP 矩阵，embedding 与归一化增益等参数沿用标准优化器。 [\[1\]](#src-1) [\[3\]](#src-3) [\[5\]](#src-5)
+
+不做投影时，半径也可以趋于稳定。要理解这种半径从何而来，以及它怎样改变角步长，需要把权重衰减加入更新。
+
+<a id="equilibrium"></a>
+
+## 4. 权重衰减与角步长的平衡
+
+在 AdamW、MuonW 这类更新中，解耦权重衰减将旧权重乘以 $\alpha_t=1-\eta_t\lambda$，其中 $\lambda$ 是衰减系数。加入基础优化器的更新后，有
+
+$$
+W_{t+1}=\alpha_t W_t-\eta_tu_t.
+$$
+
+当 $\alpha_t>0$ 时，单独的衰减项沿原方向缩短权重。把整步写成 $\alpha_t[W_t-(\eta_t/\alpha_t)u_t]$，就能看出，在同一 $W_t$ 和 $u_t$ 上，带衰减更新与采用乘数 $\eta_t/\alpha_t$ 的无衰减更新具有相同的终点方向，终点半径则相差因子 $\alpha_t$。当 $\eta_t\lambda$ 很小时，这一步的乘数只略微增大。持续衰减还会改变后续步骤的起始半径，从而改写整段训练的相对步长。 [\[3\]](#src-3) [\[5\]](#src-5)
+
+先沿用第 2 章的精确尺度不变、无动量 SGD，使 $u_t=g(W_t)$ 始终沿切向。取固定的 $\eta>0$ 和 $\lambda>0$，令 $\alpha=1-\eta\lambda$ 且 $0<\alpha<1$。勾股关系此时变为
+
+$$
+R_{t+1}^2=\alpha^2 R_t^2+\frac{\eta^2\|\widehat g_t\|_F^2}{R_t^2}.
+$$
+
+衰减从平方半径中扣去 $(1-\alpha^2)R_t^2$，切向位移补回 $\eta^2\|\widehat g_t\|_F^2/R_t^2$。半径越大，扣去的越多，补回的越少。若一个阶段内可用常数 $G^2>0$ 近似 $\|\widehat g_t\|_F^2$，就可由收支相等估计平衡半径 $R_\star$。在这个近似模型的平衡点，
+
+$$
+R_\star^4=\frac{\eta^2 G^2}{1-\alpha^2},
+\qquad
+\tan\theta_\star=\frac{\eta G}{\alpha R_\star^2}
+=\frac{\sqrt{1-\alpha^2}}{\alpha}.
+$$
+
+当 $\eta\lambda\ll 1$ 时，$1-\alpha^2\approx 2\eta\lambda$，于是 $R_\star^4\approx\eta G^2/(2\lambda)$，$\theta_\star\approx\sqrt{2\eta\lambda}$。半径以四次根的量级随超参数变化。此时径向收缩与切向位移补偿恰好抵消，方向却仍在每个非零梯度步中转动。平衡点估计来自近似固定的梯度统计。相应的随机收敛界要求单位球面梯度的平方范数有固定的条件均值、有界的条件方差和满足步长约束的正下界。在这些条件下，平方半径的误差衰减到受梯度波动控制的范围。加入动量后，历史更新一般含径向分量，需要另外处理。ImageNet 和 MS COCO 的测量表明，分段降低学习率后，半径会经历一段向新平衡过渡的过程。 [\[2\]](#src-2)
+
+AdamW 的更新范数遵循不同的近似。若同一段梯度历史整体乘以相同的正数，忽略分母中的 $\epsilon$ 后，一阶矩和二阶矩平方根会按相同倍数变化，二者之比保持不变。于是，可以在局部稳态分析中把基础更新 $u_t$ 的均方根范数 $U$ 视为相对稳定，同时保留更新之间的历史相关性。将更新式展开可得
+
+$$
+R_{t+1}^2=\alpha^2 R_t^2+\eta^2\|u_t\|_F^2
+-2\alpha\eta\langle W_t,u_t\rangle_F.
+$$
+
+若当前更新和过去的更新方向相近，而 $W_t$ 累积了过去的 $-u$，内积 $\langle W_t,u_t\rangle_F$ 可能为负，交叉项便会补偿径向收缩。在更新范数和自相关统计近似固定、角位移较小的稳态模型中，小 $\eta\lambda$ 给出
+
+$$
+R_\star\propto U\sqrt{\eta/\lambda},
+\qquad
+s_\star\propto\sqrt{\eta\lambda}.
+$$
+
+这里的比例常数取决于更新统计。原始 SGD 的切向补偿还随 $1/R_t^2$ 变化，所以它的平衡半径是四次根。AdamW 的近似模型把处理后的更新尺度视为相对稳定，得到平方根半径。在各自的平衡近似中，两种方法的角步长都可以呈现 $\sqrt{\eta\lambda}$ 的量级。 [\[2\]](#src-2) [\[3\]](#src-3) [\[5\]](#src-5)
+
+半径和步长的平衡关系也解释了为什么原始梯度增大时，实际角步长可以减小。固定 $\lambda$ 和 AdamW 的更新统计，若名义学习率降为四分之一，新平衡半径与弦长都约减半。在单位方向及单位球面梯度近似固定时，$\|g(W)\|_F=\|\widehat g\|_F/R$ 反而给出约两倍的原始梯度。刚调低学习率时，半径仍接近旧值，之后才逐步接近新平衡。 [\[3\]](#src-3) [\[5\]](#src-5)
+
+在 130M、42B token 的训练对照中，使用同一名义学习率日程的两条轨迹里，有衰减的一组后期权重范数较小，原始梯度范数较大，最终验证损失也较低。尺度关系可以解释范数变化的趋势，整模型的梯度比例还受参数块组成及两条轨迹的单位方向影响。另一组对照固定了 $\eta\lambda$，将 $(\eta,\lambda)$ 从 $(0.002,0.2)$ 改为 $(0.004,0.1)$。后者的 Q/K 权重范数大致翻倍，训练损失曲线接近，与平衡半径随 $\sqrt{\eta/\lambda}$、角步长随 $\sqrt{\eta\lambda}$ 变化的近似相符。 [\[3\]](#src-3) [\[5\]](#src-5)
+
+<a id="river"></a>
+
+## 5. 学习率日程中的河谷动力学
+
+角步长度量权重方向移动了多远，但同样大的位移在不同方向上可以引起很不一样的损失变化。设想损失地形中有一条狭长的河谷。沿河床移动可以逐渐降低谷底的损失，横向偏离河床则会因曲率较大而迅速抬高损失。一次训练可能沿河走得更远，同时偏离河床也更远。它当前的损失包含这两部分，因而可能高于一条沿河走得较慢、却更靠近河床的轨迹。 [\[8\]](#src-8)
+
+<figure class="teaching-figure">
+<svg viewBox="0 0 620 224" role="img" aria-labelledby="river-svg-title river-svg-desc">
+<title id="river-svg-title">河谷中的沿河进展与横向波动</title>
+<desc id="river-svg-desc">平面示意图。高学习率轨迹在河床两侧波动并向右前进，衰减阶段的轨迹逐渐回到河床。</desc>
+<rect x="18" y="12" width="584" height="192" rx="15" fill="var(--figure-bg)"/>
+<path d="M48 71 C173 38 245 92 355 68 S501 43 572 51" fill="none" stroke="var(--figure-grid)" stroke-width="1.5"/>
+<path d="M48 151 C173 118 245 172 355 148 S501 123 572 131" fill="none" stroke="var(--figure-grid)" stroke-width="1.5"/>
+<path d="M48 111 C173 78 245 132 355 108 S501 83 572 91" fill="none" stroke="var(--ink-muted)" stroke-dasharray="6 5" stroke-width="2"/>
+<path d="M56 112 L90 76 L125 137 L157 69 L193 139 L228 79 L264 153 L298 89 L336 140 L370 78 L408 124" fill="none" stroke="var(--rust)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M408 124 L441 92 L468 98 L492 86 L515 90 L537 88 L558 90" fill="none" stroke="var(--teal)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="558" cy="90" r="4.5" fill="var(--teal)"/>
+<g fill="var(--ink)" font-size="15" font-family="system-ui,sans-serif">
+<text x="63" y="183">高 LR · 横向振荡</text>
+<text x="377" y="180">衰减 · 靠近河床</text>
+<text x="424" y="52">沿河进展 →</text>
+</g>
+</svg>
+<figcaption>二维概念示意。虚线表示河床，橙线和绿线表示两个训练阶段。</figcaption>
+</figure>
+
+用一个二次模型分开计算这两种变化。记 $x$ 为沿河坐标，$y$ 为横向坐标，损失为 $L(x,y)=\mu x^2/2+\gamma y^2/2$，其中 $\gamma\gg\mu>0$。令 SGD 的梯度噪声只出现在横向，记为 $\xi_t$，给定此前轨迹的条件均值为零、条件方差为 $\sigma^2$。沿河方向满足 $x_{t+1}=(1-\mu\eta_t)x_t$，故
+
+$$
+x_t=x_0\prod_{j=0}^{t-1}(1-\mu\eta_j)
+\approx x_0\exp\!\left(-\mu\sum_{j=0}^{t-1}\eta_j\right).
+$$
+
+指数式来自对 $\log(1-\mu\eta_j)$ 取一阶近似。在步长较小、累积高阶项可忽略时，沿河进展主要取决于累计学习率。横向则满足 $y_{t+1}=(1-\gamma\eta_t)y_t-\eta_t\xi_t$。记横向二阶矩为 $m_t=\mathbb E[y_t^2]$。噪声的条件均值为零，平方展开后的交叉项在期望中消失，得到
+
+$$
+m_{t+1}=(1-\gamma\eta_t)^2m_t+\eta_t^2\sigma^2.
+$$
+
+对固定学习率 $\eta$，若 $0<\eta\gamma<2$，二阶矩收敛到 $\eta\sigma^2/[\gamma(2-\eta\gamma)]$。因此稳态的横向期望损失为
+
+$$
+\frac{\gamma}{2}m_\star
+=\frac{\eta\sigma^2}{2(2-\eta\gamma)}
+\approx\frac{\eta\sigma^2}{4}
+\qquad (\eta\gamma\ll 1).
+$$
+
+在小步长范围内，保持较大学习率会加快沿河推进，也会维持更大的横向波动。衰减学习率后，注入的噪声减弱，已有偏移对横向二阶矩的贡献随稳定的后续更新逐步衰减，沿河方向也随剩余的正步长继续推进。固定学习率的稳态式描述的是平衡值，衰减期间的过渡由二阶矩递推决定。在直河、横向噪声和相应步长条件下，更一般的河谷分析也能分别控制沿河进展和横向损失。 [\[8\]](#src-8)
+
+河谷结构可以在一个可分离的 bigram 模型中具体看到。给定城市，模型用一组独立的 softmax logits 预测居民名字。对某个城市，设拟合处的条件概率为 $(p_j)_j$。该城市损失对 logits 的 Hessian 为 $\operatorname{diag}(p)-pp^\top$，迹为 $1-\sum_jp_j^2$。名字分布越集中，迹就越小。这给出了数据不确定性导致曲率差异的一种机制。对真实模型则可以观察局部几何。在 124M GPT-2 的预训练实验中，对固定大学习率阶段的两个 checkpoint 做线性插值，中间出现了更低的损失。对从同一起点进入衰减的两个 checkpoint 做插值，沿线损失平滑下降。这些现象与河谷机制相符，理论中的直河与噪声条件属于模型假设。 [\[8\]](#src-8)
+
+因此，在比较预训练结果时，checkpoint 在日程中的位置与已经消耗的数据量同样重要。到了同一个 token 数，尚未衰减的中间状态与完成日程的模型，可能处在河谷中很不相同的位置。
+
+<a id="benchmark"></a>
+
+## 6. 预训练优化器的比较
+
+如果目标是在给定预算下交付一个模型，就要在同一预算下比较各自完成学习率日程后的损失。例如，从计划训练 80B token 的轨迹中截取 40B checkpoint，只能看到它在原日程上的中间状态。要判断 40B token 预算下哪套配方更好，应让两套配方分别按 40B 的预算完成日程。不同优化器的损失曲线可能在衰减阶段交叉，截取中间状态会改变比较结果。 [\[4\]](#src-4)
+
+学习率与权重衰减经过优化器更新后才决定实际步长，因此配方之间的比较要分别调参。一个覆盖 130M、300M、520M 和 1.2B 四种模型规模的基准，以 AdamW 为基线，纳入十种替代方法，并在多种 token 预算下评估。小中型设置分别搜索学习率、权重衰减和预热等参数。1.2B 的主比较使用从较小模型外推的配置，并用额外的 AdamW 设置检查外推效果。 [\[4\]](#src-4)
+
+| 比较口径 | 回答的问题 |
+|---|---|
+| 固定模型与 token 预算，比较日程结束时的损失 | 同样的数据预算下，哪套配方得到更低的损失？ |
+| 固定模型与目标损失，比较所需 token 数 | 达到同一损失，哪套配方更省数据？ |
+| 固定模型与目标损失，比较墙钟时间 | 计入单步计算和额外通信后，哪套配方用时更短？ |
+
+要从终点损失换算到 token 效率，可先用各个独立预算下完成训练的 AdamW 模型拟合损失曲线，再反解 AdamW 达到新方法终点损失所需的 token 数。用这个数除以新方法实际使用的 token 数，就得到 token 等效效率。例如 $1.3\times$ 表示在相同目标损失下约少用 $1-1/1.3\approx23\%$ 的 token。两边吞吐量不同时，还需乘以新方法与 AdamW 的 tokens/s 之比，才能换算成达到该损失的墙钟速度比。 [\[4\]](#src-4)
+
+相对调参后的 AdamW 基线，较小模型上表现最好的矩阵优化器约有 $1.3$–$1.4\times$ 的 token 等效效率，在 1.2B、$8\times$ Chinchilla 设置中约为 $1.1\times$。另一组 1.2B 实验用对应设置的 AdamW 拟合曲线作为参照，得到 MuonW 约为 $1.1\times$、MuonH 约为 $1.2$–$1.3\times$。在固定预算的宽度和深度扫描中，Hyperball 版本搜索得到的最佳学习率最大漂移约为 $1.4\times$。这些结果衡量的是各自训练设置下整套配方的表现。 [\[4\]](#src-4) [\[5\]](#src-5)
+
+若要进一步判断差异有多少来自角步长，可以在同一基础优化器上改变学习率日程。一组无衰减 Muon 对照调整学习率，使有效步长代理跟随有衰减轨迹，调整后两条损失曲线接近。逐矩阵对照可以做得更细。先用 MuonW 或 MuonH 跑出一条参考轨迹，记录各矩阵每一步的转角，再从头训练另一种方法。候选训练保留自己的梯度和动量，每步为各矩阵反解一个学习率，使其转角接近参考值。NanoGPT 的对照逐步记录了 72 个矩阵，两个方向的对齐都使训练损失曲线向各自的参考曲线靠近。 [\[6\]](#src-6) [\[7\]](#src-7)
+
+读这个对照时要区分归一化后的有效学习率与实际转角。式 (19) 使用的角有效学习率 AELR 是转角除以基础更新范数，小角度下据此反解学习率。发布的对齐实现直接记录和匹配转角。图 3 的图注写的是验证损失，纵轴与绘图脚本使用的是训练损失，发布数据另含验证损失。这个对照通过预先记录的转角来隔离步长日程的作用。候选训练仍自行生成切向方向，因此曲线接近可以说明步长日程解释了这组实验中的一部分训练差异。 [\[7\]](#src-7)
+
+<a id="sources"></a>
+
+## 参考文献
+
+1. <span id="src-1"></span> **《深度学习里的流形优化 I——尺度不变性的历史》**。§2–4 讨论有效学习率、角更新与切向步引起的半径变化。 [博客原文](https://chenxing-xuan.github.io/blog/2026/Manifold1/)
+2. <span id="src-2"></span> **Wan、Zhu、Zhang、Sun，Spherical Motion Dynamics**。§3 给出尺度不变性与角更新的定义，§4 定理 1–3 和附录 A 推导 SGD、SGDM 的平衡及收敛界，§5 是固定与分段学习率实验。 [arXiv:2006.08419](https://arxiv.org/abs/2006.08419)
+3. <span id="src-3"></span> **Wen 等，The Hitchhiker’s Guide to the Weight Norm Theory**。§2.2–2.5 推导更新范数、历史相关性、平衡半径与角步长，§2.6 给出原始梯度的反比缩放，§3 汇总训练观察。 [博客原文](https://whenwen.github.io/wd_blog/public/weight-decay-part-2.html) · [原始训练曲线](https://whenwen.github.io/wd_blog/public/experiments/wandb_metrics_plot.html)
+4. <span id="src-4"></span> **Wen、Hall、Ma、Liang，Fantastic Pretraining Optimizers and Where to Find Them**。§3 给出超参数搜索和 token 等效效率的计算，§4 与图 2–5 比较预算、规模和训练终点。 [arXiv:2509.02046](https://arxiv.org/abs/2509.02046)
+5. <span id="src-5"></span> **Wen、Dang、Lyu、Ma、Liang，Fantastic Pretraining Optimizers and Where to Find Them II: Hyperball Optimization**。§2 定义更新与投影，§3 是预训练与迁移实验，§4.2 区分 AdamW 与理想化 Muon 的稳态自相关和角步长。 [arXiv:2606.16899](https://arxiv.org/abs/2606.16899)
+6. <span id="src-6"></span> **《深度学习里的流形优化 II——Hyperball May Not Be a Free Lunch》**。§2–3 讨论无衰减 Muon 对照与双向步长对齐。 [博客原文](https://chenxing-xuan.github.io/blog/2026/Hyperball/)
+7. <span id="src-7"></span> **Xiao、Sun 等，Hyperball May Not Be a Free Lunch**。§2.3–2.4 给出转角与 AELR，§4.2–4.3 给出双向对齐及日程消融。 [arXiv:2607.22444](https://arxiv.org/abs/2607.22444) · [复现代码和数据](https://github.com/mangocrazz/hyperball-may-not-be-a-free-lunch) · [图 3 绘图脚本](https://github.com/mangocrazz/hyperball-may-not-be-a-free-lunch/blob/main/analysis/alignment/plot_hyperball_conversion.py)
+8. <span id="src-8"></span> **Wen、Li、Wang、Hall、Liang、Ma，Understanding Warmup-Stable-Decay Learning Rates**。§3 与附录 A.2、A.4–A.7 给出河谷动力学和二次模型分析，§4 给出 bigram 实验。 [arXiv:2410.05192](https://arxiv.org/abs/2410.05192)
