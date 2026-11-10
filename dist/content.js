@@ -34,7 +34,7 @@ window.HOMEPAGE = {
     {
       "title": "John Lee",
       "english": "SMOOTH MANIFOLDS",
-      "description": "《Introduction to Smooth Manifolds》读书笔记。从下沉与嵌入、Sard 定理，到向量场与流、向量丛、张量和微分形式，按教材章节顺序整理的 10 篇专题笔记。",
+      "description": "《Introduction to Smooth Manifolds》读书笔记。",
       "url": "blog/john-lee/index.html",
       "notes": [
         {
@@ -107,7 +107,7 @@ window.HOMEPAGE.topics = [
   {
     "title": "优化",
     "english": "OPTIMIZATION",
-    "description": "从随机梯度的噪声几何、预训练中的球面动力学，到学习率无关的锥提升方法，收录 3 篇关于优化器与学习率的专题文章。",
+    "description": "学习各种有趣的深度学习中的优化方法。",
     "url": "blog/optimization/index.html",
     "notes": [
       {
