@@ -2,7 +2,7 @@
   "topic": {
     "title": "优化",
     "english": "OPTIMIZATION",
-    "description": "从随机梯度的噪声几何、预训练中的球面动力学，到学习率无关的锥提升方法，收录 3 篇关于优化器与学习率的专题文章。",
+    "description": "学习各种有趣的深度学习中的优化方法。",
     "kicker": "OPTIMIZATION",
     "url": "blog/optimization/index.html"
   },

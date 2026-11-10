@@ -2,7 +2,7 @@
   "topic": {
     "title": "John Lee",
     "english": "SMOOTH MANIFOLDS",
-    "description": "《Introduction to Smooth Manifolds》读书笔记。从下沉与嵌入、Sard 定理，到向量场与流、向量丛、张量和微分形式，按教材章节顺序整理的 10 篇专题笔记。",
+    "description": "《Introduction to Smooth Manifolds》读书笔记。",
     "kicker": "JOHN LEE / SMOOTH MANIFOLDS",
     "source": "John M. Lee, Introduction to Smooth Manifolds (2nd ed.)"
   },
