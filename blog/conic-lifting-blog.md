@@ -1,0 +1,202 @@
+# Schedule-Free学习率优化方法
+
+## 1. 在线遗憾（Regret）与学习率
+
+在线凸优化在每一轮先选决策 $x_t\in\mathcal V$，再观察凸损失 $\ell_t$ 在 $x_t$ 处的次梯度 $g_t$。这里 $\mathcal V$ 是非空闭凸集。用同一个 $u\in\mathcal V$ 比较所有轮次，定义线性化遗憾（regret）
+
+$$
+\operatorname{Reg}_T(u)=\sum_{t=1}^{T}\langle g_t,x_t-u\rangle.
+$$
+
+由凸性，$\ell_t(x_t)-\ell_t(u)\le\langle g_t,x_t-u\rangle$，所以线性化遗憾给出了实际累计损失差的上界。算法每轮只能根据已经看到的反馈作决定，比较点 $u$ 则可以在事后选取，例如取为使累计损失最小的固定决策。 [\[1\]](#src-1)
+
+先在实 Hilbert 空间中讨论，记其范数为 $\|\cdot\|_2$。设 $R>0$，且每个 $x\in\mathcal V$ 都满足 $\|x\|_2\le R$。直接在 $\mathcal V$ 上使用带二次正则 $\|x\|_2^2/(2\eta)$ 的 FTRL，可得
+
+$$
+\operatorname{Reg}_T(u)
+\le
+\underbrace{\frac{R^2}{2\eta}}_{\text{比较点的正则化代价}}
++
+\underbrace{\frac{\eta}{2}\sum_{t=1}^{T}\|g_t\|_2^2}_{\text{算法对新梯度的响应代价}}.
+$$
+
+增大 $\eta$ 会降低第一项，同时提高第二项。若事先知道 $S_T=\sum_{t=1}^{T}\|g_t\|_2^2>0$，取 $\eta=R/\sqrt{S_T}$ 就能使两项相等。但 $S_T$ 取决于整段梯度序列。为了让算法维持固定的更新规则，同时在分析中根据 $S_T$ 平衡两项，可以为比较点引入一个可在事后选择的尺度。 [\[1\]](#src-1)
+
+## 2. 仿射反馈的锥提升
+
+第 $t$ 轮选定 $x_t$ 后，可以把它作为计算线性化损失的基准。用候选点 $x$ 替换 $x_t$，相对损失是
+
+$$
+d_t(x)=\langle g_t,x-x_t\rangle
+=\langle g_t,x\rangle+b_t,
+\qquad
+b_t=-\langle g_t,x_t\rangle.
+$$
+
+与射影几何中的齐次坐标一样，给 $x$ 添上一个常数坐标，就能把截距并入内积。再令 $y=sx$，其中 $s>0$，得到
+
+$$
+s\,d_t(y/s)
+=\langle g_t,y\rangle+b_t s
+=\langle\widehat g_t,(y,s)\rangle,
+\qquad
+\widehat g_t=(g_t,b_t).
+$$
+
+于是可以在凸锥 $\mathcal C_{\mathcal V}=\{s(x,1):x\in\mathcal V,\ s\ge0\}$ 上维护状态 $z_t=(y_t,s_t)$。当 $s_t>0$ 时，解码为 $x_t=y_t/s_t$，同一条射线上的所有非零状态都给出同一个决策。在有界域里，锥中高度为零的状态只有原点，此时选用预先指定的默认决策。
+
+由于 $d_t(x_t)=0$，提升反馈与当前状态的配对为 $\langle\widehat g_t,z_t\rangle=0$，在原点也成立。对于任意 $\lambda>0$，用射线上的 $\lambda(u,1)$ 作为比较状态，便有
+
+$$
+\langle\widehat g_t,z_t-\lambda(u,1)\rangle
+=\lambda\langle g_t,x_t-u\rangle.
+$$
+
+例如取 $x_t=1/2$、$g_t=2$、$u=-1/2$，则原空间的单轮遗憾为 $ 2 $，提升反馈为 $(2,-1)$。状态 $(1,2)$ 解码为 $x_t$，与反馈的内积为零。选比较状态 $ 3(u,1)=(-3/2,3)$ 后，锥空间中的单轮遗憾为 $ 6 $。改变 $\lambda$ 保留了比较决策 $u$，同时按比例缩放锥上的遗憾。这种表示也用于将在线遗憾归约为 Blackwell 可逼近性问题。在带常数坐标的拉格朗日对冲中，逐轮累加 $-\widehat g_t$ 就得到遗憾向量。 [\[1\]](#src-1) [\[2\]](#src-2)
+
+## 3. 二次正则与尺度不变性
+
+比较点已经可以沿射线缩放，接下来考察算法状态的尺度由什么决定。在有界域的锥上使用二次正则
+
+$$
+\psi_\alpha(y,s)=\frac12\big(\|y\|_2^2+\alpha s^2\big),
+\qquad \alpha>0.
+$$
+
+记 $H_{t-1}=\sum_{i<t}\widehat g_i$。带显式学习率 $\eta>0$ 的 FTRL 在锥上最小化 $\psi_\alpha(z)/\eta+\langle H_{t-1},z\rangle$。令 $z=\eta w$。由于锥对正比例缩放封闭，$w$ 仍遍历同一个可行域，而且
+
+$$
+\frac1\eta\psi_\alpha(\eta w)+\langle H_{t-1},\eta w\rangle
+=\eta\big[\psi_\alpha(w)+\langle H_{t-1},w\rangle\big].
+$$
+
+二次正则和线性损失在换元后提出同一个因子。于是，在同一累计反馈下，最优状态满足 $z_t^{(\eta)}=\eta z_t^{(1)}$。若两者高度为正，分子和分母的缩放在解码时抵消。若状态为原点，两者使用同一个默认决策。相同决策在同一轮收到相同反馈时，下一轮的累计提升反馈也相同，因此尺度关系逐轮成立。 [\[1\]](#src-1)
+
+也可以从单条射线上看出这种不变性。固定候选决策 $x$，记 $D(x)=\|x\|_2^2+\alpha$ 和 $L_t(x)=\langle H_{t-1},(x,1)\rangle$。沿 $z=s(x,1)$，目标函数为 $s^2D(x)/(2\eta)+sL_t(x)$。在 $s\ge0$ 上最小化，得到
+
+$$
+s^\star(x)=\frac{\eta[-L_t(x)]_+}{D(x)},
+\qquad [a]_+=\max\{a,0\}.
+$$
+
+代回后，最小目标值为 $-\eta[-L_t(x)]_+^2/(2D(x))$。各条射线的最小值都乘以同一个正数 $\eta$，射线之间的次序因此保持不变。实现时可以取 $\eta=1$。至于高度的正则权重 $\alpha$，它会改变 $D(x)$，需要根据遗憾上界选择。
+
+## 4. 有界域的遗憾界与投影更新
+
+记 $\|z\|_\alpha^2=\|y\|_2^2+\alpha s^2$。在这套度量下，对偶范数为 $\|(g,b)\|_{\alpha,*}^2=\|g\|_2^2+b^2/\alpha$。沿用 FTRL 的二次正则上界，对于锥中任意比较点 $v$，有
+
+$$
+\sum_{t=1}^{T}\langle\widehat g_t,z_t-v\rangle
+\le
+\frac{\|v\|_\alpha^2}{2\eta}
++\frac{\eta}{2}\sum_{t=1}^{T}\|\widehat g_t\|_{\alpha,*}^2.
+$$
+
+取 $v=\lambda(u,1)$，用第 2 节的恒等式替换左侧，再除以 $\lambda$。记 $A=\|(u,1)\|_\alpha^2$，$B=\sum_{t=1}^{T}\|\widehat g_t\|_{\alpha,*}^2$，则
+
+$$
+\operatorname{Reg}_T(u)
+\le \frac{\lambda}{2\eta}A+\frac{\eta}{2\lambda}B.
+$$
+
+这与第 1 节的两项上界同形，$\eta/\lambda$ 起到有效学习率的作用。固定算法实际使用的 $\eta$ 后，仍可对所有 $\lambda>0$ 取下确界，得到 $\sqrt{AB}$。当 $B>0$ 时，取 $\lambda=\eta\sqrt{B/A}$ 使两项相等。当 $B=0$ 时，下确界由 $\lambda\downarrow0$ 得到。比较尺度可以依赖完整的梯度序列，因为它只用于估计已生成的决策序列的遗憾。 [\[1\]](#src-1)
+
+要确定 $\alpha$，用 $\|u\|_2\le R$ 和 $|b_t|\le R\|g_t\|_2$ 分别估计两项，得到 $A\le R^2+\alpha$ 和 $B\le (1+R^2/\alpha)S_T$。由此得到 $\operatorname{Reg}_T(u)\le C(\alpha)\sqrt{S_T}$，其中系数的平方为
+
+$$
+C(\alpha)^2=(R^2+\alpha)\left(1+\frac{R^2}{\alpha}\right)
+=2R^2+\alpha+\frac{R^4}{\alpha}.
+$$
+
+提高 $\alpha$ 会增加比较点的代价，却降低提升反馈中最后一维的代价。后两项的和在 $\alpha=R^2$ 时最小，因此取
+
+$$
+\psi(y,s)=\frac12\big(\|y\|_2^2+R^2s^2\big)
+\qquad\Longrightarrow\qquad
+\operatorname{Reg}_T(u)\le 2R\sqrt{S_T}.
+$$
+
+这个权重也有直接的几何含义。锥在高度 $s$ 处的截面满足 $\|y\|_2\le Rs$，所以用 $Rs$ 衡量高度，恰好与该截面的横向尺度相配。 [\[1\]](#src-1)
+
+与 AdaGrad-Norm 的上界 $ 2\sqrt{2}R\sqrt{S_T}$ 相比，这里把系数降到了 $2$。即使 $\mathcal V=[-R,R]$，若算法事先既不知道梯度上界，也不知道总轮数，想对所有轮数、比较点和梯度序列统一保证 $\mathbb E[\operatorname{Reg}_T(u)]\le cR\sqrt{S_T}$，也必须有 $c\ge2$。期望对算法的内部随机性取值，即使每条梯度序列各自有一个有限但未知的上界，这个结论仍成立。 [\[1\]](#src-1)
+
+得到 $\alpha=R^2$ 后，可以把最小化写成投影。记 $h_t=(g_t,b_t/R^2)$，并令 $\Pi_{\mathcal C_{\mathcal V}}^{R}$ 表示按 $\|\cdot\|_{R^2}$ 度量的投影。对 FTRL 目标配方，得到锥 Blackwell 算法（CBA）。在同一个锥上应用在线镜像下降，则得到 CBA+。在 Hilbert 空间中，两种更新分别为
+
+$$
+z_{t+1}^{\mathrm{CBA}}
+=\Pi_{\mathcal C_{\mathcal V}}^{R}\!\left(-\sum_{i=1}^{t}h_i\right),
+\qquad
+z_{t+1}^{\mathrm{CBA+}}
+=\Pi_{\mathcal C_{\mathcal V}}^{R}(z_t^{\mathrm{CBA+}}-h_t).
+$$
+
+每种算法都用各自的决策生成 $h_t$，并以 $y/s$ 解码。CBA 先累计反馈再投影，CBA+ 从上一轮已经投影的状态出发。有限维非欧氏空间中，若平方范数具有强凸性，也可以用相应的正则目标与镜像更新构造这两类算法。 [\[1\]](#src-1)
+
+## 5. 无界域的正高度与尺度自适应
+
+有界域的做法用同一个 $R$ 控制锥的截面和提升反馈的最后一维。去掉有界性后，这个估计失效，解码也需要额外处理。例如当 $\mathcal V=\mathbb R$ 时，锥中的 $(1,1/n)$ 对应决策 $n$，极限 $(1,0)$ 却无法用 $y/s$ 解码。为保证每一轮都能解码，先取一个可行点 $a\in\mathcal V$ 作为锚，将原决策平移为 $x-a$，在 $\mathcal C_{\mathcal V-a}$ 上要求 $s>0$，并在正则项中加入 $\epsilon(s-\ln s)$。当 $s$ 从正侧趋近零时，这一项发散。$\epsilon>0$ 同时给出了相对锚点的遗憾预算。 [\[1\]](#src-1)
+
+若已知梯度范数上界 $G>0$，可以令横向正则的二次系数随轮数增长。具体地，第 $t$ 轮最小化历史提升损失与下列正则之和
+
+$$
+\frac{\beta G^2t}{2\epsilon}\|y\|^2+\epsilon(s-\ln s).
+$$
+
+这里 $\|g_t\|_*\le G$，提升反馈的最后一维改为 $-\langle g_t,x_t-a\rangle$。在实 Hilbert 空间或平方范数强凸的有限维实赋范空间中，对任意非空闭凸域取 $\beta\ge2$，可保证更新存在且高度始终为正。遗憾界随比较点到锚的距离 $\|u-a\|$ 自适应，量级为 $\epsilon+\widetilde O(G\|u-a\|\sqrt T)$，其中 $\widetilde O$ 省略对数因子。在 Hilbert 空间中，计算一般闭凸域上的更新，可以固定高度做投影，再通过一维求根确定高度。 [\[1\]](#src-1)
+
+当原域是整个 Hilbert 空间时，给定 $s>0$，横向坐标 $y$ 可以任意取值，因此两个坐标可以分开求解。取 $\beta=1$，令 $S_{t-1}^{\mathrm{vec}}=\sum_{i<t}g_i$，并定义
+
+$$
+W_t=\epsilon-\sum_{i<t}\langle g_i,x_i-a\rangle.
+$$
+
+此时目标中与高度有关的部分为 $W_ts-\epsilon\ln s$。在已知梯度上界且 $\beta=1$ 的这一特例中，$W_t>0$。令高度项的导数为零，得到 $s_t=\epsilon/W_t$。横向最小点为 $y_t=-\epsilon S_{t-1}^{\mathrm{vec}}/(G^2t)$，因此更新有闭式表达
+
+$$
+s_t=\frac{\epsilon}{W_t},
+\qquad
+x_t-a=-\frac{W_t}{G^2t}S_{t-1}^{\mathrm{vec}}.
+$$
+
+若把 $-g_t/G$ 看成每轮回报，$W_t/G$ 就是财富，$x_t-a$ 是下注向量。历史梯度和决定下注方向，财富决定同一方向上的下注规模。这个更新逐轮等价于 Krichevsky–Trofimov（KT）coin-betting，其中财富与锥高度成反比。 [\[1\]](#src-1)
+
+仍在无约束情形，若梯度上界也未知，就以已观察到的梯度为正则提供尺度。取锚点为原点，记 $m_0=0$。第 $t$ 轮结束后，统计最大梯度范数、累计梯度平方范数和纪录跳幅的平方和
+
+$$
+m_t=\max_{1\le i\le t}\|g_i\|_*,
+\qquad
+v_t=\sum_{i=1}^{t}\|g_i\|_*^2,
+\qquad
+\delta_t=\sum_{i=1}^{t}(m_i-m_{i-1})^2.
+$$
+
+从 $0$ 一次跳到 $10$ 时，$\delta_t=100$。若最大范数依次经过 $ 1,2,\ldots,10$，则 $\delta_t=10$。两种情况下最终的 $m_t$ 相同，$\delta_t$ 却区分了突然出现的大梯度和逐步增长的尺度。 [\[1\]](#src-1)
+
+这些历史统计用来调整下一轮的正则和横向坐标的范数上限。即使限制 $\|y\|$，任意原空间决策仍可由其射线上足够小的正高度表示。更新使用完整的梯度，遗憾界中的 $\delta_T$ 则度量梯度超过历史尺度的代价。这个版本仍以 $\epsilon$ 设定初始预算，并用 $\gamma>0$ 权衡两类代价。若平方范数的一半具有强凸常数 $\mu$，则增大 $\gamma$ 会减小界中的 $\delta_T/(2\mu\gamma)$，同时增大远处比较点的代价项 $\gamma\|u\|^2/2$。 [\[1\]](#src-1)
+
+## 6. 从在线遗憾到凸随机优化
+
+在线遗憾控制的是一串决策与固定比较点之间的累计差。在凸随机优化中，设 $x_t$ 由历史信息 $\mathcal F_{t-1}$ 决定，观测次梯度满足 $\mathbb E[g_t\mid\mathcal F_{t-1}]\in\partial f(x_t)$。对固定 $u\in\mathcal V$，由次梯度不等式，
+
+$$
+\mathbb E[f(x_t)-f(u)]
+\le \mathbb E[\langle g_t,x_t-u\rangle].
+$$
+
+将这些不等式求和，再对平均迭代点 $\bar x_T=T^{-1}\sum_{t=1}^{T}x_t$ 使用凸性，得到
+
+$$
+\mathbb E[f(\bar x_T)-f(u)]
+\le \frac{\mathbb E[\operatorname{Reg}_T(u)]}{T}.
+$$
+
+例如，沿用第 4 节的 Hilbert 空间与有界可行域，若 $\|g_t\|_2\le G$，则 $S_T\le TG^2$，代入 CBA 的遗憾界就得到 $2RG/\sqrt T$ 的期望次优性上界。这里使用了凸性和条件无偏性。锥提升在深度网络非凸训练中的效果仍需通过实验评估。 [\[1\]](#src-1)
+
+## 参考文献
+
+1. <span id="src-1"></span> Grand-Clément、Kwon、Orabona（2026）。*Conic-Lifting for Learning-rate-free Convex Optimization*. §2–3 给出在线优化设定与锥提升，§5–6 讨论有界域，§7–8 讨论已知和未知梯度上界的情形。 [arXiv:2610.39531v1](https://arxiv.org/abs/2610.39531v1) · [HTML 全文](https://arxiv.org/html/2610.39531v1)
+2. <span id="src-2"></span> Gordon（2006）。*No-regret Algorithms for Online Convex Programs*. §3 给出拉格朗日对冲的遗憾向量与常数坐标。 [论文全文](https://papers.nips.cc/paper_files/paper/2006/file/f14bc21be7eaeed046fed206a492e652-Paper.pdf)
+
+```
+
+```

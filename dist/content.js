@@ -27,19 +27,8 @@ window.HOMEPAGE = {
   focus: [], // 关注的方向，例如 ["方向一", "方向二"]
   education: [],
   projects: [],
-  blog: [
-    {
-      title: "优化器究竟在选择什么？",
-      description: "从随机梯度的稳定性与噪声几何出发，理解优化器如何影响模型的解与参数表示。",
-      url: "blog/sgd-noise-geometry.html"
-    },
-    {
-      title: "球面动力学、学习率与权重衰减",
-      label: "学习笔记 / PRETRAINING OPTIMIZATION",
-      description: "从尺度不变性与球面更新出发，串联有效学习率、Hyperball、权重衰减平衡、河谷动力学，以及预训练优化器的比较口径。",
-      url: "blog/pretraining-optimization-lecture.html"
-    }
-  ],
+  // 独立文章卡片：已全部归入「优化」专题（见 blog/optimization/meta.json 与文件末尾）
+  blog: [],
   // --- BEGIN 专题：由 build_notes.py 生成，请勿手工改动 ---
   topics: [
     {
@@ -111,3 +100,33 @@ window.HOMEPAGE = {
     description: "关于学习、作品，或任何有趣的想法，都欢迎交流。"
   }
 };
+
+// --- BEGIN 优化专题：由 build_blog.py 生成，请勿手工改动 ---
+// 插到数组最前面：主页上的专题顺序为「优化」→ John Lee
+window.HOMEPAGE.topics = [
+  {
+    "title": "优化",
+    "english": "OPTIMIZATION",
+    "description": "从随机梯度的噪声几何、预训练中的球面动力学，到学习率无关的锥提升方法，收录 3 篇关于优化器与学习率的专题文章。",
+    "url": "blog/optimization/index.html",
+    "notes": [
+      {
+        "title": "优化器究竟在选择什么？",
+        "description": "从随机梯度的稳定性与噪声几何出发，理解优化器如何影响模型的解与参数表示。",
+        "url": "blog/sgd-noise-geometry.html"
+      },
+      {
+        "title": "球面动力学、学习率与权重衰减",
+        "description": "从尺度不变性与球面更新出发，串联有效学习率、Hyperball、权重衰减平衡、河谷动力学，以及预训练优化器的比较口径。",
+        "url": "blog/pretraining-optimization-lecture.html"
+      },
+      {
+        "title": "Schedule-Free学习率优化方法",
+        "description": "从在线遗憾与锥提升出发，理解二次正则的尺度不变性、CBA / CBA+ 的投影更新，以及无界域中由 KT coin-betting 给出的学习率自适应。",
+        "url": "blog/conic-lifting-blog.html"
+      }
+    ]
+  },
+  ...(window.HOMEPAGE.topics || []).filter(t => t.title !== "优化")
+];
+// --- END 优化专题 ---

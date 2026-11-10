@@ -23,8 +23,8 @@ node preview.mjs
 - `focus`：关注方向，每一个方向为一个字符串。
 - `education`：教育经历。
 - `projects`：项目与作品。
-- `blog`：博客文章的标题、简介和页面链接。
-- `topics`：学习笔记里的专题（标题、简介、专题首页链接和笔记列表）。由 `build_notes.py` 自动生成，详见下文。
+- `blog`：独立文章卡片。目前留空，文章已全部归入「优化」专题；往里加卡片会让主页重新出现散落的文章卡片。
+- `topics`：学习笔记里的专题（标题、简介、专题首页链接和文章 / 笔记列表）。John Lee 部分由 `build_notes.py` 生成，「优化」部分由 `build_blog.py` 插到数组最前面，详见下文。
 - `publications`：论文。为空数组时，栏目和导航自动隐藏。
 - `experience`：实习、工作、社团或志愿实践。为空时自动隐藏。
 - `awards`：奖项。为空时自动隐藏。
@@ -33,23 +33,29 @@ node preview.mjs
 
 `""` 表示空文字，`[]` 表示暂时没有条目。保留引号和逗号；文字中需要英文双引号时使用 `\"`，或者改用中文引号。条目按照填写顺序展示，建议将最近经历放在前面。
 
-### 独立博客文章
+### 专题：优化
 
-每篇文章涉及三处：`blog/<slug>.md` 源文件、`build_blog.py` 里 `ARTICLES` 中的一条配置（标题、简介、栏目标签、是否允许内联 HTML）、`dist/content.js` 的 `blog` 数组中的一张卡片。**`blog` 数组的顺序就是主页上的展示顺序。**
+「学习笔记」栏目现在是**两个并列的可点击专题入口卡片**：**优化**（3 篇文章，排在前面）与 **John Lee**（10 篇笔记，排在后面）。主页只显示专题卡片，不展开文章列表；点进专题首页才能看到全部条目。
 
-改完源文件后，安装 Python 包 `markdown-it-py`，在项目根目录运行 `python build_blog.py`，生成 `dist/blog/<slug>.html`。新增一篇文章时，把 Markdown 放进 `blog/`，在 `ARTICLES` 和 `content.js` 各加一条，再重新运行脚本即可。
+**优化** 专题的入口是 `dist/blog/optimization/index.html`。专题名称、简介以及每篇文章的 `slug`、标题、简介、栏目标签、渲染开关和排列顺序，统一放在 `blog/optimization/meta.json`。安装 Python 包 `markdown-it-py` 后，在项目根目录运行 `python build_blog.py`，脚本会生成：
 
-配置里 `html: True` 的文章会保留源文件中的内联 `<figure>`/`<svg>` 示意图与标题锚点（示意图的颜色变量定义在 `dist/blog/blog.css` 的 `.article` 规则中）。数学公式由 MathJax 加载渲染，需要访问 jsDelivr。
+- `dist/blog/<slug>.html`：文章阅读页，公式由 MathJax 加载渲染，需要访问 jsDelivr。
+- `dist/blog/optimization/index.html`：专题首页，列出全部 3 篇文章。
+- `dist/content.js` 末尾带 `BEGIN 优化专题 / END 优化专题` 标记的数据段：把专题插入 `topics` 数组最前面。**这段由脚本生成，不要手工改动。**
+
+新增一篇优化文章：把 Markdown 放进 `blog/`，在 `meta.json` 的 `articles` 中加一条（`slug` 与文件名一致），重新运行脚本即可。`articles` 的顺序决定专题首页的列表。配置里 `html: true` 的文章会保留源文件中的内联 `<figure>`/`<svg>` 示意图、参考文献锚点等（示意图的颜色变量定义在 `dist/blog/blog.css` 的 `.article` 规则中）。
+
+`content.js` 的 `blog` 数组请保持为空。两个专题各由自己的脚本维护标记区块，互不覆盖，运行顺序不限。
 
 ### 学习笔记专题：John Lee
 
-「学习笔记」栏目收录了专题 **John Lee**，是《Introduction to Smooth Manifolds》的 10 篇读书笔记。**主页只显示一个可点击的专题入口卡片，不展开笔记列表；点进专题首页 `dist/blog/john-lee/index.html` 才能看到全部 10 篇。** 栏目里另外保留 `blog` 中的独立文章卡片。专题数据来自 `dist/content.js` 中带 `BEGIN 专题 / END 专题` 标记的 `topics` 区块，**这个区块由脚本自动生成，不要手工改动**；其中 `notes` 目前只用于主页显示篇数、生成专题首页和每篇的上下篇导航。
+「学习笔记」栏目收录了专题 **John Lee**，是《Introduction to Smooth Manifolds》的 10 篇读书笔记。**该专题在主页只显示一个可点击的入口卡片，不展开笔记列表；点进专题首页 `dist/blog/john-lee/index.html` 才能看到全部 10 篇。** 专题数据来自 `dist/content.js` 中带 `BEGIN 专题 / END 专题` 标记的 `topics` 区块，**这个区块由脚本自动生成，不要手工改动**；其中 `notes` 目前只用于主页显示篇数、生成专题首页和每篇的上下篇导航。
 
 相关文件：
 
 - `blog/john-lee/*.tex`：从 `John Lee/*.zip` 解压出的 LaTeX 源文件（每个压缩包内是一个 `main.tex`）。
 - `blog/john-lee/meta.json`：专题名称与简介，以及每篇笔记的 `slug`、标题、简介和排列顺序。
-- `build_notes.py`：把 LaTeX 转成 HTML，并同步 `content.js` 的 `topics` 区块。
+- `build_notes.py`：把 LaTeX 转成 HTML，并同步 `content.js` 中 John Lee 的 `topics` 区块（不会覆盖末尾的「优化」专题数据段）。
 
 在项目根目录运行：
 
