@@ -1,39 +1,39 @@
 /* 由 build_notes.py 生成：John Lee 专题的定理框、列表与公式样式 */
-.article-lead{font-size:14px;color:#5e666d;line-height:1.9;margin:-22px 0 34px;padding-bottom:24px;border-bottom:1px solid var(--line)}
-.article-source{font-size:13px;color:#7a838b;background:#f7f8fa;border-left:2px solid #ccd6e5;padding:12px 16px;border-radius:0 4px 4px 0}
+.article-lead{font-size:14px;color:#7b887f;line-height:1.9;margin:-22px 0 34px;padding-bottom:24px;border-bottom:1px solid var(--line)}
+.article-source{font-size:13px;color:#909a91;background:#f3f6f2;border-left:2px solid #cfdccf;padding:12px 16px;border-radius:0 4px 4px 0}
 .article-toc ol{max-height:68vh;overflow-y:auto;scrollbar-width:thin}
-.article-toc li.toc-l3{padding-left:30px;font-size:12px;color:#8a939b}
-.article-toc li.toc-l4{padding-left:44px;font-size:11px;color:#8a939b}
+.article-toc li.toc-l3{padding-left:30px;font-size:12px;color:#95a096}
+.article-toc li.toc-l4{padding-left:44px;font-size:11px;color:#a4aea5}
 .article-toc li.toc-l4 a{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.article h4.note-para{font-family:var(--sans);font-size:15px;font-weight:650;color:#3d444a;margin:32px 0 12px;letter-spacing:.3px;scroll-margin-top:100px}
-.article h4.note-para:before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:#6b7d94;vertical-align:middle;margin-right:9px}
+.article h4.note-para{font-family:var(--sans);font-size:15px;font-weight:650;color:#37523f;margin:32px 0 12px;letter-spacing:.3px;scroll-margin-top:100px}
+.article h4.note-para:before{content:"";display:inline-block;width:5px;height:5px;border-radius:50%;background:#8dab91;vertical-align:middle;margin-right:9px}
 .math-block{overflow-x:auto;overflow-y:hidden;margin:22px 0;padding:2px 0}
 .math-block mjx-container[display="true"]{margin:.4em 0!important}
-.thm{margin:26px 0;padding:18px 22px 6px;border:1px solid #e4e8ec;border-left:3px solid #6b7d94;border-radius:4px;background:#f9fafc}
+.thm{margin:26px 0;padding:18px 22px 6px;border:1px solid #e2e9e2;border-left:3px solid #8dab91;border-radius:4px;background:#f7faf7}
 .thm-head{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;margin-bottom:10px}
-.thm-kind{font-size:12px;font-weight:650;letter-spacing:1px;color:#2f4f86;background:#e8eef8;border-radius:3px;padding:2px 8px}
-.thm-name{font-size:13px;color:#5e666d;line-height:1.7}
+.thm-kind{font-size:12px;font-weight:650;letter-spacing:1px;color:#4c7257;background:#e7f1e8;border-radius:3px;padding:2px 8px}
+.thm-name{font-size:13px;color:#6d7f70;line-height:1.7}
 .thm-body>p:last-child{margin-bottom:14px}
 .thm-body>.math-block:last-child{margin-bottom:14px}
-.thm-theorem,.thm-proposition{border-left-color:#5b7bb0;background:#f7f9fd}
-.thm-theorem .thm-kind,.thm-proposition .thm-kind{color:#2f4f86;background:#e6edf8}
+.thm-theorem,.thm-proposition{border-left-color:#6f8fbd;background:#f7f9fd}
+.thm-theorem .thm-kind,.thm-proposition .thm-kind{color:#4a679b;background:#e6edf8}
 .thm-example,.thm-exercise{border-left-color:#c5a86d;background:#fbf9f3}
 .thm-example .thm-kind,.thm-exercise .thm-kind{color:#8a7440;background:#f2ead7}
 .thm-remark{border-left-color:#b9b0c9;background:#faf9fc}
 .thm-remark .thm-kind{color:#776b91;background:#ede9f4}
 .note-list{padding-left:22px!important;margin:12px 0 20px!important}
 .note-list li{margin:7px 0;line-height:1.95}
-.item-label{color:#2f4f86;font-weight:650}
+.item-label{color:#3d5a45;font-weight:650}
 .note-ul{text-decoration:underline;text-underline-offset:3px}
 .note-series{list-style:none;margin:30px 0 0;padding:0;border-top:1px solid var(--line)}
 .note-series li{border-bottom:1px solid var(--line)}
 .note-series a{display:flex;align-items:baseline;gap:18px;padding:17px 4px;transition:background .2s}
 .note-series a:hover{background:var(--blue-soft)}
-.note-series .series-no{font-family:Georgia,serif;font-style:italic;font-size:13px;color:#8a939b;width:26px;flex:none}
+.note-series .series-no{font-family:Georgia,serif;font-style:italic;font-size:13px;color:#a4b0a2;width:26px;flex:none}
 .note-series .series-main{display:flex;flex-direction:column;gap:5px;min-width:0}
-.note-series strong{font-family:var(--serif);font-size:17px;font-weight:600;color:#2f373d}
+.note-series strong{font-family:var(--serif);font-size:17px;font-weight:600;color:#2f4436}
 .note-series small{font-size:12px;line-height:1.8;color:#8b958d}
 .note-series .series-arrow{margin-left:auto;color:var(--blue);white-space:nowrap;font-size:13px}
 .series-nav{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 20px;border-top:1px solid var(--line);margin-top:44px;padding-top:22px;font-size:13px;color:var(--blue)}
-.series-nav span{color:#8a939b}
+.series-nav span{color:#a2aca2}
 @media(max-width:600px){.thm{padding:15px 16px 4px}.article h4.note-para{font-size:14px}.note-series strong{font-size:15px}}
