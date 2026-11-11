@@ -116,12 +116,12 @@ window.HOMEPAGE.topics = [
         "url": "blog/sgd-noise-geometry.html"
       },
       {
-        "title": "球面动力学、学习率与权重衰减",
+        "title": "学习率一样，模型为什么走得不一样？",
         "description": "从尺度不变性与球面更新出发，串联有效学习率、Hyperball、权重衰减平衡、河谷动力学，以及预训练优化器的比较口径。",
         "url": "blog/pretraining-optimization-lecture.html"
       },
       {
-        "title": "Schedule-Free学习率优化方法",
+        "title": "学习率不存在了？",
         "description": "从在线遗憾与锥提升出发，理解二次正则的尺度不变性、CBA / CBA+ 的投影更新，以及无界域中由 KT coin-betting 给出的学习率自适应。",
         "url": "blog/conic-lifting-blog.html"
       },

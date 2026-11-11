@@ -37,6 +37,7 @@ ARTICLES = META['articles']
 MATH_RE = r'(?<!\\)\$\$[\s\S]*?(?<!\\)\$\$|(?<!\\)\$(?!\$)[^\n$]*?(?<!\\)\$'
 ANCHOR_LINE = re.compile(r'(?m)^<a\s+id="([^"]+)"\s*>\s*</a>[ \t]*$\n?')
 ANCHOR_PARA = re.compile(r'<p>\s*BLOGANCHOR(\d+)END\s*</p>\s*<h2\s+id="(section-\d+)"')
+SUPERSCRIPT = str.maketrans('0123456789', '⁰¹²³⁴⁵⁶⁷⁸⁹')
 
 PAGE_HEAD = '''<!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -92,6 +93,16 @@ def render_article(cfg):
             anchor = 'section-%d' % (len(headings) + 1)
             token.attrSet('id', anchor)
             title = tokens[i + 1].content
+            # 章节标题里也可能带行内公式；侧栏目录是单独拼出来的，
+            # 需要在这里把公式占位符还原，否则目录会显示 MATHPLACEHOLDER 明文。
+            for j, formula in enumerate(math):
+                title = title.replace('MATHPLACEHOLDER%dEND' % j, formula)
+            # 目录栏很窄，MathJax 容器会把标题撑成多行，这里改写成纯文本上标。
+            # 正文里的标题仍由 MathJax 正常渲染。
+            title = re.sub(r'\$\$?([^$]*?)\$\$?', r'\1', title)
+            title = re.sub(
+                r'\^\{([0-9]+)\}|\^([0-9])',
+                lambda m: (m.group(1) or m.group(2)).translate(SUPERSCRIPT), title)
             headings.append(None if title in cfg['skip_toc'] else (anchor, title))
 
     content = md.renderer.render(tokens, md.options, {})

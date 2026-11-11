@@ -16,6 +16,10 @@ kid141234、仓库只勾 kid141234.github.io、Contents 设为 Read and Write
 （Git Data API 的 blob/tree/commit/ref 写端点均要求 Contents: write）。
 Token 只从环境变量读取，不会写入文件或打印。
 
+网络受限时可设置 GITHUB_API_RESOLVE=<GitHub 出口 IP>（多个用空格/逗号分隔，
+例如 "140.82.116.5 140.82.116.6"），让请求经 curl 的 --resolve 走指定出口，
+并在单个出口丢包时自动换下一个重试，绕开本机对大请求体的间歇性限流。
+
 安全保护：发布前会比对远端 content.js 的 profile 字段；若远端有值而本地
 为空（典型情况：本地是旧副本，用户在 GitHub 网页上补过资料），默认中止
 发布，避免把邮箱、学校等信息覆盖掉。确认要清空时加 --allow-profile-reset。
@@ -81,22 +85,34 @@ def protect_profile(local_text: str, remote_text: str, dry_run: bool) -> bool:
 
 
 def curl_api(method: str, url: str, headers: dict, data: bytes | None, path: str):
-    """代理环境下 urllib 偶发 SSL EOF 时，用 curl 完成同一次请求。"""
-    cmd = ["curl", "-sS", "--max-time", "60", "-X", method]
-    for key, value in headers.items():
-        cmd += ["-H", f"{key}: {value}"]
-    if data is not None:
-        cmd += ["--data-binary", "@-"]
-    cmd += ["-w", "\n__HTTP_STATUS__%{http_code}", url]
-    proc = subprocess.run(cmd, input=data, capture_output=True)
-    if proc.returncode != 0:
-        raise RuntimeError(f"{method} {path} -> curl 失败: "
-                           f"{proc.stderr.decode('utf-8', 'replace')[:300]}") from None
-    raw = proc.stdout.decode("utf-8", "replace")
-    body, _, code = raw.rpartition("\n__HTTP_STATUS__")
-    if code.strip() not in ("200", "201", "202", "204"):
-        raise RuntimeError(f"{method} {path} -> HTTP {code.strip()}: {body[:500]}") from None
-    return json.loads(body) if body.strip() else {}
+    """代理环境下 urllib 偶发 SSL EOF 时，用 curl 完成同一次请求。
+
+    GITHUB_API_RESOLVE 可写多个 GitHub 出口 IP（空格/逗号分隔）。本机网络对
+    api.github.com 不同出口的写请求体限流是间歇性的，请求失败时依次换 IP
+    重试，避免整批发布因为单次丢包而中断。
+    """
+    ips = [x for x in re.split(r"[\s,]+", os.environ.get("GITHUB_API_RESOLVE", "").strip()) if x]
+    last_error = "unknown error"
+    for ip in ips or [""]:
+        cmd = ["curl", "-sS", "--max-time", "60", "-X", method]
+        if ip:
+            cmd += ["--resolve", f"api.github.com:443:{ip}"]
+        for key, value in headers.items():
+            cmd += ["-H", f"{key}: {value}"]
+        if data is not None:
+            cmd += ["--data-binary", "@-"]
+        cmd += ["-w", "\n__HTTP_STATUS__%{http_code}", url]
+        proc = subprocess.run(cmd, input=data, capture_output=True)
+        if proc.returncode == 0:
+            raw = proc.stdout.decode("utf-8", "replace")
+            body, _, code = raw.rpartition("\n__HTTP_STATUS__")
+            if code.strip() in ("200", "201", "202", "204"):
+                return json.loads(body) if body.strip() else {}
+            last_error = f"{method} {path} -> HTTP {code.strip()}: {body[:300]}"
+        else:
+            last_error = (f"{method} {path} -> curl 失败: "
+                          f"{proc.stderr.decode('utf-8', 'replace')[:200]}")
+    raise RuntimeError(last_error) from None
 
 
 def api(method: str, path: str, token: str, payload: dict | None = None):
@@ -110,6 +126,9 @@ def api(method: str, path: str, token: str, payload: dict | None = None):
     if token:
         headers["Authorization"] = "Bearer " + token
     url = API + path
+    if os.environ.get("GITHUB_API_RESOLVE", "").strip():
+        # urllib 无法指定解析 IP，此时直接走 curl + --resolve，避免白等超时。
+        return curl_api(method, url, headers, data, path)
     try:
         req = urllib.request.Request(url, data=data, method=method, headers=headers)
         with urllib.request.urlopen(req, timeout=60) as resp:
