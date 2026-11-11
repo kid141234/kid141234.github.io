@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="从极分解与 Newton–Schulz 迭代出发，串起 Padé 多项式族、两种范数下的最速方向，以及 Muon 与 Polar Express 在有限步里选择系数的理由。">
+<title>迭代！从理论走向工程应用 · 高源的学习笔记</title><link rel="icon" href="../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../styles.css"><link rel="stylesheet" href="blog.css">
+<script>window.MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']]},svg:{fontCache:'global'}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script></head>
+<body id="top"><a class="skip-link" href="#article">跳转到正文</a><header class="site-header"><div class="header-inner"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">✳</span> 个人主页<span class="brand-slash"> / </span><span class="brand-en">PERSONAL SPACE</span></a><a class="back-link" href="../index.html#blog">← 返回博客</a></div></header>
+<div class="article-layout"><aside class="article-toc" aria-label="文章目录"><p>目录 <span>CONTENTS</span></p><ol><li><a href="#section-1">1. 极分解去掉了什么？</a></li><li><a href="#section-2">2. Muon究竟想得到什么样的矩阵？</a></li><li><a href="#section-3">3. 如何算出极因子？</a></li><li><a href="#section-4">4. Padé 家族怎样从三次走到五次？</a></li><li><a href="#section-5">5. Frobenius 范数下，最速下降方向是什么？</a></li><li><a href="#section-6">6. 谱范数下，最速方向是什么？</a></li><li><a href="#section-7">7. Muon 为什么要改变系数？</a></li><li><a href="#section-8">参考资料</a></li></ol></aside><main id="article" class="article"><p class="article-kicker">学习笔记 / OPTIMIZATION</p><h1>迭代！从理论走向工程应用</h1>
+<p>笔者最近在学习各种优化器的时候回顾了Muon，其中最为精彩的手法当属Newton–Schulz分解，使得Muon能够在工程上得以运用，但是翻遍网上许多文章，发现无一篇能够能够详细介绍这种技术，笔者翻阅了Higham 在《Functions of Matrices》中第八章所写的内容后，做了一篇blog来整理这部分内容。</p>
+<p>如果只看实现，Newton–Schulz 似乎就是反复执行几行矩阵乘法。但这些乘法为什么能把矩阵“正交化”？三次式里的系数从何而来，到了 Muon 又为什么会换成三个看起来很不规则的小数？笔者想把这中间省略的思考过程补上：先弄清楚我们希望矩阵发生什么变化，再尝试构造这样的迭代，最后回到优化器，看看工程上的要求怎样改变了我们选择系数的方式。</p>
+<p>我们先从一个直观的问题说起：给定矩阵 $A$，能否去掉它沿不同方向的“伸缩”，只留下输入方向与输出方向之间的对应关系？极分解会给出一个候选答案。至于为什么要用这个答案更新参数，我们还需要重新审视“沿负梯度下降最快”这句熟悉的话。</p>
+<p>正文采用实矩阵和转置记号。Higham 在《Functions of Matrices》第 8 章用共轭转置处理复矩阵，文末的节号和公式编号沿用书中的记法。</p>
+<h2 id="section-1">1. 极分解去掉了什么？</h2>
+<p>对于一个非零向量，去掉长度很容易，除以它的模长就可以了。矩阵却多了一层麻烦：它可以把一个方向拉长四倍，同时让另一个方向保持原样。拿 $\operatorname{diag}(4,1)$ 来说，除以一个共同的数，显然无法同时去掉这两种伸缩。我们需要先找到这些方向，再分别处理它们的倍率。</p>
+<p>这正是奇异值分解能告诉我们的事情。先设 $A\in\mathbb R^{m\times n}$，$m\ge n$，并且 $A$ 满列秩。写出薄 SVD $A=U\Sigma V^\top$，其中 $U^\top U=I_n$，$V$ 是正交方阵，$\Sigma=\operatorname{diag}(\sigma_1,\ldots,\sigma_n)$，各 $\sigma_i&gt;0$。沿着输入方向 $v_i$ 看，矩阵的作用就是 $Av_i=\sigma_i u_i$：输出方向是 $u_i$，伸缩倍率是 $\sigma_i$。</p>
+<p>于是一个自然的尝试是保留 $U,V$，把 $\Sigma$ 换成 $I_n$。得到的 $Q=UV^\top$ 满足 $Qv_i=u_i$，恰好完成了我们想要的操作。被去掉的伸缩又放在哪里呢？在 $U$ 和 $\Sigma$ 之间插入 $V^\top V$，就能把它单独拿出来：</p>
+<p>$$
+A=\underbrace{UV^\top}_{Q}\,\underbrace{V\Sigma V^\top}_{H}.
+$$</p>
+<p>这就是右极分解。$H$ 对称正定，$Q^\top Q=I_n$。把三个矩阵放在同一对奇异向量上比较，它们的分工就很清楚了：</p>
+<p>$$
+Av_i=\sigma_i u_i,\qquad Hv_i=\sigma_i v_i,\qquad Qv_i=u_i.
+$$</p>
+<p>$H$ 先在输入空间里沿各个 $v_i$ 方向伸缩，$Q$ 再把这些方向等距映到输出空间。这与复数的极坐标表示 $z=re^{i\theta}$ 有些相似，只是矩阵允许不同方向拥有不同的伸缩倍率。方阵的 $Q$ 是正交阵；如果 $A$ 是高矩阵，$Q$ 就有正交归一的列。对于满行秩的宽矩阵，我们可以先处理 $A^\top$，再把得到的极因子转置回来，此时得到的是行正交归一的因子。</p>
+<p>SVD 帮我们看清了这个分解，不过后面要设计迭代，最好能直接用 $A$ 写出两个因子。由 $A^\top A=HQ^\top QH=H^2$，取唯一的对称半正定平方根，就有</p>
+<p>$$
+H=(A^\top A)^{1/2},\qquad Q=A(A^\top A)^{-1/2}.
+$$</p>
+<p>满列秩保证 $H$ 可逆，所以这个 $Q$ 也被唯一确定了。这个式子先记在这里：它给出了精确答案，也把计算上的困难暴露了出来——我们还要计算一个矩阵的逆平方根。 <a href="#src-1">[1]</a></p>
+<h3>秩亏时，零奇异值对应的方向怎么办？</h3>
+<p>前面特意要求 $\sigma_i&gt;0$，是因为“去掉伸缩”在零奇异值处会遇到一个小问题。如果一个方向已经被 $A$ 压成了零，我们该把它恢复到哪里？</p>
+<p>看最简单的例子 $A=\operatorname{diag}(2,0)$。令 $H=\operatorname{diag}(2,0)$，那么无论取 $Q=I_2$，还是 $Q=\operatorname{diag}(1,-1)$，都有 $A=QH$。第二个方向先被 $H$ 消去了，$A$ 自然无从告诉我们 $Q$ 在这个方向上应该怎样作用。因而，若坚持要求 $Q^\top Q=I_n$，就必须补齐这些方向，而补齐的方式未必唯一。</p>
+<p>后面的迭代会采用一个更直接的约定：有非零伸缩的方向，把倍率改成 $1$；原本为零的方向，继续保留为零。用只包含 $r$ 个正奇异值的紧致 SVD $A=U_r\Sigma_rV_r^\top$ 来写，这便是规范极因子</p>
+<p>$$
+\operatorname{polar}(A)=U_rV_r^\top=AH^\dagger,
+\qquad H=(A^\top A)^{1/2},
+$$</p>
+<p>其中 $H^\dagger$ 是 Moore–Penrose 伪逆。它在 $(\ker A)^\perp$ 上保持长度，在 $\ker A$ 上取零，这样的矩阵称为部分等距矩阵。满列秩时，它就是前面的 $Q$。把这点提前说明，是因为我们稍后构造的奇多项式都在零点取零：它们可以改变已有的正奇异值，却不会凭空补出零空间中的方向。 <a href="#src-1">[1]</a></p>
+<h2 id="section-2">2. Muon究竟想得到什么样的矩阵？</h2>
+<p>到这里，我们知道怎样把奇异值改成 $1$ 了。但还有一个值得追问的地方：如果只是想得到一个列正交的矩阵，选择其实有很多，为什么偏偏保留原来的奇异向量？</p>
+<p>不妨先给这个直觉一个可以检验的要求：在列正交的前提下，尽量少改动原矩阵。仍以满列秩的 $A$ 为例，用 Frobenius 范数衡量改动，就得到</p>
+<p>$$
+\min_{Z^\top Z=I_n}\lVert A-Z\rVert_F,
+\qquad
+\lVert A-Z\rVert_F^2=\sum_{i,j}(A_{ij}-Z_{ij})^2.
+$$</p>
+<p>直觉上，把长度改成 $1$ 已经是约束强加给我们的代价，再改变输出方向似乎只会增加误差。这个直觉能否直接从式子里看出来？沿一个输入奇异向量 $v_i$ 计算就够了。因为 $Zv_i$ 和 $u_i$ 都是单位向量，有</p>
+<p>$$
+\begin{aligned}
+\lVert(A-Z)v_i\rVert_2^2
+&amp;=\lVert\sigma_i u_i-Zv_i\rVert_2^2\\
+&amp;=\sigma_i^2+1-2\sigma_i u_i^\top Zv_i\\
+&amp;=(\sigma_i-1)^2+\sigma_i\lVert u_i-Zv_i\rVert_2^2.
+\end{aligned}
+$$</p>
+<p>最后一行把两种代价分开了：$(\sigma_i-1)^2$ 是调整长度必须付出的，后面那项则是在衡量输出方向是否偏离 $u_i$。沿整组标准正交基 $\{v_i\}_{i=1}^n$ 求和，得到</p>
+<p>$$
+\lVert A-Z\rVert_F^2
+=\sum_i(\sigma_i-1)^2+\sum_i\sigma_i\lVert u_i-Zv_i\rVert_2^2.
+$$</p>
+<p>现在选择 $Z=Q=UV^\top$，第二项就全部消失了。并且每个 $\sigma_i&gt;0$，所以任何想取到这个最小值的 $Z$，都必须在每个 $v_i$ 上满足 $Zv_i=u_i$。这组基已经覆盖整个输入空间，$Z$ 也就只能是 $Q$。我们由此得到了一个比“看起来合理”更强的结论：极因子是 Frobenius 范数下唯一的最近解。 <a href="#src-1">[1]</a></p>
+<p>如果我们关心最坏方向上的误差，把距离换成谱范数，结果会怎样？对每个 $i$，反三角不等式给出</p>
+<p>$$
+\lVert A-Z\rVert_2\ge\lVert(A-Z)v_i\rVert_2\ge\lvert\sigma_i-1\rvert.
+$$</p>
+<p>因此最大的 $\lvert\sigma_i-1\rvert$ 是绕不过去的下界。而 $A-Q=U(\Sigma-I_n)V^\top$，恰好取到了这个下界，所以极因子依旧是最近解。不过，这次唯一性就不一定成立了。</p>
+<p>例如 $A=\operatorname{diag}(3,1)$，无论选择 $I_2$，还是 $\operatorname{diag}(1,-1)$，谱范数距离都是 $2$。后一个选择把第二个方向反了过来，但造成的误差也只是 $2$，并没有超过第一个方向原本的误差。Frobenius 范数会把这笔额外代价加进去，谱范数只看最大值，所以允许它存在。这个例子也提醒我们，同样叫“最近”，换一种距离，最优解的性质就可能发生变化。</p>
+<p>事实上，这种最近性可以推广到任意酉不变范数，即左右乘正交矩阵都不改变数值的范数。Mirsky 不等式用奇异值之差给出距离下界，而保留左右奇异向量的极因子达到这个下界，这就是 Fan–Hoffman 最近性结论背后的思路。秩亏时则要沿用上一节的区分：若要求 $Z^\top Z=I_n$，需要在零奇异值方向补齐正交列；若只在与 $A$ 有相同值域的部分等距矩阵中寻找最近解，规范极因子就能达到最小距离。 <a href="#src-1">[1]</a></p>
+<p>我们已经能解释，极因子怎样在满足正交条件的同时保留原矩阵的方向信息。这有助于理解 Muon 的更新形状，但“离梯度最近”还不足以说明它为何适合下降。那个问题留到第 5、6 节再讨论。先沿着本文最初的疑问往前走：如果每次更新都要得到这样的矩阵，能否把 SVD 换成更适合反复执行的计算？</p>
+<h2 id="section-3">3. 如何算出极因子？</h2>
+<p>既然目标是保留奇异向量、把正奇异值改成 $1$，我们可以尝试从 $X_0=A$ 出发，每次只做一点修正。关键在于，修正既要让矩阵更接近正交，又不能把原来的方向关系弄丢。</p>
+<p>先从比较容易处理的可逆方阵开始。假设当前矩阵已经是 $X$，我们想找一个 $\Delta$，让 $X+\Delta$ 更接近正交阵。直接求解 $(X+\Delta)^\top(X+\Delta)=I$ 仍然是非线性问题，不过若 $\Delta$ 足够小，就可以先略去其中的二次项。这正好给了 Newton 法一个入口。</p>
+<h3>3.1 带逆的 Newton 迭代</h3>
+<p>展开正交条件，保留关于 $\Delta$ 的一次项，有</p>
+<p>$$
+X^\top\Delta+\Delta^\top X=I-X^\top X.
+$$</p>
+<p>右边表示当前离正交条件还有多少误差，左边表示一次小修正能怎样改变它。这里还不能唯一确定 $\Delta$，因为方程只规定了 $X^\top\Delta$ 的对称部分。我们先作一个最简单的选择，把反对称部分取为零，于是 $2X^\top\Delta=I-X^\top X$，解得</p>
+<p>$$
+\Delta=\frac12X^{-\top}(I-X^\top X)=\frac12(X^{-\top}-X).
+$$</p>
+<p>把它加回原矩阵，就得到计算极因子的 Newton 迭代：</p>
+<p>$$
+X_{k+1}=\frac12(X_k+X_k^{-\top}).
+$$</p>
+<p>这个平均看起来很简洁，但它为什么会走向我们想要的那个正交阵？将 $X_k=UD_kV^\top$ 代入，就有 $X_k^{-\top}=UD_k^{-1}V^\top$。两项的左右奇异向量完全相同，所以上面的选择恰好保住了方向，只把每个奇异值按照 $N(s)=(s+s^{-1})/2$ 更新。</p>
+<p>接下来只需要看一个正数怎样变化。一个有用的恒等式是</p>
+<p>$$
+N(s)-1=\frac{(s-1)^2}{2s}.
+$$</p>
+<p>它同时告诉我们两件事。首先，不管 $s$ 原来在 $1$ 的哪一边，更新后都落在 $[1,\infty)$；而当 $s&gt;1$ 时又有 $N(s)&lt;s$，所以后续会一路减小，趋向唯一的正不动点 $1$。其次，在 $1$ 附近，新误差与旧误差的平方成正比，这就是局部二次收敛。</p>
+<p>不过，“最终能到”还不等于“前几步就很快”。如果 $s$ 很小，第一步会把它推到大约 $1/(2s)$，然后再从很大的数慢慢降下来。这样看，给 Newton 迭代加一个合适的缩放就很自然了：我们希望先减少这种过大的跳跃，再利用靠近目标后的快速收敛。 <a href="#src-1">[1]</a></p>
+<h3>3.2 取倒数得到适用于矩形矩阵的变体</h3>
+<p>前面的式子还有一个直接的限制：$X^{-\top}$ 要求 $X$ 是可逆方阵，而神经网络中的权重矩阵常常是矩形。先暂时放下矩阵，看看标量式能否改写。</p>
+<p>令 $y=1/s$，对下一步也取倒数，就有 $y^+=1/N(1/y)=2y/(1+y^2)$。这里的分母始终为正，不再需要单独出现 $y^{-1}$。把 $y^2$ 换成 Gram 矩阵 $Y^\top Y$，我们得到</p>
+<p>$$
+Y_{k+1}=2Y_k(I+Y_k^\top Y_k)^{-1}.
+$$</p>
+<p>无论 $Y_k$ 是高矩阵还是宽矩阵，右侧的维度都能对上，并且 $I+Y_k^\top Y_k$ 一定正定。实际计算时可以求解对应的线性系统，不必显式形成逆矩阵。将 SVD 代入，也能检查出它确实是在每个奇异值上执行刚才的标量更新。</p>
+<p>这个变体和前面的 Newton 式还有一个有意思的联系：从同一个可逆方阵 $A$ 出发，由于 $N(s)=N(1/s)$，两条序列在第一步就建立了倒数关系，随后始终满足 $Y_k=X_k^{-\top}$（$k\ge1$）。所以它们可以从相反的一侧逼近同一个极因子。我们已经去掉了对矩阵形状的限制，但每一步还要解线性系统，能否继续把它换成矩阵乘法？ <a href="#src-1">[1]</a></p>
+<h3>3.3 用 Schulz 求逆步消掉矩阵逆</h3>
+<p>为了做到这一点，先退一步问：如果手里已经有一个逆矩阵的粗略近似，怎样只用乘法把它改进一点？</p>
+<p>设 $B$ 可逆，$Y$ 是 $B^{-1}$ 的一个可逆近似。我们可以对方程 $Y^{-1}-B=0$ 再做一次 Newton 迭代。由 $(Y+t\Delta)(Y+t\Delta)^{-1}=I$ 对 $t$ 求导，逆映射沿 $\Delta$ 的导数是 $-Y^{-1}\Delta Y^{-1}$，所以线性化方程为</p>
+<p>$$
+Y^{-1}-B-Y^{-1}\Delta Y^{-1}=0.
+$$</p>
+<p>左右各乘一个 $Y$，便得到 $\Delta=Y-YBY$。看起来推导还带着逆，算出来的更新却已经把逆消掉了。若记求逆残差 $R=I-BY$，那么</p>
+<p>$$
+Y^+=Y(2I-BY)=Y(I+R),\qquad I-BY^+=R^2.
+$$</p>
+<p>这个结果比更新式本身更能说明它的作用：只做矩阵乘加，就能把残差平方。当残差已经足够小时，这会迅速改善近似。这一步就是求逆的 Schulz 更新。</p>
+<p>现在回到极分解的 Newton 式。当 $X$ 接近正交阵时，$X$ 本身就是 $X^{-\top}$ 的一个近似。于是令 $B=X^\top$、$Y=X$，做一次 Schulz 更新，得到 $X(2I-X^\top X)$。再用它替换 Newton 式里的 $X^{-\top}$：</p>
+<p>$$
+X_{k+1}
+=\frac12\bigl[X_k+X_k(2I-X_k^\top X_k)\bigr]
+=\frac12X_k(3I-X_k^\top X_k).
+$$</p>
+<p>这就得到了三次 Newton–Schulz 迭代。虽然我们从可逆方阵推导它，最后的乘法式已经可以直接作用于矩形矩阵。</p>
+<p>用近似代替求逆后，原来的收敛范围是否还能保留？这需要重新检查。代入 SVD，奇异值遵循的多项式变成了 $\phi_3(s)=s(3-s^2)/2$。当 $0&lt;s&lt;\sqrt3$ 时，它为正，而且</p>
+<p>$$
+1-\phi_3(s)=\frac12(s+2)(1-s)^2\ge0.
+$$</p>
+<p>所以第一步会把正奇异值送进 $(0,1]$。在这个区间内，又有 $\phi_3(s)-s=\tfrac12s(1-s^2)\ge0$，后续就会逐步上升到 $1$。由此也能理解实现中为什么通常要先归一化：对非零矩阵取 $X_0=A/\lVert A\rVert_F$，利用 $\lVert A\rVert_2\le\lVert A\rVert_F$，就能把所有正奇异值放进 $(0,1]$，同时正标量缩放不会改变极因子。零奇异值则始终保留为零。 <a href="#src-1">[1]</a></p>
+<p>还可以从矩阵残差再看一遍。令 $E_k=I-X_k^\top X_k$，更新就写成 $X_{k+1}=X_k(I+\tfrac12E_k)$。因为这些因子都是 $E_k$ 的多项式，可以直接展开：</p>
+<p>$$
+\begin{aligned}
+E_{k+1}
+&amp;=I-(I+\tfrac12E_k)(I-E_k)(I+\tfrac12E_k)\\
+&amp;=\frac34E_k^2+\frac14E_k^3.
+\end{aligned}
+$$</p>
+<p>一阶项恰好抵消了。对于满列秩的情形，当 $E_k$ 已经很小时，下一步残差便从二次项开始。若矩阵秩亏，零空间上的残差特征值一直是 $1$，因而整个 $E_k$ 不会趋于零；我们应当在正奇异值对应的子空间上理解这个收敛过程。</p>
+<p>现在，系数 $\tfrac12$ 的作用已经不神秘了：两侧的修正各贡献半个 $E_k$，共同消掉了一阶误差。顺着这个思路继续想，如果再加一个 $E_k^2$ 项，能否连二阶误差一起消掉？ <a href="#src-1">[1]</a></p>
+<h2 id="section-4">4. Padé 家族怎样从三次走到五次？</h2>
+<p>上一节得到三次式，靠的是用一次求逆近似替换精确求逆。现在有了残差表达式，我们也可以反过来设计迭代：先写出完全消除误差所需要的修正，再用低成本的式子逼近它。这样既能重新得到三次式，也能看清五次式的系数为什么是那几个分数。</p>
+<h3>4.1 从精确修正反推迭代结构</h3>
+<p>仍先设 $X$ 满列秩，记 $E=I-X^\top X$。第 1 节已经给出精确极因子，所以一步到位的修正是</p>
+<p>$$
+\operatorname{polar}(X)=X(I-E)^{-1/2}.
+$$</p>
+<p>当 $X$ 已经接近列正交时，$E$ 接近零。我们要做的，就是在零附近近似 $h(\xi)=(1-\xi)^{-1/2}$。为什么一个标量函数能解决矩阵问题？沿一个奇异值 $s$ 看，$\xi=1-s^2$，而 $s\,h(1-s^2)=1$，恰好把这个方向的长度修正到目标值。</p>
+<p>这并不只是形式上的类比。若 $X=U\Sigma V^\top$，那么 $E=V(I-\Sigma^2)V^\top$。对所需谱点上有定义的多项式或有理函数 $r$，有</p>
+<p>$$
+Xr(E)=U\bigl[\Sigma r(I-\Sigma^2)\bigr]V^\top.
+$$</p>
+<p>所以只要在标量层面设计好 $r$，就可以把同样的修正同时施加到所有奇异值上，计算时也不必真的求出 $U,V$。</p>
+<p>最直接的选择是截断 Taylor 展开。不过，如果允许分母中也出现一个多项式，就有更多匹配低阶误差的自由度。这便引出了 Padé 近似：取分子次数至多为 $\ell$、分母次数至多为 $d$ 的 $p/q$，令 $q(0)=1$，再让</p>
+<p>$$
+q(\xi)h(\xi)-p(\xi)=O(\xi^{\ell+d+1}).
+$$</p>
+<p>也就是说，我们选择系数，让两边尽可能多的低阶项相同。将 $\xi$ 换成 $E_k$，在 $q(E_k)$ 可逆时，便得到一族迭代</p>
+<p>$$
+X_{k+1}=X_kp(E_k)q(E_k)^{-1}.
+$$</p>
+<p>对应的标量更新是 $\phi(s)=s\,p(1-s^2)/q(1-s^2)$。因为在 $s=1$ 附近，$1-s^2$ 与 $s-1$ 同阶，匹配到上述精度就能让下一步误差达到 $O((s-1)^{\ell+d+1})$。名字和记号可能有些抽象，下面直接解两组系数，就能看到它们怎样落到我们关心的迭代上。 <a href="#src-1">[1]</a></p>
+<h3>4.2 直接解出经典五次式</h3>
+<p>先保留“只用乘法”这个要求，也就是让分母等于 $1$。上一节的修正是 $1+\xi/2$，现在多留一个二次项，设 $r(\xi)=1+a\xi+b\xi^2$。我们希望修正后的奇异值平方尽可能接近 $1$，于是展开</p>
+<p>$$
+\begin{aligned}
+(s\,r(\xi))^2
+&amp;=(1-\xi)(1+a\xi+b\xi^2)^2\\
+&amp;=1+(2a-1)\xi+(a^2+2b-2a)\xi^2+O(\xi^3).
+\end{aligned}
+$$</p>
+<p>先令一次项为零，得到 $a=1/2$；再代回二次项，得到 $b=3/8$。系数就这样被两个消去条件依次确定了。将 $\xi=1-s^2$ 代回，经典 $[2/0]$ 方法的标量式是</p>
+<p>$$
+\phi_5(s)
+=s\left[1+\frac12(1-s^2)+\frac38(1-s^2)^2\right]
+=\frac{15s-10s^3+3s^5}{8}.
+$$</p>
+<p>记 $B_k=X_k^\top X_k$，矩阵式则为</p>
+<p>$$
+X_{k+1}=X_k(I+\tfrac12E_k+\tfrac38E_k^2)
+=X_k\left(\tfrac{15}{8}I-\tfrac54B_k+\tfrac38B_k^2\right).
+$$</p>
+<p>如果已经记住了 Newton–Schulz 的三次式，这个结果很容易理解：我们多算一次残差的平方，用它消掉下一阶误差，于是得到了五次多项式。</p>
+<p>同一组系数还可以从另一个角度得到，这有助于分清“五次”和“三阶”为什么会同时出现。假设直接寻找一个奇多项式 $\phi$，希望 $\phi(s)-1$ 在 $s=1$ 处从三次项开始，那么必须有 $\phi(1)=1$、$\phi&#x27;(1)=\phi&#x27;&#x27;(1)=0$。由于 $\phi&#x27;$ 是偶多项式，$1$ 是二重根时，$-1$ 也必然是二重根。因此，最低次数的导数只能取 $\phi&#x27;(s)=C(1-s^2)^2$ 的形式。积分，再用 $\phi(0)=0$、$\phi(1)=1$ 确定常数，就得到 $C=15/8$，也回到了上面的式子。</p>
+<p>这样，“五次”说的是多项式的次数，“三阶”说的是靠近 $1$ 后误差衰减的阶数。多项式多了两次幂，是为了让局部误差再消去一阶。 <a href="#src-1">[1]</a></p>
+<h3>4.3 允许矩阵在分母上的时候，也可以得到三阶方法</h3>
+<p>五次式给出了一个只用乘法的三阶方法。若愿意重新接受一次线性系统求解，分子和分母是否可以各少用一些次数？</p>
+<p>尝试 $[1/1]$，令 $p(\xi)=1+a\xi$、$q(\xi)=1+b\xi$，展开</p>
+<p>$$
+(1+b\xi)(1-\xi)^{-1/2}
+=1+(\tfrac12+b)\xi+(\tfrac38+\tfrac b2)\xi^2+O(\xi^3).
+$$</p>
+<p>要让它与 $1+a\xi$ 匹配到二次项，只需令 $a=\tfrac12+b$、$\tfrac38+\tfrac b2=0$。于是 $b=-3/4$、$a=-1/4$，代回就得到 Halley 更新 $\phi(s)=s(3+s^2)/(1+3s^2)$。它同样是局部三阶方法，只是把一部分近似交给了分母。</p>
+<p>至于第 3.2 节的倒数变体，也能放进这套记号：取 $[0/1]$，即分子为 $1$、分母为 $1-\xi/2$，代入 $\xi=1-s^2$，就是 $2s/(1+s^2)$。把几个常见选择放在一起，就能看清计算方式与局部精度之间的关系。 <a href="#src-1">[1]</a></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Padé 类型</th>
+<th>标量更新 $\phi(s)$</th>
+<th style="text-align:right">局部收敛阶</th>
+<th>矩阵实现</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$[0/1]$</td>
+<td>$\dfrac{2s}{1+s^2}$</td>
+<td style="text-align:right">2</td>
+<td>求解线性系统</td>
+</tr>
+<tr>
+<td>$[1/0]$</td>
+<td>$\dfrac{s(3-s^2)}2$</td>
+<td style="text-align:right">2</td>
+<td>矩阵乘加</td>
+</tr>
+<tr>
+<td>$[1/1]$</td>
+<td>$\dfrac{s(3+s^2)}{1+3s^2}$</td>
+<td style="text-align:right">3</td>
+<td>求解线性系统</td>
+</tr>
+<tr>
+<td>$[2/0]$</td>
+<td>$\dfrac{15s-10s^3+3s^5}{8}$</td>
+<td style="text-align:right">3</td>
+<td>矩阵乘加</td>
+</tr>
+</tbody>
+</table></div>
+<p>不过，表里的阶数只回答“到了 $1$ 附近以后有多快”。从初始值能否顺利走到那里，还要另外检查。Halley 式有一个特别整齐的恒等式：</p>
+<p>$$
+\frac{1-\phi(s)}{1+\phi(s)}
+=\left(\frac{1-s}{1+s}\right)^3.
+$$</p>
+<p>把 $w=(1-s)/(1+s)$ 当作新的误差变量，迭代就变成了 $w^+=w^3$。只要 $s&gt;0$，就有 $\lvert w\rvert&lt;1$，反复立方使 $w$ 趋于零，也就使 $s$ 趋于 $1$。这一次，我们同时看到了收敛速度和初值范围。</p>
+<p>更一般地，当 $\ell+d&gt;0$ 且 $\ell\in\{d-1,d\}$ 时，对应的 Padé 迭代满足 $w^+=w^{\ell+d+1}$，因此可以从任意正奇异值启动。经典五次 $[2/0]$ 不属于这个情形，但满列秩时有一个方便的充分条件：$\lVert I-X_0^\top X_0\rVert_2&lt;1$。前面用过的 Frobenius 归一化将初始奇异值放进 $(0,1]$，也就满足了这个条件。 <a href="#src-1">[1]</a></p>
+<p>我们现在已经有办法逐步算出极因子了。沿着这条计算路线看，几组迭代都来自同一个目标：让正奇异值靠近 $1$。接下来回到暂时搁置的问题——用它做优化器的更新方向，到底有什么依据？</p>
+<h2 id="section-5">5. Frobenius 范数下，最速下降方向是什么？</h2>
+<p>我们通常会说，负梯度是下降最快的方向。现在却准备把梯度的奇异值都改成 $1$，这会不会反而偏离了最速方向？</p>
+<p>先别急着判断，想一想“最快”是在怎样比较。若不限制步子大小，同一个方向走两倍距离，线性模型就会预言两倍的下降量，显然无法公平比较两个方向。因此，在谈最速下降之前，我们必须先说清楚一步允许走多远。</p>
+<p>设损失 $L$ 在 $W$ 处可微，$G=\nabla_W L(W)$，其中 $G_{ij}=\partial L/\partial W_{ij}$。对于一个小更新 $\Delta W$，有</p>
+<p>$$
+\begin{aligned}
+L(W+\Delta W)
+&amp;=L(W)+\sum_{i,j}G_{ij}\Delta W_{ij}+o(\lVert\Delta W\rVert_F)\\
+&amp;=L(W)+\langle G,\Delta W\rangle_F+o(\lVert\Delta W\rVert_F),
+\qquad
+\langle G,\Delta W\rangle_F=\operatorname{tr}(G^\top\Delta W).
+\end{aligned}
+$$</p>
+<p>这一步把复杂的损失函数局部换成了一个线性函数。令 $\Delta W=\eta D$，$\eta&gt;0$，先用 Frobenius 范数限制 $D$ 的大小，就要解 $\min_{\lVert D\rVert_F\le1}\langle G,D\rangle_F$。把矩阵元素看成一个长向量，Cauchy–Schwarz 不等式立即给出</p>
+<p>$$
+\langle G,D\rangle_F
+\ge-\lVert G\rVert_F\lVert D\rVert_F
+\ge-\lVert G\rVert_F.
+$$</p>
+<p>要同时取到两个等号，当 $G\ne0$ 时，$D$ 必须与 $G$ 反向共线，并用满单位长度。因此唯一的最优方向及对应更新为</p>
+<p>$$
+D_F^\star=-\frac{G}{\lVert G\rVert_F},
+\qquad
+\Delta W_F^\star=-\eta\frac{G}{\lVert G\rVert_F}.
+$$</p>
+<p>所以在 Frobenius 范数给定的步长预算下，我们熟悉的负梯度方向确实最快，它使线性化损失下降 $\eta\lVert G\rVert_F$。如果 $G=0$，所有可行方向的一阶变化都是零，这时一阶近似本身就无法选出方向了。</p>
+<p>这里得到的是归一化梯度，平常写的梯度下降却是 $\Delta W=-\alpha G$，两者是什么关系？方向相同，只是后者的实际步长为 $\alpha\lVert G\rVert_F$，会随梯度大小变化。我们还可以把硬性的长度预算换成二次代价，对 $\alpha&gt;0$ 配方：</p>
+<p>$$
+\langle G,\Delta W\rangle_F+\frac{1}{2\alpha}\lVert\Delta W\rVert_F^2
+=\frac{1}{2\alpha}\lVert\Delta W+\alpha G\rVert_F^2
+-\frac{\alpha}{2}\lVert G\rVert_F^2.
+$$</p>
+<p>平方项在 $\Delta W=-\alpha G$ 时取到最小值，于是又得到了通常的梯度下降。这两种写法让我们看清了步长的角色：可以预先固定允许走的长度，也可以用代价系数 $\alpha$ 来调节它。</p>
+<p>至此，第 2 节的最近性与这里的最速性也就分开了。在第 2 节，Frobenius 范数衡量的是 $A$ 与候选正交因子之间的距离；这里，它衡量的是更新 $\Delta W$ 的大小。极因子在前一个问题里最优，并不自动意味着它在后一个问题里也最优。要理解 Muon，我们还得看看矩阵更新有没有另一种值得采用的长度定义。</p>
+<h2 id="section-6">6. 谱范数下，最速方向是什么？</h2>
+<p>对线性层 $y=Wx$ 来说，我们不妨从更新会对输出造成什么影响来衡量它。固定同一个输入 $x$，参数改变 $\Delta W$ 后，输出的变化就是 $\Delta y=\Delta W x$。如果希望所有单位输入的输出变化都不超过某个范围，自然要看</p>
+<p>$$
+\sup_{\lVert x\rVert_2=1}\lVert\Delta y\rVert_2=\lVert\Delta W\rVert_2.
+$$</p>
+<p>右边正是更新矩阵的谱范数。这样，谱范数预算 $\lVert\Delta W\rVert_2\le\eta$ 就有了具体含义：任何单位输入经过这一层时，由本次参数更新带来的输出改变量都至多为 $\eta$。 <a href="#src-2">[2]</a></p>
+<p>现在保持上一节的线性目标不变，只替换预算。写 $\Delta W=\eta D$，需要求 $\min_{\lVert D\rVert_2\le1}\langle G,D\rangle_F$。要看清这个约束怎样起作用，仍然沿梯度的奇异方向展开。令 $G=\sum_{i=1}^r\sigma_i u_i v_i^\top$ 为紧致 SVD，那么</p>
+<p>$$
+\langle G,D\rangle_F
+=\sum_{i=1}^r\sigma_i u_i^\top Dv_i
+\ge-\sum_{i=1}^r\sigma_i.
+$$</p>
+<p>最后一步来自 $\lVert Dv_i\rVert_2\le1$，所以每个 $u_i^\top Dv_i$ 都不可能小于 $-1$。读到这里可以先猜一猜：要让所有项同时取到下界，我们希望 $D$ 怎样作用在 $v_i$ 上？</p>
+<p>每个方向都满足 $Dv_i=-u_i$ 就行。而这正是我们已经研究了许久的负极因子 $D=-U_rV_r^\top$！当 $G\ne0$ 时，它的谱范数为 $1$，既满足约束，又让每一项同时取等号。因此</p>
+<p>$$
+D_2^\star=-\operatorname{polar}(G),
+\qquad
+\min_{\lVert\Delta W\rVert_2\le\eta}\langle G,\Delta W\rangle_F
+=-\eta\sum_i\sigma_i.
+$$</p>
+<p>极因子就在这个问题里重新出现了。它让每个有下降信号的奇异方向都走到谱范数预算允许的幅度。当 $G$ 秩亏时，只要一个可行的 $D$ 在所有正奇异值方向上满足 $Dv_i=-u_i$，就同样能取到最优值；规范极因子选择在其余输入方向上取零。</p>
+<p>这两个最速下降问题也对应一个通用概念：范数 $\lVert\cdot\rVert$ 的对偶范数定义为 $\sup_{\lVert D\rVert\le1}\langle G,D\rangle_F$。因为范数球关于原点对称，将最大值换成最小值，就会得到它的负数。上一节算出的 $\lVert G\rVert_F$ 说明 Frobenius 范数自对偶，这里算出的 $\sum_i\sigma_i$ 则是核范数 $\lVert G\rVert_*$，也就是谱范数的对偶范数。我们不必先记住这条对应关系，刚才的逐方向计算已经把它推出来了。 <a href="#src-2">[2]</a></p>
+<h3>同一个梯度，在两种预算下分别走一步</h3>
+<p>公式给出了答案，但“把小奇异值抬高”为什么能增加下降量，还可以用一个二维例子看得更清楚。</p>
+<p>取 $G=\operatorname{diag}(10,1)$。它告诉我们，第一个方向的一阶收益比第二个方向大十倍。分别沿负梯度和负极因子走一步，并把它们缩放到用满各自的单位预算，结果如下：</p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>单位步长预算</th>
+<th>更新方向</th>
+<th>用满预算的一步 $\Delta W$</th>
+<th style="text-align:right">一阶损失变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frobenius 范数</td>
+<td>负梯度</td>
+<td>$-\operatorname{diag}(10,1)/\sqrt{101}$</td>
+<td style="text-align:right">$-\sqrt{101}\approx-10.05$</td>
+</tr>
+<tr>
+<td>Frobenius 范数</td>
+<td>负极因子</td>
+<td>$-I_2/\sqrt{2}$</td>
+<td style="text-align:right">$-11/\sqrt{2}\approx-7.78$</td>
+</tr>
+<tr>
+<td>谱范数</td>
+<td>负梯度</td>
+<td>$-\operatorname{diag}(1,0.1)$</td>
+<td style="text-align:right">$-10.1$</td>
+</tr>
+<tr>
+<td>谱范数</td>
+<td>负极因子</td>
+<td>$-I_2$</td>
+<td style="text-align:right">$-11$</td>
+</tr>
+</tbody>
+</table></div>
+<p>在 Frobenius 预算下，两个方向共享的是位移的平方和。给第二个方向更多长度，就要从第一个方向拿走一些，而第一个方向的一阶收益更大，所以等幅更新会吃亏。</p>
+<p>谱范数预算的情况就不同了。对这个对角例子，它只限制两个位移幅度的最大值。负梯度缩放后已经在第一个方向走到了 $1$，但第二个方向只走了 $0.1$。我们可以把后者继续增大到 $1$，既不减少第一个方向的位移，也不增加谱范数，于是还能获得额外的下降量。</p>
+<p>这个例子说明，所谓“哪个方向更快”必须连同步长的衡量方式一起讨论。对于 Muon，谱范数约束使得梯度中较小的正奇异值方向也有机会用满允许的幅度；而我们前面推导的极因子迭代，正好提供了实现这种更新的计算方法。</p>
+<h2 id="section-7">7. Muon 为什么要改变系数？</h2>
+<p>把前面的结果接回优化器，最简形式的 Muon 可以写成先平滑梯度，再取动量矩阵的极因子。暂时省略权重衰减和形状缩放，有</p>
+<p>$$
+M_t=\beta M_{t-1}+(1-\beta)G_t,
+\qquad
+W_{t+1}=W_t-\eta_t\,\operatorname{polar}(M_t).
+$$</p>
+<p>第 6 节的推导此时适用于由 $M_t$ 定义的线性目标；当 $M_t=G_t$ 时，它就是当前损失的一阶项。实际实现还可以先对梯度和动量做 Nesterov 式组合，并根据权重矩阵形状缩放步长。这里我们继续关心其中的极因子计算。 <a href="#src-3">[3]</a></p>
+<p>按前面的讨论，似乎把经典五次迭代放进来就大功告成了。但对照参考实现，会发现它的三个系数与 $\tfrac{15}{8},-\tfrac54,\tfrac38$ 完全不同。我们费了一番功夫才解出那些分数，工程实现为什么又要换掉它们？要回答这个问题，得把“最终收敛到哪里”和“只算几步时能到哪里”都放进考虑。</p>
+<h3>7.1 用矩阵乘法直接修改奇异值</h3>
+<p>先看看五次多项式怎样变成代码中的矩阵乘法。对 $X=U\Sigma V^\top$，有</p>
+<p>$$
+XX^\top X=U\Sigma^3V^\top,\qquad
+(XX^\top)^2X=U\Sigma^5V^\top.
+$$</p>
+<p>因此，要把每个奇异值上的标量系数改成 $\phi(s)=as+bs^3+cs^5$，只需计算</p>
+<p>$$
+B=XX^\top,\qquad X^+=aX+(bB+cB^2)X.
+$$</p>
+<p>SVD 在这里帮助我们理解这一步的效果，执行时只需要三次矩阵乘法：形成 $B$、形成 $B^2$，再把组合后的矩阵乘回 $X$。对于一般的系数，这个式子把固定左右基下的对角系数 $s$ 变成 $\phi(s)$；若输出为负，相应的奇异值应当取 $\lvert\phi(s)\rvert$。 <a href="#src-3">[3]</a></p>
+<p>参考实现先把待处理的更新矩阵转成 bfloat16，再除以 Frobenius 范数与一个小正数之和。前面已经解释了归一化的作用，而那个小正数是为了处理零矩阵等情况。如果行数大于列数，就先转置，让这里的 $XX^\top$ 使用较小的维度，迭代结束后再转回来。</p>
+<p>这些安排把计算落到了较小的 Gram 矩阵和低精度矩阵乘法上。默认执行五步，每一步使用同一组系数</p>
+<p>$$
+(a,b,c)=(3.4445,\,-4.7750,\,2.0315).
+$$</p>
+<p>最终得到的矩阵作为极因子的近似，用来更新权重。现在，我们已经知道这三个数具体控制什么了：它们共同决定每一步怎样改变奇异值。 <a href="#src-3">[3]</a></p>
+<h3>7.2 这三个数为什么与经典五次系数不同？</h3>
+<p>回忆经典五次式的推导，我们要求 $\phi(1)=1$，又要求 $\phi&#x27;(1)=\phi&#x27;&#x27;(1)=0$。这些条件都围绕着 $s=1$，所以它擅长的是把已经接近目标的奇异值修得更准。</p>
+<p>但归一化后的某些奇异值可能还很小。如果总共只打算做五步，它们未必有机会进入那个局部快速收敛的区域。此时先看 $s=0$ 附近的行为就很有用：</p>
+<p>$$
+\phi(s)=as+O(s^3),\qquad \phi&#x27;(0)=a.
+$$</p>
+<p>也就是说，小奇异值在最初阶段大约被放大 $a$ 倍。经典系数给出的倍率是 $15/8=1.875$，参考实现则把它提高到了 $3.4445$。如果前几步主要花在抬升小奇异值上，这个差别就可能比靠近 $1$ 后的收敛阶更直接。</p>
+<p>不过，单纯把 $a$ 增大也不够，其他奇异值还得留在可接受的范围内。因此这组系数来自基于梯度的启发式搜索，在加快小奇异值增长的同时控制输出偏差。相关训练实验观察到，奇异值相对 $1$ 有约 $0.3$ 的偏差时，损失曲线仍可表现得相近。这个经验给了系数选择更多余地，但它依赖相应的实验设置，不能当作任意误差都无关紧要的保证。公开说明给出了搜索思路和最终系数，我们也可以直接计算两组系数的有限步效果。 <a href="#src-3">[3]</a></p>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>标量检验</th>
+<th style="text-align:right">经典五次 $[2/0]$</th>
+<th style="text-align:right">Muon 参考实现的五次式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原点斜率 $\phi&#x27;(0)$</td>
+<td style="text-align:right">1.875</td>
+<td style="text-align:right">3.4445</td>
+</tr>
+<tr>
+<td>从 $s=1$ 出发迭代一步</td>
+<td style="text-align:right">1</td>
+<td style="text-align:right">0.701</td>
+</tr>
+<tr>
+<td>从 $s=0.001$ 出发迭代五步</td>
+<td style="text-align:right">0.023171</td>
+<td style="text-align:right">0.470544</td>
+</tr>
+<tr>
+<td>从 $s=0.01$ 出发迭代五步</td>
+<td style="text-align:right">0.228493</td>
+<td style="text-align:right">0.698917</td>
+</tr>
+</tbody>
+</table></div>
+<p>表中的取舍相当直观。从 $0.001$ 出发，经典五次式做完五步仍只有约 $0.023$，参考实现则已经把它抬到了约 $0.47$；与此同时，参考实现连原本位于 $1$ 的值也会改成 $0.701$。这些数值来自标量多项式迭代，实际 bfloat16 矩阵计算还会受到舍入影响。</p>
+<p>这里也可以顺手检查一个容易产生的误解：既然叫迭代，多做一些是否总能更接近精确极因子？对于这组固定系数，$\phi(1)=0.701$。如果序列 $s_{k+1}=\phi(s_k)$ 真能趋于 $1$，由连续性就必须有 $\phi(1)=1$，两者矛盾。因此不能把它理解为不断迭代就会收敛到 $1$ 的经典五次式。</p>
+<p>这样看，Muon 更改系数的原因就清楚了：它在固定的几步里争取一个可用的谱形状，并接受一定的近似误差。第 2 节的最近性和第 6 节的最速性描述精确极因子；实际更新能在多大程度上实现这些性质，要看有限步所得矩阵与它相差多少。</p>
+<h3>7.3 Polar Express 怎样重新选择系数？</h3>
+<p>前面的启发式搜索给出了一组固定系数。顺着有限步误差继续想，我们还能提出一个更具体的问题：如果已经知道当前正奇异值都在哪个区间，能否直接针对整个区间选出这一轮的系数？</p>
+<p>设正奇异值位于 $[\ell_t,u_t]$，且 $\ell_t&gt;0$。既然目标都是 $1$，一个自然的要求就是让最坏位置的误差尽量小。Polar Express 据此选择五次以内的奇多项式：</p>
+<p>$$
+\min_{a_t,b_t,c_t\in\mathbb R}
+\max_{s\in[\ell_t,u_t]}
+\lvert1-(a_ts+b_ts^3+c_ts^5)\rvert.
+$$</p>
+<p>这个问题与经典五次式的出发点有了区别：我们现在对整个区间负责，所以区间中离 $1$ 很远的部分也会影响系数。完成这一轮后，再把多项式在原区间上取得的最小值和最大值作为下一轮端点，继续选择下一组系数。区间逐步变化，系数也就随之变化。</p>
+<p>逐轮都选当前最好的多项式，是否会错过几步之后更好的结果？这是贪心选择必须回答的问题。对于这里的正谱区间和奇多项式复合，Polar Express 给出了相应的最优性保证：在精确算术下，固定初始区间、每步次数上限和总步数，逐轮求解上述最小最大问题，可以使最终的最坏误差在同样次数限制的复合中达到最小。初始区间确定后，整张系数表可以预先算好，实际每一步仍然执行第 7.1 节的矩阵乘法。 <a href="#src-4">[4]</a></p>
+<p>回到最开始的几行代码，现在我们可以逐项问清楚它们的来由：归一化负责把奇异值放入合适的初始范围，奇多项式在保留方向关系的同时调整伸缩，而系数的选择取决于我们最关心哪一段误差。经典迭代把靠近目标后的精度做得很好，固定步数的工程实现还需要照顾那些暂时离目标很远的方向。理解了这层差别，再遇到另一组系数时，我们也就知道应该从哪里开始分析它。</p>
+<h2 id="section-8">参考资料</h2>
+<ol>
+<li><span id="src-1"></span> Nicholas J. Higham，<em>Functions of Matrices: Theory and Computation</em>。定理 8.1 与 8.3 给出极分解和规范极因子，定理 8.4 与 8.5 给出最近性。§8.3 的式 (8.17)、(8.19)、(8.20) 对应三种 Newton 更新，§8.5 的式 (8.22) 与推论 8.14 讨论 Padé 迭代，表 5.1 列出常用近似，§8.6 讨论缩放。 <a href="https://doi.org/10.1137/1.9780898717778.ch8">SIAM 第 8 章</a></li>
+<li><span id="src-2"></span> Jeremy Bernstein，<em>Deriving Muon</em>。 <a href="https://jeremybernste.in/writing/deriving-muon">原文</a></li>
+<li><span id="src-3"></span> Keller Jordan，<em>Muon: An Optimizer for Hidden Layers in Neural Networks</em>。 <a href="https://kellerjordan.github.io/posts/muon/#tuning-the-coefficients">系数调优说明</a> · <a href="https://github.com/KellerJordan/Muon/blob/master/muon.py">参考实现</a></li>
+<li><span id="src-4"></span> Noah Amsel、David Persson、Christopher Musco、Robert M. Gower，<em>The Polar Express: Optimal Matrix Sign Methods and Their Application to the Muon Algorithm</em>。逐轮选择的最优性见定理 3.1。 <a href="https://arxiv.org/abs/2505.16932v5">论文 v5</a></li>
+</ol>
+<div class="article-end"><a href="../index.html#blog">← 返回博客列表</a><a href="#top">回到顶部 ↑</a></div></main></div><footer class="site-footer"><div class="footer-inner"><p>© 高源 · Personal Homepage</p><p>保持好奇，慢慢积累。</p></div></footer></body></html>

@@ -33,6 +33,15 @@
       "html": true,
       "merge_anchors": false,
       "skip_toc": []
+    },
+    {
+      "slug": "polar-decomposition-to-muon",
+      "title": "迭代！从理论走向工程应用",
+      "description": "从极分解与 Newton–Schulz 迭代出发，串起 Padé 多项式族、两种范数下的最速方向，以及 Muon 与 Polar Express 在有限步里选择系数的理由。",
+      "kicker": "学习笔记 / OPTIMIZATION",
+      "html": true,
+      "merge_anchors": false,
+      "skip_toc": []
     }
   ]
 }

@@ -124,6 +124,11 @@ window.HOMEPAGE.topics = [
         "title": "Schedule-Free学习率优化方法",
         "description": "从在线遗憾与锥提升出发，理解二次正则的尺度不变性、CBA / CBA+ 的投影更新，以及无界域中由 KT coin-betting 给出的学习率自适应。",
         "url": "blog/conic-lifting-blog.html"
+      },
+      {
+        "title": "迭代！从理论走向工程应用",
+        "description": "从极分解与 Newton–Schulz 迭代出发，串起 Padé 多项式族、两种范数下的最速方向，以及 Muon 与 Polar Express 在有限步里选择系数的理由。",
+        "url": "blog/polar-decomposition-to-muon.html"
       }
     ]
   },
